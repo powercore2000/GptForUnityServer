@@ -1,0 +1,4 @@
+﻿[*.cs]
+
+# CS0006: Metadata file 'F:\1-Documents Clone\Unity Created Games\Unity Ai Experiments\GptToUnity\Temp\Bin\Debug\SharedLibrary.dll' could not be found
+dotnet_diagnostic.CS0006.severity = warning
