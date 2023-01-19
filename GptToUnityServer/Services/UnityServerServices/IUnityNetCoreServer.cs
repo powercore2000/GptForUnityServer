@@ -11,5 +11,9 @@
 
         public Task<string> SendMessage(string message);
 
+        public Task StartAsync(CancellationToken cancellationToken);
+
+        public Task StopAsync(CancellationToken cancellationToken);
+
     }
 }

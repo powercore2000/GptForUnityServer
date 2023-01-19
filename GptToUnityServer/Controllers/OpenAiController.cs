@@ -1,4 +1,5 @@
-﻿using GptToUnityServer.Services.UnityServerServices;
+﻿using GptToUnityServer.Services.UnityServerManager;
+using GptToUnityServer.Services.UnityServerServices;
 using Microsoft.AspNetCore.Mvc;
 using SharedLibrary;
 
@@ -10,31 +11,23 @@ namespace GptToUnityServer.Controllers
     public class OpenAiController : Controller
     {
 
-        private readonly TcpServerService _unityService;
+        private readonly UnityServerManagerService _unityService;
 
-        public OpenAiController(TcpServerService unityService)
+        public OpenAiController(UnityServerManagerService unityService)
         {
 
             _unityService = unityService;
         }
 
-        [HttpGet]
-        public async Task<string> Get()
+        [HttpGet("SendAiMessage/{prompt}")]
+        public async Task<string> Get(string prompt)
         {
 
             //_unityService.StartServer();
-            return await _unityService.SendMessage("What are you?");
+            return await _unityService.CurrentServerService.SendMessage(prompt);
 
         }
 
-        [HttpPost]
-        public async Task<string> Post(string message)
-        {
-
-            //_unityService.StartServer();
-            return await _unityService.SendMessage(message);
-
-        }
     }
 
     

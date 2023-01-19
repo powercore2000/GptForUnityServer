@@ -11,159 +11,158 @@ using SharedLibrary;
 
 namespace GptToUnityServer.Services.UnityServerServices
 {
-    class AiChatSession : TcpSession
+
+    public class TcpServerService : IUnityNetCoreServer
     {
 
-        public Action<string> OnClientMessageRecived;
-
-        public AiChatSession(TcpServer server) : base(server)
+        #region Class Definitions
+        private class AiChatSession : TcpSession
         {
 
-            if (server is AiChatServer)
+            public Action<string> OnClientMessageRecived;
+
+            public AiChatSession(TcpServer server) : base(server)
             {
 
-                AiChatServer chatServer = server as AiChatServer;
+                if (server is AiChatServer)
+                {
 
+                    AiChatServer chatServer = server as AiChatServer;
+
+                }
+
+            }
+
+
+            void MulticastWrapper(string message)
+            {
+
+                Server.Multicast(message);
+            }
+
+
+            protected override void OnConnected()
+            {
+                Console.WriteLine($"Chat TCP session with Id {Id} connected!");
+                if (Server is AiChatServer)
+                {
+                    AiChatServer chatServer = Server as AiChatServer;
+                    chatServer.OnReciveAiMessage += MulticastWrapper;
+                }
+                // Send invite message
+                string message = "Hello from TCP chat! Your connection to the Unity Net Core Server has been established!";
+                SendAsync(message);
+            }
+
+            protected override void OnDisconnected()
+            {
+
+                Console.WriteLine($"Chat TCP session with Id {Id} disconnected!");
+                if (Server is AiChatServer)
+                {
+                    AiChatServer chatServer = Server as AiChatServer;
+                    chatServer.OnReciveAiMessage -= MulticastWrapper;
+                }
+            }
+
+            protected override void OnReceived(byte[] buffer, long offset, long size)
+            {
+                string message = Encoding.UTF8.GetString(buffer, (int)offset, (int)size);
+                Console.WriteLine("Displaying client message: " + message);
+
+                OnClientMessageRecived.Invoke(message);
+
+                // If the buffer starts with '!' the disconnect the current session
+                if (message == "!")
+                    Disconnect();
+            }
+
+            protected override void OnError(SocketError error)
+            {
+                Console.WriteLine($"Chat TCP session caught an error with code {error}");
+            }
+        }
+
+        private class AiChatServer : TcpServer
+        {
+            public Action<string> OnReciveAiMessage;
+            public Action<string> OnReciveClientMessage;
+
+            protected TcpServerService serverService;
+            //public sessionGuids
+            public AiChatServer(IPAddress address, int port, TcpServerService _serverService) : base(address, port)
+            {
+
+                serverService = _serverService;
+                Console.WriteLine("Prepared to recive ai messages!");
+
+            }
+
+            protected override TcpSession CreateSession()
+            {
+
+                return new AiChatSession(this);
+
+            }
+
+            protected override void OnError(SocketError error)
+            {
+                Console.WriteLine($"Chat TCP server caught an error with code {error}");
+            }
+
+
+            protected override void OnConnected(TcpSession session)
+            {
+
+                if (session is AiChatSession)
+                {
+
+                    AiChatSession aiChatSession = session as AiChatSession;
+                    aiChatSession.OnClientMessageRecived += OnReciveClientMessage.Invoke;
+
+                    //When a valid session connects to the server,
+                    //If the service hasnt added the servers delegates yet, add them as now they have been filled to be valid
+                    if (serverService.OnReciveAiMessage == null)
+                        serverService.OnReciveAiMessage += OnReciveAiMessage.Invoke;
+
+                }
+            }
+
+            protected override void OnDisconnecting(TcpSession session)
+            {
+
+                if (session is AiChatSession)
+                {
+
+                    AiChatSession aiChatSession = session as AiChatSession;
+                    aiChatSession.OnClientMessageRecived -= OnReciveClientMessage.Invoke;
+
+
+
+                }
+            }
+
+            protected override void OnStopping()
+            {
+                serverService.OnReciveAiMessage -= OnReciveAiMessage;
+                base.OnStopping();
             }
 
         }
 
-
-        void MulticastWrapper(string message)
-        {
-
-            Server.Multicast(message);
-        }
-
-
-        protected override void OnConnected()
-        {
-            Console.WriteLine($"Chat TCP session with Id {Id} connected!");
-            if (Server is AiChatServer)
-            {
-                AiChatServer chatServer = Server as AiChatServer;
-                chatServer.OnReciveAiMessage += MulticastWrapper;
-            }
-            // Send invite message
-            string message = "Hello from TCP chat! Please send a message or '!' to disconnect the client!";
-            SendAsync(message);
-        }
-
-        protected override void OnDisconnected()
-        {
-
-            Console.WriteLine($"Chat TCP session with Id {Id} disconnected!");
-            if (Server is AiChatServer)
-            {
-                AiChatServer chatServer = Server as AiChatServer;
-                chatServer.OnReciveAiMessage -= MulticastWrapper;
-            }
-        }
-
-        protected override void OnReceived(byte[] buffer, long offset, long size)
-        {
-            string message = Encoding.UTF8.GetString(buffer, (int)offset, (int)size);
-            Console.WriteLine("Displaying client message: " + message);
-
-            OnClientMessageRecived.Invoke(message);
+        #endregion
 
 
 
-            //AiMessageRecive.Invoke(message);
-            // If the buffer starts with '!' the disconnect the current session
-            if (message == "!")
-                Disconnect();
-        }
+        #region Fields
 
-
-
-        /*
-        async Task SendAiMessage(string message) {
-
-            //Server.FindSession(< InsertClientGuid >).SendAsync(Encoding.UTF8.GetBytes(message));
-            string aiMessage = await OnReceivedPrompt.Invoke(message);
-            Server.Multicast(aiMessage);
-            return Task.CompletedTask;
-        }
-        */
-        protected override void OnError(SocketError error)
-        {
-            Console.WriteLine($"Chat TCP session caught an error with code {error}");
-        }
-    }
-
-    class AiChatServer : TcpServer
-    {
-        public Action<string> OnReciveAiMessage;
-        public Action<string> OnReciveClientMessage;
-
-        protected TcpServerService serverService;
-        //public sessionGuids
-        public AiChatServer(IPAddress address, int port, TcpServerService _serverService) : base(address, port)
-        {
-
-            serverService = _serverService;
-            Console.WriteLine("Prepared to recive ai messages!");
-
-        }
-
-        protected override TcpSession CreateSession()
-        {
-
-            return new AiChatSession(this);
-
-        }
-
-        protected override void OnError(SocketError error)
-        {
-            Console.WriteLine($"Chat TCP server caught an error with code {error}");
-        }
-
-
-        protected override void OnConnected(TcpSession session)
-        {
-
-            if (session is AiChatSession)
-            {
-
-                AiChatSession aiChatSession = session as AiChatSession;
-                aiChatSession.OnClientMessageRecived += OnReciveClientMessage.Invoke;
-
-                //When a valid session connects to the server,
-                //If the service hasnt added the servers delegates yet, add them as now they have been filled to be valid
-                if (serverService.OnReciveAiMessage == null)
-                    serverService.OnReciveAiMessage += OnReciveAiMessage.Invoke;
-
-            }
-        }
-
-        protected override void OnDisconnecting(TcpSession session)
-        {
-
-            if (session is AiChatSession)
-            {
-
-                AiChatSession aiChatSession = session as AiChatSession;
-                aiChatSession.OnClientMessageRecived -= OnReciveClientMessage.Invoke;
-
-
-
-            }
-        }
-
-        protected override void OnStopping()
-        {
-            serverService.OnReciveAiMessage -= OnReciveAiMessage;
-            base.OnStopping();
-        }
-
-    }
-
-    public class TcpServerService : IUnityNetCoreServer, IHostedService
-    {
-        public Action<string> OnReciveAiMessage;
         int port = 0;
         AiChatServer server;
+
+        public Action<string> OnReciveAiMessage;
+        #endregion
+
+        #region Constructor
         private readonly IServiceProvider serviceProvider;
 
         public TcpServerService(IServiceProvider _serviceProvider)
@@ -173,7 +172,11 @@ namespace GptToUnityServer.Services.UnityServerServices
 
         }
 
-        #region 
+        #endregion
+
+
+
+        #region UnityNetCoreServer Methods
         public async Task<string> SendMessage(string message)
         {
 
@@ -196,7 +199,6 @@ namespace GptToUnityServer.Services.UnityServerServices
             OnReciveAiMessage.Invoke(aiResponse);
         }
         #endregion
-
 
         #region Server Management
         public void StartServer(int _port = 1111)

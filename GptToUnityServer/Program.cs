@@ -2,6 +2,7 @@ using GptToUnityServer.Services.UnityServerServices;
 using GptToUnityServer.Services;
 using GptToUnityServer.Models;
 using Microsoft.Extensions.DependencyInjection;
+using GptToUnityServer.Services.UnityServerManager;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,7 +17,11 @@ builder.Services.AddSingleton(settings);
 
 builder.Services.AddTransient<IOpenAiService, GenericOpenAiService>();
 
-builder.Services.AddHostedService<TcpServerService>();
+builder.Services.AddTransient<IUnityNetCoreServer, TcpServerService>();
+builder.Services.AddTransient<IUnityNetCoreServer, UdpServerService>();
+
+
+builder.Services.AddHostedService<UnityServerManagerService>();
 
 var app = builder.Build();
 
