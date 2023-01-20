@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "U0ipygFBBroIH01i6n5IhQTzxBin0j2KrDWogcpWwlw3SnSpvpDwHzOflxt/g9fCn4J4+eZBhaihiy7N8RMClA==",
+  "dgSpecHash": "plBz9nrxcjIdF3Iu9xY9B4xo1y3JQH94Pp/PqRuWHCstMD9KT6CvFlYT0T+wgjW8OW09aGaukhevYoj9HyxaTg==",
   "success": true,
-  "projectFilePath": "F:\\1-Documents Clone\\Unity Created Games\\Unity Ai Experiments\\GptToUnityServer\\NetCoreServer\\NetCoreServer.csproj",
+  "projectFilePath": "F:\\1-Documents Clone\\Unity Created Games\\Unity Ai Experiments\\GptUnityServer\\NetCoreServer\\NetCoreServer.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }
