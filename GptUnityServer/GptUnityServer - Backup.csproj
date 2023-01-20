@@ -15,10 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.15.0" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\NetCoreServer\NetCoreServer.csproj" />
   </ItemGroup>
 
@@ -29,6 +25,10 @@
     <Reference Include="SharedLibrary">
       <HintPath>..\..\GptToUnity\Library\ScriptAssemblies\SharedLibrary.dll</HintPath>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="7.0.0" />
   </ItemGroup>
 
 </Project>

@@ -22,6 +22,7 @@ builder.Services.AddTransient<IUnityNetCoreServer, UdpServerService>();
 
 
 builder.Services.AddHostedService<UnityServerManagerService>();
+builder.Services.AddApplicationInsightsTelemetry();
 
 var app = builder.Build();
 
