@@ -6,13 +6,14 @@ using System.Text;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.Extensions.DependencyInjection;
 using NetCoreServer;
-using GptToUnityServer.Services;
 using SharedLibrary;
+using GptUnityServer.Services.OpenAiServices;
+using GptUnityServer.Services.UnityServerServices;
 
 namespace GptToUnityServer.Services.UnityServerServices
 {
 
-    public class TcpServerService : IUnityNetCoreServer
+    public class TcpServerService : UnityNetCoreServer
     {
 
         #region Class Definitions
@@ -20,15 +21,15 @@ namespace GptToUnityServer.Services.UnityServerServices
         {
 
             public Action<string> OnClientMessageRecived;
-
+            public Action OnClientConnect;
             public AiChatSession(TcpServer server) : base(server)
             {
-
+      
                 if (server is AiChatServer)
                 {
 
                     AiChatServer chatServer = server as AiChatServer;
-
+                    chatServer.OnReciveAiMessage += MulticastWrapper;
                 }
 
             }
@@ -47,9 +48,10 @@ namespace GptToUnityServer.Services.UnityServerServices
                 if (Server is AiChatServer)
                 {
                     AiChatServer chatServer = Server as AiChatServer;
-                    chatServer.OnReciveAiMessage += MulticastWrapper;
+                    OnClientConnect.Invoke();
                 }
                 // Send invite message
+
                 string message = "Hello from TCP chat! Your connection to the Unity Net Core Server has been established!";
                 SendAsync(message);
             }
@@ -87,6 +89,8 @@ namespace GptToUnityServer.Services.UnityServerServices
         {
             public Action<string> OnReciveAiMessage;
             public Action<string> OnReciveClientMessage;
+            public Action OnClientConnect;
+
 
             protected TcpServerService serverService;
             //public sessionGuids
@@ -110,21 +114,19 @@ namespace GptToUnityServer.Services.UnityServerServices
                 Console.WriteLine($"Chat TCP server caught an error with code {error}");
             }
 
-
-            protected override void OnConnected(TcpSession session)
+            protected override void OnConnecting(TcpSession session)
             {
-
+                base.OnConnecting(session);
                 if (session is AiChatSession)
                 {
-
+                    Console.WriteLine("An ai session is connecting!");
                     AiChatSession aiChatSession = session as AiChatSession;
-                    aiChatSession.OnClientMessageRecived += OnReciveClientMessage.Invoke;
+                    aiChatSession.OnClientConnect += OnClientConnect.Invoke;
 
                     //When a valid session connects to the server,
                     //If the service hasnt added the servers delegates yet, add them as now they have been filled to be valid
                     if (serverService.OnReciveAiMessage == null)
                         serverService.OnReciveAiMessage += OnReciveAiMessage.Invoke;
-
                 }
             }
 
@@ -136,7 +138,7 @@ namespace GptToUnityServer.Services.UnityServerServices
 
                     AiChatSession aiChatSession = session as AiChatSession;
                     aiChatSession.OnClientMessageRecived -= OnReciveClientMessage.Invoke;
-
+                    aiChatSession.OnClientConnect -= OnClientConnect.Invoke;
 
 
                 }
@@ -159,7 +161,11 @@ namespace GptToUnityServer.Services.UnityServerServices
         int port = 0;
         AiChatServer server;
 
+        string onConnectionSucessMessage = "Welcome to GPT to Unity using TCP!";
+        string onConnectionFailMessage = "ERROR: Invalid Open Ai API Key!";
+
         public Action<string> OnReciveAiMessage;
+        public Action OnClientConnect;
         #endregion
 
         #region Constructor
@@ -169,7 +175,7 @@ namespace GptToUnityServer.Services.UnityServerServices
         {
 
             serviceProvider = _serviceProvider;
-
+            OnClientConnect += CheckApiValidity;
         }
 
         #endregion
@@ -177,7 +183,7 @@ namespace GptToUnityServer.Services.UnityServerServices
 
 
         #region UnityNetCoreServer Methods
-        public async Task<string> SendMessage(string message)
+        public override async Task<string> SendMessage(string message)
         {
 
             // The scope informs the service provider when you're
@@ -201,12 +207,11 @@ namespace GptToUnityServer.Services.UnityServerServices
         #endregion
 
         #region Server Management
-        public void StartServer(int _port = 1111)
+        public override void StartServer(int _port = 1111)
         {
             Console.WriteLine($"TCP server service has started!");
             int port = _port;
             Console.WriteLine($"TCP server port: {port}");
-            Console.WriteLine("Started hosted server process!");
             // TCP server port      
             Console.WriteLine();
             server = new AiChatServer(IPAddress.Any, port, this);
@@ -215,12 +220,10 @@ namespace GptToUnityServer.Services.UnityServerServices
             server.Start();
             Console.WriteLine("Done!");
 
-            Console.WriteLine("Press Enter to stop the server or '!' to restart the server...");
-
 
         }
 
-        public void StopServer()
+        public override void StopServer()
         {
 
             // Stop the server
@@ -229,7 +232,7 @@ namespace GptToUnityServer.Services.UnityServerServices
             Console.WriteLine("Done!");
         }
 
-        public void RestartServer()
+        public override void RestartServer()
         {
             Console.Write("Server restarting...");
             server?.Restart();
@@ -238,19 +241,40 @@ namespace GptToUnityServer.Services.UnityServerServices
         #endregion
 
         #region Service Managment
-        public Task StartAsync(CancellationToken cancellationToken)
+        public override Task StartAsync(CancellationToken cancellationToken, bool _isKeyValid)
         {
+            base.StartAsync(cancellationToken, _isKeyValid);
             StartServer();
             server.OnReciveClientMessage += TriggerAiResponse;
+            server.OnClientConnect += OnClientConnect.Invoke;
             return Task.CompletedTask;
         }
 
-        public Task StopAsync(CancellationToken cancellationToken)
+        public override Task StopAsync(CancellationToken cancellationToken)
         {
             server.OnReciveClientMessage -= TriggerAiResponse;
+            server.OnClientConnect += OnClientConnect.Invoke;
             StopServer();
             return Task.CompletedTask;
         }
+
+        void CheckApiValidity()
+        {
+
+            if (isKeyValid)
+            {
+                Console.WriteLine($"Tcp server api key is valid!");
+                //server.Me
+                OnReciveAiMessage.Invoke(onConnectionSucessMessage);
+            }
+
+            else{
+
+                Console.WriteLine($"Invalid Tcp server api key!");
+                OnReciveAiMessage.Invoke(onConnectionFailMessage);
+            }
+        }
+
         #endregion
     }
 }

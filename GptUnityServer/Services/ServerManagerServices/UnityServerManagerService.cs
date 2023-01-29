@@ -1,6 +1,9 @@
-﻿using GptToUnityServer.Services.UnityServerServices;
+﻿using GptToUnityServer.Models;
+using GptToUnityServer.Services.UnityServerServices;
+using GptUnityServer.Services.OpenAiServices;
+using GptUnityServer.Services.UnityServerServices;
 
-namespace GptToUnityServer.Services.UnityServerManager
+namespace GptToUnityServer.Services.ServerManagerServices
 {
     public class UnityServerManagerService : IHostedService
     {
@@ -8,18 +11,22 @@ namespace GptToUnityServer.Services.UnityServerManager
         //private readonly IServiceProvider serviceProvider;
         private IUnityNetCoreServer selectedServerService;
         private IEnumerable<IUnityNetCoreServer> allNetCoreServers;
+        private readonly Settings settings;
         public IUnityNetCoreServer CurrentServerService { get { return selectedServerService; } }
-
-        public UnityServerManagerService(IEnumerable<IUnityNetCoreServer> _allNetCoreServers)
+        protected readonly IApiKeyValidation validatonService;
+        protected bool IsApiKeyValid { get; set; }
+        public UnityServerManagerService(IEnumerable<IUnityNetCoreServer> _allNetCoreServers, Settings _settings, IApiKeyValidation _validationService)
         {
-
+            validatonService = _validationService;
+            settings = _settings;
             allNetCoreServers = _allNetCoreServers;
-            DetermineSelectedServerType("UDP");
+            DetermineSelectedServerType(settings.ServerType);
         }
 
-        void DetermineSelectedServerType(string serverTypeCommand) {
+        void DetermineSelectedServerType(string newServerType) {
 
-            switch (serverTypeCommand) {
+
+            switch (newServerType) {
 
                 case "TCP":
                     {
@@ -37,7 +44,7 @@ namespace GptToUnityServer.Services.UnityServerManager
 
 
                 default:
-                    {
+                    {                  
                         selectedServerService = allNetCoreServers.Single(server => server is TcpServerService);
                     }
                     break;
@@ -51,8 +58,9 @@ namespace GptToUnityServer.Services.UnityServerManager
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            Console.WriteLine("Starting Unity Server service!");           
-            await selectedServerService.StartAsync(cancellationToken);
+            IsApiKeyValid = validatonService.ValidateApiKey(settings.ApiKey);
+            Console.WriteLine($"Starting Unity Server service! \nCurrent key validation : {IsApiKeyValid}");           
+            await selectedServerService.StartAsync(cancellationToken, IsApiKeyValid);
 
         }
 

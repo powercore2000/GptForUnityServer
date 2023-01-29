@@ -6,15 +6,16 @@ using System.Text;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.Extensions.DependencyInjection;
 using NetCoreServer;
-using GptToUnityServer.Services;
 using SharedLibrary;
 using Microsoft.AspNetCore.Http;
 using System.Drawing;
+using GptUnityServer.Services.OpenAiServices;
+using GptUnityServer.Services.UnityServerServices;
 
 namespace GptToUnityServer.Services.UnityServerServices
 {
 
-    public class UdpServerService : IUnityNetCoreServer
+    public class UdpServerService : UnityNetCoreServer
     {
 
         #region Class Definitions
@@ -97,7 +98,7 @@ namespace GptToUnityServer.Services.UnityServerServices
         }
 
         #region UnityNetCoreServer Methods
-        public async Task<string> SendMessage(string message)
+        public override async Task<string> SendMessage(string message)
         {
 
             // The scope informs the service provider when you're
@@ -121,7 +122,7 @@ namespace GptToUnityServer.Services.UnityServerServices
 
 
         #region Server Management
-        public void StartServer(int _port = 1111)
+        public override void StartServer(int _port = 1111)
         {
             Console.WriteLine($"UDP server service has started!");
             int port = _port;
@@ -140,7 +141,7 @@ namespace GptToUnityServer.Services.UnityServerServices
 
         }
 
-        public void StopServer()
+        public override void StopServer()
         {
 
             // Stop the server
@@ -149,7 +150,7 @@ namespace GptToUnityServer.Services.UnityServerServices
             Console.WriteLine("Done!");
         }
 
-        public void RestartServer()
+        public override void RestartServer()
         {
             Console.Write("Server restarting...");
             server?.Restart();
@@ -158,14 +159,15 @@ namespace GptToUnityServer.Services.UnityServerServices
         #endregion
 
         #region Service Managment
-        public Task StartAsync(CancellationToken cancellationToken)
+        public override Task StartAsync(CancellationToken cancellationToken, bool _isKeyValid)
         {
+            base.StartAsync(cancellationToken, _isKeyValid);
             StartServer();
             server.OnClientMessageRecived += TriggerAiResponse;
             return Task.CompletedTask;
         }
 
-        public Task StopAsync(CancellationToken cancellationToken)
+        public override Task StopAsync(CancellationToken cancellationToken)
         {
             server.OnClientMessageRecived -= TriggerAiResponse;
             StopServer();

@@ -11,7 +11,7 @@
 
         public Task<string> SendMessage(string message);
 
-        public Task StartAsync(CancellationToken cancellationToken);
+        public Task StartAsync(CancellationToken cancellationToken, bool _isKeyValid);
 
         public Task StopAsync(CancellationToken cancellationToken);
 

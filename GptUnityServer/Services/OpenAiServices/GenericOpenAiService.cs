@@ -4,9 +4,10 @@ using GptToUnityServer.Models;
 using Newtonsoft.Json;
 using SharedLibrary;
 
-namespace GptToUnityServer.Services
+namespace GptUnityServer.Services.OpenAiServices
 {
-    public interface IOpenAiService {
+    public interface IOpenAiService
+    {
 
         public Task<AiResponse> SendMessage(string prompt);
     }
@@ -14,7 +15,8 @@ namespace GptToUnityServer.Services
     public class GenericOpenAiService : IOpenAiService
     {
         private readonly Settings settings;
-        public GenericOpenAiService(Settings _settings) {
+        public GenericOpenAiService(Settings _settings)
+        {
 
             settings = _settings;
         }
@@ -23,7 +25,7 @@ namespace GptToUnityServer.Services
         public async Task<AiResponse> SendMessage(string prompt)
         {
             string url = "https://api.openai.com/v1/completions";
-            string apiKey = settings.BearerKey;
+            string apiKey = settings.ApiKey;
             string model = "text-davinci-002";
             string engine = "davinci";
 
@@ -36,15 +38,15 @@ namespace GptToUnityServer.Services
             //request.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
             request.Content = new StringContent(JsonConvert.SerializeObject(new
             {
-                prompt = prompt,
-                model = model,
+                prompt,
+                model,
                 temperature = 1,
                 max_tokens = 50,
                 top_p = 1,
                 frequency_penalty = 0,
             }), Encoding.UTF8, "application/json");
 
-            
+
 
             // Send the request and get the response
             HttpResponseMessage response = await client.SendAsync(request);
