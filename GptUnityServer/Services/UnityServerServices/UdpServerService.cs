@@ -84,6 +84,8 @@ namespace GptToUnityServer.Services.UnityServerServices
 
         #endregion
 
+        string onConnectionSucessMessage = "Welcome to GPT to Unity using UDP!";
+        string onConnectionFailMessage = "ERROR: Invalid Open Ai API Key With UDP Service!";
 
         public Action<string> OnAiMessageRecived;
         int port = 0;
@@ -114,9 +116,14 @@ namespace GptToUnityServer.Services.UnityServerServices
 
         async void TriggerAiResponse(string clientMessage)
         {
+            string response;
+            if (isKeyValid)
+                response = await SendMessage(clientMessage);
 
-            string aiResponse = await SendMessage(clientMessage);
-            OnAiMessageRecived.Invoke(aiResponse);
+            else
+                response = CheckApiValidity();
+
+            OnAiMessageRecived.Invoke(response);
         }
         #endregion
 
@@ -172,6 +179,27 @@ namespace GptToUnityServer.Services.UnityServerServices
             server.OnClientMessageRecived -= TriggerAiResponse;
             StopServer();
             return Task.CompletedTask;
+        }
+
+        protected override string CheckApiValidity()
+        {
+
+
+            if (isKeyValid)
+            {
+                Console.WriteLine($"UDP server api key is valid!");
+                //server.Me
+                return onConnectionSucessMessage;
+            }
+
+            else
+            {
+
+                Console.WriteLine($"Invalid UDP server api key!");
+                return onConnectionFailMessage;
+            }
+
+
         }
         #endregion
     }

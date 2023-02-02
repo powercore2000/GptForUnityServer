@@ -7,6 +7,8 @@
         public string DefaultServerType { get; set; }
         public string ServerType { get { return ServerTypeEnum.ToString(); } }
 
+        public string AiModel { get; set; }
+
         //public bool IsApiKeyValid { get; set; }
 
         private ServerTypes ServerTypeEnum { get; set; }
@@ -15,13 +17,14 @@
         public void RunSetUp(string[] args) {
 
             Console.WriteLine($"All arugments:\n {string.Join("\n",args)}");
-            args = new string[1];
-            args[0] = "UDP";
             if (args.Length >=1)
             ChangeServerType(args[0]);
 
             if (args.Length >= 2)
                 ChangeApiKey(args[1]);
+
+            if (args.Length >= 3)
+                ChangeModel(args[2]);
         }
 
        void ChangeServerType(string newServerType) {
@@ -51,8 +54,18 @@
            }
        }
 
-       //public Action<string> OnServerTypeChange;
-       
+        void ChangeModel(string newKey)
+        {
+
+            if (!string.IsNullOrEmpty(newKey))
+            {
+
+                AiModel = newKey;
+            }
+        }
+
+        //public Action<string> OnServerTypeChange;
+
         private enum ServerTypes { 
         
             TCP,
