@@ -49,6 +49,7 @@ namespace GptToUnityServer.Services.UnityServerServices
                 {
                     AiChatServer chatServer = Server as AiChatServer;
                     OnClientConnect.Invoke();
+                    OnClientMessageRecived += chatServer.OnReciveClientMessage.Invoke;
                 }
                 // Send invite message
 
@@ -125,8 +126,8 @@ namespace GptToUnityServer.Services.UnityServerServices
 
                     //When a valid session connects to the server,
                     //If the service hasnt added the servers delegates yet, add them as now they have been filled to be valid
-                    if (serverService.OnReciveAiMessage == null)
-                        serverService.OnReciveAiMessage += OnReciveAiMessage.Invoke;
+                    if (serverService.OnAiMessageRecived == null)
+                        serverService.OnAiMessageRecived += OnReciveAiMessage.Invoke;
                 }
             }
 
@@ -146,7 +147,7 @@ namespace GptToUnityServer.Services.UnityServerServices
 
             protected override void OnStopping()
             {
-                serverService.OnReciveAiMessage -= OnReciveAiMessage;
+                serverService.OnAiMessageRecived -= OnReciveAiMessage;
                 base.OnStopping();
             }
 
@@ -162,9 +163,9 @@ namespace GptToUnityServer.Services.UnityServerServices
         AiChatServer server;
 
         string onConnectionSucessMessage = "Welcome to GPT to Unity using TCP!";
-        string onConnectionFailMessage = "ERROR: Invalid Open Ai API Key!";
+        string onConnectionFailMessage = "ERROR: Invalid Open Ai API Key With TCP Service!";
 
-        public Action<string> OnReciveAiMessage;
+        public Action<string> OnAiMessageRecived;
         public Action OnClientConnect;
         #endregion
 
@@ -175,7 +176,7 @@ namespace GptToUnityServer.Services.UnityServerServices
         {
 
             serviceProvider = _serviceProvider;
-            OnClientConnect += CheckApiValidity;
+            OnClientConnect += delegate { Console.WriteLine("Client connected!"); };
         }
 
         #endregion
@@ -199,10 +200,17 @@ namespace GptToUnityServer.Services.UnityServerServices
 
         async void TriggerAiResponse(string clientMessage)
         {
+            string response;
 
-            string aiResponse = await SendMessage(clientMessage);
-            Console.WriteLine($"displaying Ai response: {aiResponse}");
-            OnReciveAiMessage.Invoke(aiResponse);
+            if (isKeyValid)
+                response = await SendMessage(clientMessage);
+
+            else
+                response = CheckApiValidity();
+
+            Console.WriteLine($"displaying Ai response: {response}");
+            OnAiMessageRecived.Invoke(response);           
+
         }
         #endregion
 
@@ -253,26 +261,30 @@ namespace GptToUnityServer.Services.UnityServerServices
         public override Task StopAsync(CancellationToken cancellationToken)
         {
             server.OnReciveClientMessage -= TriggerAiResponse;
-            server.OnClientConnect += OnClientConnect.Invoke;
+            server.OnClientConnect -= OnClientConnect.Invoke;
             StopServer();
             return Task.CompletedTask;
         }
 
-        void CheckApiValidity()
+        protected override string CheckApiValidity()
         {
+
 
             if (isKeyValid)
             {
                 Console.WriteLine($"Tcp server api key is valid!");
                 //server.Me
-                OnReciveAiMessage.Invoke(onConnectionSucessMessage);
+                return onConnectionSucessMessage;
             }
 
-            else{
+            else
+            {
 
                 Console.WriteLine($"Invalid Tcp server api key!");
-                OnReciveAiMessage.Invoke(onConnectionFailMessage);
+                return onConnectionFailMessage;
             }
+
+
         }
 
         #endregion

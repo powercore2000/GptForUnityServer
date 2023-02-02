@@ -15,8 +15,9 @@
         public void RunSetUp(string[] args) {
 
             Console.WriteLine($"All arugments:\n {string.Join("\n",args)}");
-
-            if(args.Length >=1)
+            args = new string[1];
+            args[0] = "UDP";
+            if (args.Length >=1)
             ChangeServerType(args[0]);
 
             if (args.Length >= 2)

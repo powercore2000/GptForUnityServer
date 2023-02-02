@@ -25,11 +25,12 @@ namespace GptToUnityServer.Services.ServerManagerServices
 
         void DetermineSelectedServerType(string newServerType) {
 
-
+            Console.WriteLine($"Selected {newServerType} for server type!");
             switch (newServerType) {
 
                 case "TCP":
                     {
+                        
                         selectedServerService = allNetCoreServers.Single(server => server is TcpServerService);
 
                     }
@@ -37,6 +38,7 @@ namespace GptToUnityServer.Services.ServerManagerServices
 
                 case "UDP":
                     {
+                        
                         selectedServerService = allNetCoreServers.Single(server => server is UdpServerService);
 
                     }
@@ -44,7 +46,8 @@ namespace GptToUnityServer.Services.ServerManagerServices
 
 
                 default:
-                    {                  
+                    {
+                        Console.WriteLine($"Defaulted to TCP due to unrecognized server type!!");
                         selectedServerService = allNetCoreServers.Single(server => server is TcpServerService);
                     }
                     break;

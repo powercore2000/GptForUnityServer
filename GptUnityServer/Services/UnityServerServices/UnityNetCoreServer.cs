@@ -41,6 +41,12 @@ namespace GptUnityServer.Services.UnityServerServices
             throw new NotImplementedException();
         }
 
-        
+        protected virtual string CheckApiValidity()
+        {
+
+            throw new NotImplementedException();
+        }
+
+
     }
 }
