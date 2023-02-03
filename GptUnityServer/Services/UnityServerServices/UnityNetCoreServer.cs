@@ -8,7 +8,8 @@ namespace GptUnityServer.Services.UnityServerServices
     {
 
         protected bool isKeyValid { get; set; }
-
+        protected Action onFailedValidation { get; private set; }
+        public Action<string> OnAiMessageRecived;
 
         public virtual void RestartServer()
         {
@@ -20,9 +21,10 @@ namespace GptUnityServer.Services.UnityServerServices
             throw new NotImplementedException();
         }
 
-        public virtual Task StartAsync(CancellationToken cancellationToken, bool _isKeyValid)
+        public virtual Task StartAsync(CancellationToken cancellationToken, bool _isKeyValid, Action _onFailedValidation)
         {
             isKeyValid = _isKeyValid;
+            onFailedValidation = _onFailedValidation;
             return Task.CompletedTask;
         }
 
@@ -46,6 +48,21 @@ namespace GptUnityServer.Services.UnityServerServices
 
             throw new NotImplementedException();
         }
+        /*
+        protected async void TriggerAiResponse(string clientMessage)
+        {
+            string response;
+
+            if (isKeyValid)
+                response = await SendMessage(clientMessage);
+
+            else
+                response = CheckApiValidity();
+
+            Console.WriteLine($"displaying Ai response: {response}");
+            OnAiMessageRecived.Invoke(response);
+
+        }*/
 
 
     }

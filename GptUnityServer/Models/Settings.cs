@@ -17,14 +17,24 @@
         public void RunSetUp(string[] args) {
 
             Console.WriteLine($"All arugments:\n {string.Join("\n",args)}");
-            if (args.Length >=1)
-            ChangeServerType(args[0]);
+            if (args.Length == 0)
+            {
+                Console.WriteLine("Using default dev values!");
+                ChangeServerType(DefaultServerType);
+                //ChangeApiKey(ApiKey);
+            }
 
-            if (args.Length >= 2)
-                ChangeApiKey(args[1]);
+            else
+            {
+                if (args.Length >= 1)
+                    ChangeServerType(args[0]);
 
-            if (args.Length >= 3)
-                ChangeModel(args[2]);
+                if (args.Length >= 2)
+                    ChangeApiKey(args[1]);
+
+                if (args.Length >= 3)
+                    ChangeModel(args[2]);
+            }
         }
 
        void ChangeServerType(string newServerType) {

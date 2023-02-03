@@ -56,8 +56,6 @@ namespace GptToUnityServer.Services.UnityServerServices
                 Console.WriteLine($"Displaying client message:\n { message}\n");
                 userEndpoint = endpoint;
                 OnClientMessageRecived.Invoke(message);
-                // Echo the message back to the sender
-                SendAsync(endpoint, buffer, 0, size);
             }
 
             protected override void OnSent(EndPoint endpoint, long sent)
@@ -84,6 +82,8 @@ namespace GptToUnityServer.Services.UnityServerServices
 
         #endregion
 
+        bool hasCheckedApiKey;
+
         string onConnectionSucessMessage = "Welcome to GPT to Unity using UDP!";
         string onConnectionFailMessage = "ERROR: Invalid Open Ai API Key With UDP Service!";
 
@@ -91,6 +91,7 @@ namespace GptToUnityServer.Services.UnityServerServices
         int port = 0;
         AiChatServer server;
         private readonly IServiceProvider serviceProvider;
+        private readonly IApiKeyValidation validationService;
 
         public UdpServerService(IServiceProvider _serviceProvider)
         {
@@ -113,18 +114,26 @@ namespace GptToUnityServer.Services.UnityServerServices
             }
 
         }
-
         async void TriggerAiResponse(string clientMessage)
         {
             string response;
+
             if (isKeyValid)
                 response = await SendMessage(clientMessage);
 
             else
                 response = CheckApiValidity();
 
+            Console.WriteLine($"displaying Ai response: {response}");
             OnAiMessageRecived.Invoke(response);
+
+            if (response == onConnectionFailMessage) { 
+            
+                onFailedValidation.Invoke();
+            }
+           
         }
+
         #endregion
 
 
@@ -166,9 +175,9 @@ namespace GptToUnityServer.Services.UnityServerServices
         #endregion
 
         #region Service Managment
-        public override Task StartAsync(CancellationToken cancellationToken, bool _isKeyValid)
+        public override Task StartAsync(CancellationToken cancellationToken, bool _isKeyValid, Action _onFailedValidation)
         {
-            base.StartAsync(cancellationToken, _isKeyValid);
+            base.StartAsync(cancellationToken, _isKeyValid, _onFailedValidation);
             StartServer();
             server.OnClientMessageRecived += TriggerAiResponse;
             return Task.CompletedTask;
@@ -183,8 +192,8 @@ namespace GptToUnityServer.Services.UnityServerServices
 
         protected override string CheckApiValidity()
         {
-
-
+            hasCheckedApiKey = true;
+            //isKeyValid = validationService.ValidateApiKey();
             if (isKeyValid)
             {
                 Console.WriteLine($"UDP server api key is valid!");
@@ -196,6 +205,7 @@ namespace GptToUnityServer.Services.UnityServerServices
             {
 
                 Console.WriteLine($"Invalid UDP server api key!");
+                
                 return onConnectionFailMessage;
             }
 

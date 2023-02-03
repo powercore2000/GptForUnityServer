@@ -6,7 +6,7 @@
 
 
 
-        public bool ValidateApiKey(string key) { return false; }
+        public Task<bool> ValidateApiKey(string key) { return Task.FromResult(false); }
 
 
 

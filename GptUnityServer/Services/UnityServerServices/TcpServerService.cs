@@ -9,6 +9,7 @@ using NetCoreServer;
 using SharedLibrary;
 using GptUnityServer.Services.OpenAiServices;
 using GptUnityServer.Services.UnityServerServices;
+using GptToUnityServer.Services.ServerManagerServices;
 
 namespace GptToUnityServer.Services.UnityServerServices
 {
@@ -165,16 +166,19 @@ namespace GptToUnityServer.Services.UnityServerServices
         string onConnectionSucessMessage = "Welcome to GPT to Unity using TCP!";
         string onConnectionFailMessage = "ERROR: Invalid Open Ai API Key With TCP Service!";
 
-        public Action<string> OnAiMessageRecived;
+       
         public Action OnClientConnect;
+
+        private readonly IServiceProvider serviceProvider;
+       
         #endregion
 
         #region Constructor
-        private readonly IServiceProvider serviceProvider;
+
 
         public TcpServerService(IServiceProvider _serviceProvider)
         {
-
+            
             serviceProvider = _serviceProvider;
             OnClientConnect += delegate { Console.WriteLine("Client connected!"); };
         }
@@ -209,7 +213,13 @@ namespace GptToUnityServer.Services.UnityServerServices
                 response = CheckApiValidity();
 
             Console.WriteLine($"displaying Ai response: {response}");
-            OnAiMessageRecived.Invoke(response);           
+            OnAiMessageRecived.Invoke(response);
+
+            if (response == onConnectionFailMessage)
+            {
+                server.DisconnectAll();
+                onFailedValidation.Invoke();
+            }
 
         }
         #endregion
@@ -249,9 +259,9 @@ namespace GptToUnityServer.Services.UnityServerServices
         #endregion
 
         #region Service Managment
-        public override Task StartAsync(CancellationToken cancellationToken, bool _isKeyValid)
+        public override Task StartAsync(CancellationToken cancellationToken, bool _isKeyValid, Action  _onFailedValidation)
         {
-            base.StartAsync(cancellationToken, _isKeyValid);
+            base.StartAsync(cancellationToken, _isKeyValid, _onFailedValidation);
             StartServer();
             server.OnReciveClientMessage += TriggerAiResponse;
             server.OnClientConnect += OnClientConnect.Invoke;
@@ -280,7 +290,7 @@ namespace GptToUnityServer.Services.UnityServerServices
             else
             {
 
-                Console.WriteLine($"Invalid Tcp server api key!");
+                Console.WriteLine($"Invalid Tcp server api key!");               
                 return onConnectionFailMessage;
             }
 

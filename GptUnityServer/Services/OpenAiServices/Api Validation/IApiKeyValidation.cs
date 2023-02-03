@@ -2,6 +2,6 @@
 {
     public interface IApiKeyValidation
     {
-        public bool ValidateApiKey(string key);
+        public Task<bool> ValidateApiKey(string key);
     }
 }

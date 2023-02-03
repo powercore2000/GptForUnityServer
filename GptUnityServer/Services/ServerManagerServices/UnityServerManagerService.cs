@@ -2,6 +2,7 @@
 using GptToUnityServer.Services.UnityServerServices;
 using GptUnityServer.Services.OpenAiServices;
 using GptUnityServer.Services.UnityServerServices;
+using Microsoft.Extensions.Hosting.Internal;
 
 namespace GptToUnityServer.Services.ServerManagerServices
 {
@@ -14,13 +15,21 @@ namespace GptToUnityServer.Services.ServerManagerServices
         private readonly Settings settings;
         public IUnityNetCoreServer CurrentServerService { get { return selectedServerService; } }
         protected readonly IApiKeyValidation validatonService;
+        protected readonly IHostApplicationLifetime applicationLifetime;
         protected bool IsApiKeyValid { get; set; }
-        public UnityServerManagerService(IEnumerable<IUnityNetCoreServer> _allNetCoreServers, Settings _settings, IApiKeyValidation _validationService)
+        public UnityServerManagerService(
+            IEnumerable<IUnityNetCoreServer> _allNetCoreServers, 
+            Settings _settings, 
+            IApiKeyValidation _validationService, 
+            IHostApplicationLifetime _applicationLifetime)
         {
+
             validatonService = _validationService;
             settings = _settings;
             allNetCoreServers = _allNetCoreServers;
+            applicationLifetime = _applicationLifetime;
             DetermineSelectedServerType(settings.ServerType);
+
         }
 
         void DetermineSelectedServerType(string newServerType) {
@@ -56,14 +65,17 @@ namespace GptToUnityServer.Services.ServerManagerServices
         }
 
 
-        
+       void DeactivateService() {
+
+            applicationLifetime.StopApplication();
+        }
 
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            IsApiKeyValid = validatonService.ValidateApiKey(settings.ApiKey);
+            IsApiKeyValid = await validatonService.ValidateApiKey(settings.ApiKey);
             Console.WriteLine($"Starting Unity Server service! \nCurrent key validation : {IsApiKeyValid}");           
-            await selectedServerService.StartAsync(cancellationToken, IsApiKeyValid);
+            await selectedServerService.StartAsync(cancellationToken, IsApiKeyValid, DeactivateService);
 
         }
 
