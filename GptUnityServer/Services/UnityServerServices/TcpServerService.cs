@@ -96,7 +96,8 @@ namespace GptToUnityServer.Services.UnityServerServices
             {
 
                 serverService = _serverService;
-                Console.WriteLine("Prepared to recive ai messages!");
+                Console.WriteLine("Prepared to recive ai messages!");               
+
 
             }
 
@@ -177,6 +178,8 @@ namespace GptToUnityServer.Services.UnityServerServices
             
             serviceProvider = _serviceProvider;
             OnClientConnect += delegate { Console.WriteLine("Client connected!"); };
+            onValidationFail += delegate { server.DisconnectAll(); };
+            serverType = "TCP";
         }
 
         #endregion
@@ -198,26 +201,6 @@ namespace GptToUnityServer.Services.UnityServerServices
 
         }
 
-        async void TriggerAiResponse(string clientMessage)
-        {
-            string response;
-
-            if (isKeyValid)
-                response = await SendMessage(clientMessage);
-
-            else
-                response = CheckApiValidity();
-
-            Console.WriteLine($"displaying Ai response: {response}");
-            OnAiMessageRecived.Invoke(response);
-
-            if (response == onConnectionFailMessage)
-            {
-                server.DisconnectAll();
-                onFailedValidation.Invoke();
-            }
-
-        }
         #endregion
 
         #region Server Management
@@ -272,26 +255,6 @@ namespace GptToUnityServer.Services.UnityServerServices
             return Task.CompletedTask;
         }
 
-        protected override string CheckApiValidity()
-        {
-
-
-            if (isKeyValid)
-            {
-                Console.WriteLine($"Tcp server api key is valid!");
-                //server.Me
-                return onConnectionSucessMessage;
-            }
-
-            else
-            {
-
-                Console.WriteLine($"Invalid Tcp server api key!");               
-                return onConnectionFailMessage;
-            }
-
-
-        }
 
         #endregion
     }

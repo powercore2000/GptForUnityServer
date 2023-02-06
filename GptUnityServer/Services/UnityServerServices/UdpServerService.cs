@@ -33,7 +33,7 @@ namespace GptToUnityServer.Services.UnityServerServices
 
                 serverService = _serverService;
                 Console.WriteLine("Prepared to recive ai messages!");
-
+                //serverService.OnAiMessageRecived += SendMessageToClient;
             }
 
             protected override void OnStarted()
@@ -82,12 +82,7 @@ namespace GptToUnityServer.Services.UnityServerServices
 
         #endregion
 
-        bool hasCheckedApiKey;
 
-        string onConnectionSucessMessage = "SUCCESS: Welcome to GPT to Unity using UDP!";
-        string onConnectionFailMessage = "ERROR: Invalid Open Ai API Key With UDP Service!";
-
-        public Action<string> OnAiMessageRecived;
         int port = 0;
         AiChatServer server;
         private readonly IServiceProvider serviceProvider;
@@ -97,7 +92,7 @@ namespace GptToUnityServer.Services.UnityServerServices
         {
 
             serviceProvider = _serviceProvider;
-
+            serverType = "UDP";
         }
 
         #region UnityNetCoreServer Methods
@@ -113,25 +108,6 @@ namespace GptToUnityServer.Services.UnityServerServices
                 return response.Message;
             }
 
-        }
-        async void TriggerAiResponse(string clientMessage)
-        {
-            string response;
-
-            if (isKeyValid)
-                response = await SendMessage(clientMessage);
-
-            else
-                response = CheckApiValidity();
-
-            Console.WriteLine($"displaying Ai response: {response}");
-            OnAiMessageRecived.Invoke(response);
-
-            if (response == onConnectionFailMessage) { 
-            
-                onFailedValidation.Invoke();
-            }
-           
         }
 
         #endregion
@@ -190,27 +166,7 @@ namespace GptToUnityServer.Services.UnityServerServices
             return Task.CompletedTask;
         }
 
-        protected override string CheckApiValidity()
-        {
-            hasCheckedApiKey = true;
-            //isKeyValid = validationService.ValidateApiKey();
-            if (isKeyValid)
-            {
-                Console.WriteLine($"UDP server api key is valid!");
-                //server.Me
-                return onConnectionSucessMessage;
-            }
 
-            else
-            {
-
-                Console.WriteLine($"Invalid UDP server api key!");
-                
-                return onConnectionFailMessage;
-            }
-
-
-        }
         #endregion
     }
 }
