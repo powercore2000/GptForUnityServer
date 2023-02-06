@@ -84,7 +84,7 @@ namespace GptToUnityServer.Services.UnityServerServices
 
         bool hasCheckedApiKey;
 
-        string onConnectionSucessMessage = "Welcome to GPT to Unity using UDP!";
+        string onConnectionSucessMessage = "SUCCESS: Welcome to GPT to Unity using UDP!";
         string onConnectionFailMessage = "ERROR: Invalid Open Ai API Key With UDP Service!";
 
         public Action<string> OnAiMessageRecived;

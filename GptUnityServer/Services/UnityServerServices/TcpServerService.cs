@@ -52,10 +52,6 @@ namespace GptToUnityServer.Services.UnityServerServices
                     OnClientConnect.Invoke();
                     OnClientMessageRecived += chatServer.OnReciveClientMessage.Invoke;
                 }
-                // Send invite message
-
-                string message = "Hello from TCP chat! Your connection to the Unity Net Core Server has been established!";
-                SendAsync(message);
             }
 
             protected override void OnDisconnected()
@@ -163,7 +159,7 @@ namespace GptToUnityServer.Services.UnityServerServices
         int port = 0;
         AiChatServer server;
 
-        string onConnectionSucessMessage = "Welcome to GPT to Unity using TCP!";
+        string onConnectionSucessMessage = "SUCCESS: Welcome to GPT to Unity using TCP!";
         string onConnectionFailMessage = "ERROR: Invalid Open Ai API Key With TCP Service!";
 
        
