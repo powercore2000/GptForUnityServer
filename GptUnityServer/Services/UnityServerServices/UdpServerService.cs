@@ -6,10 +6,6 @@ using System.Text;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.Extensions.DependencyInjection;
 using NetCoreServer;
-using SharedLibrary;
-using Microsoft.AspNetCore.Http;
-using System.Drawing;
-using GptUnityServer.Services.OpenAiServices;
 using GptUnityServer.Services.UnityServerServices;
 
 namespace GptToUnityServer.Services.UnityServerServices
@@ -82,33 +78,15 @@ namespace GptToUnityServer.Services.UnityServerServices
 
         #endregion
 
+        AiChatServer ?server;
 
-        int port = 0;
-        AiChatServer server;
-        private readonly IServiceProvider serviceProvider;
-        private readonly IApiKeyValidation validationService;
-
-        public UdpServerService(IServiceProvider _serviceProvider)
+        public UdpServerService(IServiceProvider _serviceProvider) : base(_serviceProvider)
         {
-
-            serviceProvider = _serviceProvider;
             serverType = "UDP";
         }
 
         #region UnityNetCoreServer Methods
-        public override async Task<string> SendMessage(string message)
-        {
 
-            // The scope informs the service provider when you're
-            // done with the transient service so it can be disposed
-            using (var scope = serviceProvider.CreateScope())
-            {
-                IOpenAiService openAiService = scope.ServiceProvider.GetRequiredService<IOpenAiService>();
-                AiResponse response = await openAiService.SendMessage(message);
-                return response.Message;
-            }
-
-        }
 
         #endregion
 

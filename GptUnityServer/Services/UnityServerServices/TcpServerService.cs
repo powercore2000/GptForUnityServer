@@ -6,10 +6,7 @@ using System.Text;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.Extensions.DependencyInjection;
 using NetCoreServer;
-using SharedLibrary;
-using GptUnityServer.Services.OpenAiServices;
 using GptUnityServer.Services.UnityServerServices;
-using GptToUnityServer.Services.ServerManagerServices;
 
 namespace GptToUnityServer.Services.UnityServerServices
 {
@@ -85,9 +82,9 @@ namespace GptToUnityServer.Services.UnityServerServices
 
         private class AiChatServer : TcpServer
         {
-            public Action<string> OnReciveAiMessage;
-            public Action<string> OnReciveClientMessage;
-            public Action OnClientConnect;
+            public Action<string> ?OnReciveAiMessage;
+            public Action<string> ?OnReciveClientMessage;
+            public Action ?OnClientConnect;
 
 
             protected TcpServerService serverService;
@@ -119,7 +116,7 @@ namespace GptToUnityServer.Services.UnityServerServices
                 if (session is AiChatSession)
                 {
                     Console.WriteLine("An ai session is connecting!");
-                    AiChatSession aiChatSession = session as AiChatSession;
+                    AiChatSession ?aiChatSession = session as AiChatSession;
                     aiChatSession.OnClientConnect += OnClientConnect.Invoke;
 
                     //When a valid session connects to the server,
@@ -135,7 +132,7 @@ namespace GptToUnityServer.Services.UnityServerServices
                 if (session is AiChatSession)
                 {
 
-                    AiChatSession aiChatSession = session as AiChatSession;
+                    AiChatSession ?aiChatSession = session as AiChatSession;
                     aiChatSession.OnClientMessageRecived -= OnReciveClientMessage.Invoke;
                     aiChatSession.OnClientConnect -= OnClientConnect.Invoke;
 
@@ -157,28 +154,22 @@ namespace GptToUnityServer.Services.UnityServerServices
 
         #region Fields
 
-        int port = 0;
-        AiChatServer server;
-
-        string onConnectionSucessMessage = "SUCCESS: Welcome to GPT to Unity using TCP!";
-        string onConnectionFailMessage = "ERROR: Invalid Open Ai API Key With TCP Service!";
+        AiChatServer ?server;
 
        
         public Action OnClientConnect;
 
-        private readonly IServiceProvider serviceProvider;
        
         #endregion
 
         #region Constructor
 
 
-        public TcpServerService(IServiceProvider _serviceProvider)
+        public TcpServerService(IServiceProvider _serviceProvider) : base(_serviceProvider)
         {
             
-            serviceProvider = _serviceProvider;
             OnClientConnect += delegate { Console.WriteLine("Client connected!"); };
-            onValidationFail += delegate { server.DisconnectAll(); };
+            onValidationFail += delegate { server?.DisconnectAll(); };
             serverType = "TCP";
         }
 
@@ -187,19 +178,6 @@ namespace GptToUnityServer.Services.UnityServerServices
 
 
         #region UnityNetCoreServer Methods
-        public override async Task<string> SendMessage(string message)
-        {
-
-            // The scope informs the service provider when you're
-            // done with the transient service so it can be disposed
-            using (var scope = serviceProvider.CreateScope())
-            {
-                IOpenAiService openAiService = scope.ServiceProvider.GetRequiredService<IOpenAiService>();
-                AiResponse response = await openAiService.SendMessage(message);
-                return response.Message;
-            }
-
-        }
 
         #endregion
 

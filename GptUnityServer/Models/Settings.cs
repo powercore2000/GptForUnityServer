@@ -2,12 +2,19 @@
 {
     public class Settings
     {
-        public string ApiKey { get; set; }
+        public string ?ApiKey { get; set; }
 
-        public string DefaultServerType { get; set; }
+        public string ?DefaultServerType { get; set; }
         public string ServerType { get { return ServerTypeEnum.ToString(); } }
 
-        public string AiModel { get; set; }
+        public string ?PlayerIdToken { get; set; }
+
+        public string ?AiModel { get; set; }
+        public int Temperature { get; set; }
+        public int MaxTokens { get; set; }
+        public int TopP { get; set; }
+        public int FrequencyPenalty { get; set; }
+
 
         //public bool IsApiKeyValid { get; set; }
 
@@ -34,6 +41,9 @@
 
                 if (args.Length >= 3)
                     ChangeModel(args[2]);
+
+                if (args.Length >= 4)
+                    ChangeModel(args[3]);
             }
         }
 

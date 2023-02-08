@@ -1,21 +1,14 @@
-﻿using System;
-using System.Text;
-using GptToUnityServer.Models;
+﻿using GptToUnityServer.Models;
 using Newtonsoft.Json;
+using System.Text;
 using SharedLibrary;
 
-namespace GptUnityServer.Services.OpenAiServices
+namespace GptUnityServer.Services.OpenAiServices.PromptSending
 {
-    public interface IOpenAiService
-    {
-
-        public Task<AiResponse> SendMessage(string prompt);
-    }
-
-    public class GenericOpenAiService : IOpenAiService
+    public class PromptResponseService : IOpenAiPromptService
     {
         private readonly Settings settings;
-        public GenericOpenAiService(Settings _settings)
+        public PromptResponseService(Settings _settings)
         {
 
             settings = _settings;
@@ -27,7 +20,6 @@ namespace GptUnityServer.Services.OpenAiServices
             string url = "https://api.openai.com/v1/completions";
             string apiKey = settings.ApiKey;
             string model = "text-davinci-002";
-            string engine = "davinci";
 
             HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Add("Authorization", "Bearer " + apiKey);
@@ -59,7 +51,6 @@ namespace GptUnityServer.Services.OpenAiServices
             Console.WriteLine($"\n Raw Json output: {aiResponse.JsonRaw}\n\n");
             return aiResponse;
         }
-
 
     }
 }

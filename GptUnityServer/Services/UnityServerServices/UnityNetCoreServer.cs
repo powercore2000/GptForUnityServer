@@ -1,6 +1,10 @@
 ﻿using GptToUnityServer.Models;
 using GptToUnityServer.Services.UnityServerServices;
 using GptUnityServer.Services.OpenAiServices;
+using GptUnityServer.Services.OpenAiServices.PromptDetails;
+using GptUnityServer.Services.OpenAiServices.PromptSending;
+using Microsoft.Extensions.DependencyInjection;
+using SharedLibrary;
 
 namespace GptUnityServer.Services.UnityServerServices
 {
@@ -13,18 +17,20 @@ namespace GptUnityServer.Services.UnityServerServices
         protected Action onValidationSucess { get; set; }
         protected string serverType { get; set; }
 
+        protected readonly IServiceProvider serviceProvider;
 
         public Action<string> OnAiMessageRecived;
+
+        public UnityNetCoreServer(IServiceProvider _serviceProvider) {
+
+            serviceProvider = _serviceProvider;
+        }
 
         public virtual void RestartServer()
         {
             throw new NotImplementedException();
         }
 
-        public virtual Task<string> SendMessage(string message)
-        {
-            throw new NotImplementedException();
-        }
 
         public virtual Task StartAsync(CancellationToken cancellationToken, bool _isKeyValid, Action _onFailedValidation)
         {
@@ -50,20 +56,62 @@ namespace GptUnityServer.Services.UnityServerServices
 
         protected async void TriggerAiResponse(string clientMessage)
         {
-            string response;
 
             if (displayedStatusMessage)
-                response = await SendMessage(clientMessage);
+            {
+                await ProcessClientInput(clientMessage);
+            }
 
             else
-                response = CheckApiValidity();
-
-            Console.WriteLine($"displaying Ai response: {response}");
-            OnAiMessageRecived.Invoke(response);
+            {
+                string response = CheckApiValidity();
+                Console.WriteLine($"displaying Ai response: {response}");
+                OnAiMessageRecived.Invoke(response);
+            }
 
             
 
         }
+
+        public virtual async Task ProcessClientInput(string clientMessage)
+        {
+            if (clientMessage.Contains("PROMPT_MESSAGE: "))
+                SendPromptDetails(clientMessage);
+
+            else
+            {
+                string response = await SendMessage(clientMessage);
+                Console.WriteLine($"displaying Ai response: {response}");
+                OnAiMessageRecived.Invoke(response);
+            }
+
+        }
+
+        public virtual async Task<string> SendMessage(string message)
+        {
+
+            // The scope informs the service provider when you're
+            // done with the transient service so it can be disposed
+            using (var scope = serviceProvider.CreateScope())
+            {
+                IOpenAiPromptService openAiService = scope.ServiceProvider.GetRequiredService<IOpenAiPromptService>();
+                AiResponse response = await openAiService.SendMessage(message);
+                return response.Message;
+            }
+
+        }
+
+        protected virtual void SendPromptDetails(string promptDetailsString)
+        {
+
+            using (var scope = serviceProvider.CreateScope())
+            {
+                IPromptDetailService promptDetailService = scope.ServiceProvider.GetRequiredService<IPromptDetailService>();
+                promptDetailService.SetPromptDetails();
+
+            }
+        }
+
 
         protected virtual string CheckApiValidity()
         {
@@ -89,11 +137,14 @@ namespace GptUnityServer.Services.UnityServerServices
 
         }
 
+
         async Task ValidationFailFunctions() {
 
             await Task.Delay(300);
                 onValidationFail?.Invoke();
         }
+
+
 
 
     }

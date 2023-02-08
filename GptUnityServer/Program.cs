@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using GptToUnityServer.Services.ServerManagerServices;
 using GptUnityServer.Services.OpenAiServices;
 using GptUnityServer.Services.OpenAiServices.Api_Validation;
+using GptUnityServer.Services.OpenAiServices.PromptSending;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +20,10 @@ builder.Services.AddControllers();
 
 builder.Services.AddSingleton(settings);
 
-builder.Services.AddTransient<IOpenAiService, GenericOpenAiService>();
+
+builder.Services.AddTransient<IOpenAiPromptService, UnityCloudCodePromptService>();
+//builder.Services.AddTransient<IOpenAiPromptService, GenericOpenAiService>();
+//builder.Services.AddTransient<IOpenAiPromptService, PromptResponseService>();
 builder.Services.AddTransient<IApiKeyValidation, ApiKeyValidationService>();
 
 builder.Services.AddTransient<IUnityNetCoreServer, TcpServerService>();
