@@ -1,4 +1,4 @@
-﻿using GptToUnityServer.Models;
+﻿using GptUnityServer.Models;
 using Newtonsoft.Json;
 using System.Text;
 using SharedLibrary;

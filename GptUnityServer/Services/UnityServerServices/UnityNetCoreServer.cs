@@ -1,9 +1,7 @@
-﻿using GptToUnityServer.Models;
-using GptToUnityServer.Services.UnityServerServices;
-using GptUnityServer.Services.OpenAiServices;
-using GptUnityServer.Services.OpenAiServices.PromptDetails;
-using GptUnityServer.Services.OpenAiServices.PromptSending;
-using Microsoft.Extensions.DependencyInjection;
+﻿using GptUnityServer.Services.OpenAiServices.PromptSending;
+using GptUnityServer.Services.OpenAiServices.PromptSettings;
+using GptUnityServer.Services.ServerSetup;
+using Newtonsoft.Json;
 using SharedLibrary;
 
 namespace GptUnityServer.Services.UnityServerServices
@@ -18,12 +16,14 @@ namespace GptUnityServer.Services.UnityServerServices
         protected string serverType { get; set; }
 
         protected readonly IServiceProvider serviceProvider;
+        //protected readonly IServerSetupService serverSetupService;
 
         public Action<string> OnAiMessageRecived;
 
         public UnityNetCoreServer(IServiceProvider _serviceProvider) {
 
             serviceProvider = _serviceProvider;
+            //serverSetupService = _serverSetupService;
         }
 
         public virtual void RestartServer()
@@ -63,9 +63,18 @@ namespace GptUnityServer.Services.UnityServerServices
             }
 
             else
-            {
+            {              
                 string response = CheckApiValidity();
-                Console.WriteLine($"displaying Ai response: {response}");
+                
+
+                using (var scope = serviceProvider.CreateScope())
+                {
+                    IServerSetupService serverSetupService = scope.ServiceProvider.GetRequiredService<IServerSetupService>();
+                    Console.WriteLine($"setting up server with data...");
+                    ServerSetupData setupData = JsonConvert.DeserializeObject<ServerSetupData>(clientMessage);
+                    serverSetupService.SetUpServer(setupData);
+                }
+                
                 OnAiMessageRecived.Invoke(response);
             }
 
@@ -75,8 +84,9 @@ namespace GptUnityServer.Services.UnityServerServices
 
         public virtual async Task ProcessClientInput(string clientMessage)
         {
-            if (clientMessage.Contains("PROMPT_MESSAGE: "))
-                SendPromptDetails(clientMessage);
+            if (clientMessage.Contains("PROMPT-SETTINGS:"))          
+                SendPromptDetails(clientMessage.Replace("PROMPT-SETTINGS:", ""));
+            
 
             else
             {
@@ -103,11 +113,10 @@ namespace GptUnityServer.Services.UnityServerServices
 
         protected virtual void SendPromptDetails(string promptDetailsString)
         {
-
             using (var scope = serviceProvider.CreateScope())
             {
-                IPromptDetailService promptDetailService = scope.ServiceProvider.GetRequiredService<IPromptDetailService>();
-                promptDetailService.SetPromptDetails();
+                IPromptSettingsService promptDetailService = scope.ServiceProvider.GetRequiredService<IPromptSettingsService>();
+                promptDetailService.SetPromptDetails(promptDetailsString);
 
             }
         }

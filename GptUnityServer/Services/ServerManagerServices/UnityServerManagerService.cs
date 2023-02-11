@@ -1,10 +1,10 @@
-﻿using GptToUnityServer.Models;
-using GptToUnityServer.Services.UnityServerServices;
+﻿using GptUnityServer.Models;
+using GptUnityServer.Services.UnityServerServices;
 using GptUnityServer.Services.OpenAiServices;
 using GptUnityServer.Services.UnityServerServices;
 using Microsoft.Extensions.Hosting.Internal;
 
-namespace GptToUnityServer.Services.ServerManagerServices
+namespace GptUnityServer.Services.ServerManagerServices
 {
     public class UnityServerManagerService : IHostedService
     {
@@ -74,7 +74,7 @@ namespace GptToUnityServer.Services.ServerManagerServices
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             IsApiKeyValid = await validatonService.ValidateApiKey(settings.ApiKey);
-            Console.WriteLine($"Starting Unity Server service! \nCurrent key validation : {IsApiKeyValid}");           
+            //Console.WriteLine($"Starting Unity Server service! \nCurrent key validation : {IsApiKeyValid}");           
             await selectedServerService.StartAsync(cancellationToken, IsApiKeyValid, DeactivateService);
 
         }

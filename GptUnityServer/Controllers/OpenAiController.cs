@@ -1,10 +1,10 @@
-﻿using GptToUnityServer.Services.ServerManagerServices;
-using GptToUnityServer.Services.UnityServerServices;
+﻿using GptUnityServer.Services.ServerManagerServices;
+using GptUnityServer.Services.UnityServerServices;
 using Microsoft.AspNetCore.Mvc;
 using SharedLibrary;
 
 
-namespace GptToUnityServer.Controllers
+namespace GptUnityServer.Controllers
 {
     [ApiController]
     [Route("[controller]")]

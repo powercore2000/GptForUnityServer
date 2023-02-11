@@ -1,4 +1,4 @@
-﻿namespace GptToUnityServer.Models
+﻿namespace GptUnityServer.Models
 {
     public class Settings
     {
@@ -10,6 +10,10 @@
         public string ?PlayerIdToken { get; set; }
 
         public string ?AiModel { get; set; }
+
+        public string? ProjectId { get; set; }
+
+        public string? CloudFunctionName { get; set; }
         public int Temperature { get; set; }
         public int MaxTokens { get; set; }
         public int TopP { get; set; }

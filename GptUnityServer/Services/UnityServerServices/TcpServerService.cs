@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NetCoreServer;
 using GptUnityServer.Services.UnityServerServices;
 
-namespace GptToUnityServer.Services.UnityServerServices
+namespace GptUnityServer.Services.UnityServerServices
 {
 
     public class TcpServerService : UnityNetCoreServer
