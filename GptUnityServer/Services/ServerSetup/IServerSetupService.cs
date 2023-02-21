@@ -5,7 +5,7 @@ namespace GptUnityServer.Services.ServerSetup
     public interface IServerSetupService
     {
 
-        public void SetUpServer(ServerSetupData data);
+        public void SetUpServer(CloudServerSetupData data);
 
     }
 }

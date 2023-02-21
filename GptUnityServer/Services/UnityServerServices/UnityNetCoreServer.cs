@@ -65,6 +65,27 @@ namespace GptUnityServer.Services.UnityServerServices
             else
             {              
                 string response = CheckApiValidity();
+
+                
+                OnAiMessageRecived.Invoke(response);
+            }
+
+            
+
+        }
+
+        /*
+        protected async void TriggerAiResponse(string clientMessage)
+        {
+
+            if (displayedStatusMessage)
+            {
+                await ProcessClientInput(clientMessage);
+            }
+
+            else
+            {              
+                string response = CheckApiValidity();
                 
 
                 using (var scope = serviceProvider.CreateScope())
@@ -80,7 +101,7 @@ namespace GptUnityServer.Services.UnityServerServices
 
             
 
-        }
+        }*/
 
         public virtual async Task ProcessClientInput(string clientMessage)
         {

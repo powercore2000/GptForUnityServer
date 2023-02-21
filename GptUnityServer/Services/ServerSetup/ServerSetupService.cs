@@ -11,10 +11,9 @@ namespace GptUnityServer.Services.ServerSetup
 
             settings = _settings;
         }
-        public void SetUpServer(ServerSetupData data)
+        public void SetUpServer(CloudServerSetupData data)
         {
-            settings.PlayerIdToken = data.PlayerAuthenticationToken;
-            settings.CloudFunctionName = data.CloudFunctionName;
+            
         }
 
 

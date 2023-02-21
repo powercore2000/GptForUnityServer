@@ -53,7 +53,7 @@ namespace GptUnityServer.Services.OpenAiServices.PromptSending
         {
             HttpClient client = new HttpClient();
     
-            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {settings.PlayerIdToken}");
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {settings.AuthToken}");
             var requestBody = new
             {
                 @params = new

@@ -26,12 +26,14 @@ builder.Services.AddControllers();
 builder.Services.AddSingleton(settings);
 builder.Services.AddSingleton(promptSettings);
 
+if(settings.ServerConfig == "Cloud")
+    builder.Services.AddTransient<IOpenAiPromptService, CloudFunctionPromptService>();
 
-builder.Services.AddTransient<IOpenAiPromptService, CloudFunctionPromptService>();
+else if(settings.ServerConfig == "Api")
+    builder.Services.AddTransient<IOpenAiPromptService, GenericOpenAiService>();
+
 builder.Services.AddTransient<IServerSetupService, ServerSetupService>();
 builder.Services.AddTransient<IPromptSettingsService, PromptSettingsService>();
-//builder.Services.AddTransient<IOpenAiPromptService, GenericOpenAiService>();
-//builder.Services.AddTransient<IOpenAiPromptService, PromptResponseService>();
 builder.Services.AddTransient<IApiKeyValidation, TestApiKeyValidationService>();
 
 builder.Services.AddTransient<IUnityNetCoreServer, TcpServerService>();

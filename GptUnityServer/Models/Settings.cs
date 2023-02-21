@@ -1,4 +1,9 @@
-﻿namespace GptUnityServer.Models
+﻿using GptUnityServer.Services.ServerSetup;
+using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
+namespace GptUnityServer.Models
 {
     public class Settings
     {
@@ -6,12 +11,23 @@
 
         public string ?DefaultServerType { get; set; }
         public string ServerType { get { return ServerTypeEnum.ToString(); } }
+        public string ServerConfig { get { return ServerConfigEnum.ToString(); } }
+        /// <summary>
+        /// JSON Web Token to indicate authentication privledges for serverless function calls
+        /// </summary>
+        public string ?AuthToken { get; set; }
 
-        public string ?PlayerIdToken { get; set; }
+        /// <summary>
+        /// Name of the Open Ai Model to call
+        /// </summary>
+        public string? ProjectId { get; set; }
 
+
+        /// <summary>
+        /// Name of the Open Ai Model to call
+        /// </summary>
         public string ?AiModel { get; set; }
 
-        public string? ProjectId { get; set; }
 
         public string? CloudFunctionName { get; set; }
         public int Temperature { get; set; }
@@ -22,78 +38,92 @@
 
         //public bool IsApiKeyValid { get; set; }
 
-        private ServerTypes ServerTypeEnum { get; set; }
-
+        private ServerProtocolTypes ServerTypeEnum { get; set; }
+        private ServerConfigType ServerConfigEnum { get; set; }
 
         public void RunSetUp(string[] args) {
 
             Console.WriteLine($"All arugments:\n {string.Join("\n",args)}");
             if (args.Length == 0)
             {
-                Console.WriteLine("Using default dev values!");
-                ChangeServerType(DefaultServerType);
-                //ChangeApiKey(ApiKey);
+                SetServerProtocol(DefaultServerType);
+                ServerConfigEnum = ServerConfigType.Api;
+                Console.WriteLine($"Using default dev values! In {ServerConfigEnum} config");
+                
             }
 
             else
             {
                 if (args.Length >= 1)
-                    ChangeServerType(args[0]);
+                    SetServerProtocol(args[0]);
 
-                if (args.Length >= 2)
-                    ChangeApiKey(args[1]);
+                if (args.Length >= 2) {
 
-                if (args.Length >= 3)
-                    ChangeModel(args[2]);
+                    //If this argument is avalid JSON, use it as set up data for cloud code configuartion
+                    if (args[1].StartsWith("{") && args[1].EndsWith("}"))
+                        SetCloudServerData(args[1]);
 
-                if (args.Length >= 4)
-                    ChangeModel(args[3]);
+                    else
+                        SetApiKey(args[1]);
+                }
+                    
+
+
             }
         }
 
-       void ChangeServerType(string newServerType) {
+       void SetServerProtocol(string newServerType) {
 
-           ServerTypes serverType;
-           Console.WriteLine($"Server Argument passed in was {newServerType}");
-           bool validType = ServerTypes.TryParse(newServerType, out serverType);
+           ServerProtocolTypes serverType;
+           bool validType = ServerProtocolTypes.TryParse(newServerType, out serverType);
 
            if (!validType)
            {
-               Console.WriteLine($"Now parsing Default Server value: {DefaultServerType}");
-               ServerTypeEnum = Enum.Parse<ServerTypes>(DefaultServerType);
+               ServerTypeEnum = Enum.Parse<ServerProtocolTypes>(DefaultServerType);
            }
            else {
-               Console.WriteLine($"Now parsing new Server value: {newServerType}");
-               ServerTypeEnum = Enum.Parse<ServerTypes>(newServerType);
+               ServerTypeEnum = Enum.Parse<ServerProtocolTypes>(newServerType);
            }
 
-           //OnServerTypeChange.Invoke(newServerType);
-       }
+            Console.WriteLine($"Set server protocol to: {ServerTypeEnum}");
 
-       void ChangeApiKey(string newKey) {
+            //OnServerTypeChange.Invoke(newServerType);
+        }
+
+       void SetApiKey(string newKey) {
 
            if (!string.IsNullOrEmpty(newKey)) {
+                Console.WriteLine($"Setting api key...");
+                ServerConfigEnum = ServerConfigType.Api;
+                ApiKey = newKey;
+            }
+        }
 
-               ApiKey = newKey;
-           }
-       }
-
-        void ChangeModel(string newKey)
+        void SetCloudServerData(string setupDataJson)
         {
 
-            if (!string.IsNullOrEmpty(newKey))
-            {
+            Console.WriteLine($"setting up server with cloud config data...");
+            Console.WriteLine($"Attemtping to deseralize: {setupDataJson}");
+            ServerConfigEnum = ServerConfigType.Cloud;
+            CloudServerSetupData setupData = JsonConvert.DeserializeObject<CloudServerSetupData>(setupDataJson);
+            AuthToken = setupData.PlayerAuthenticationToken;
+            CloudFunctionName = setupData.CloudFunctionName;
 
-                AiModel = newKey;
-            }
         }
 
         //public Action<string> OnServerTypeChange;
 
-        private enum ServerTypes { 
+        private enum ServerProtocolTypes { 
         
             TCP,
             UDP
+        }
+
+        private enum ServerConfigType
+        {
+
+            Api,
+            Cloud
         }
 
     }
