@@ -1,10 +1,8 @@
-﻿using GptUnityServer.Services.OpenAiServices.PromptSending;
-using GptUnityServer.Services.OpenAiServices.PromptSettings;
-using GptUnityServer.Services.ServerSetup;
+﻿using GptUnityServer.Services.OpenAiServices.PromptServices;
 using Newtonsoft.Json;
 using SharedLibrary;
 
-namespace GptUnityServer.Services.UnityServerServices
+namespace GptUnityServer.Services.ServerManagment.UnityServerServices
 {
     public abstract class UnityNetCoreServer : IUnityNetCoreServer
     {
@@ -20,7 +18,8 @@ namespace GptUnityServer.Services.UnityServerServices
 
         public Action<string> OnAiMessageRecived;
 
-        public UnityNetCoreServer(IServiceProvider _serviceProvider) {
+        public UnityNetCoreServer(IServiceProvider _serviceProvider)
+        {
 
             serviceProvider = _serviceProvider;
             //serverSetupService = _serverSetupService;
@@ -63,14 +62,14 @@ namespace GptUnityServer.Services.UnityServerServices
             }
 
             else
-            {              
+            {
                 string response = CheckApiValidity();
 
-                
+
                 OnAiMessageRecived.Invoke(response);
             }
 
-            
+
 
         }
 
@@ -105,9 +104,9 @@ namespace GptUnityServer.Services.UnityServerServices
 
         public virtual async Task ProcessClientInput(string clientMessage)
         {
-            if (clientMessage.Contains("PROMPT-SETTINGS:"))          
+            if (clientMessage.Contains("PROMPT-SETTINGS:"))
                 SendPromptDetails(clientMessage.Replace("PROMPT-SETTINGS:", ""));
-            
+
 
             else
             {
@@ -168,10 +167,11 @@ namespace GptUnityServer.Services.UnityServerServices
         }
 
 
-        async Task ValidationFailFunctions() {
+        async Task ValidationFailFunctions()
+        {
 
             await Task.Delay(300);
-                onValidationFail?.Invoke();
+            onValidationFail?.Invoke();
         }
 
 

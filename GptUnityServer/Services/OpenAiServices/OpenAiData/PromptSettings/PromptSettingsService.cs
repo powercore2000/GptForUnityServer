@@ -1,8 +1,7 @@
-﻿
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
- 
-namespace GptUnityServer.Services.OpenAiServices.PromptSettings
+
+namespace GptUnityServer.Services.OpenAiServices.OpenAiData.PromptSettings
 {
     using SharedLibrary;
 
@@ -10,7 +9,8 @@ namespace GptUnityServer.Services.OpenAiServices.PromptSettings
     {
 
         private readonly PromptSettings promptSettings;
-        public PromptSettingsService(PromptSettings _promptSettings) {
+        public PromptSettingsService(PromptSettings _promptSettings)
+        {
             promptSettings = _promptSettings;
         }
 

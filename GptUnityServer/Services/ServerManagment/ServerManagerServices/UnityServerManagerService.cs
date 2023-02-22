@@ -1,11 +1,10 @@
-﻿using GptUnityServer.Models;
-using GptUnityServer.Services.UnityServerServices;
-using GptUnityServer.Services.OpenAiServices;
-using GptUnityServer.Services.UnityServerServices;
+﻿using GptUnityServer.Services.OpenAiServices;
 using Microsoft.Extensions.Hosting.Internal;
+using GptUnityServer.Services.ServerManagment.UnityServerServices;
 
-namespace GptUnityServer.Services.ServerManagerServices
+namespace GptUnityServer.Services.ServerManagment.ServerManagerServices
 {
+    using Models;
     public class UnityServerManagerService : IHostedService
     {
 
@@ -18,9 +17,9 @@ namespace GptUnityServer.Services.ServerManagerServices
         protected readonly IHostApplicationLifetime applicationLifetime;
         protected bool IsApiKeyValid { get; set; }
         public UnityServerManagerService(
-            IEnumerable<IUnityNetCoreServer> _allNetCoreServers, 
-            Settings _settings, 
-            IApiKeyValidation _validationService, 
+            IEnumerable<IUnityNetCoreServer> _allNetCoreServers,
+            Settings _settings,
+            IApiKeyValidation _validationService,
             IHostApplicationLifetime _applicationLifetime)
         {
 
@@ -32,14 +31,16 @@ namespace GptUnityServer.Services.ServerManagerServices
 
         }
 
-        void DetermineSelectedServerType(string newServerType) {
+        void DetermineSelectedServerType(string newServerType)
+        {
 
             Console.WriteLine($"Selected {newServerType} for server type!");
-            switch (newServerType) {
+            switch (newServerType)
+            {
 
                 case "TCP":
                     {
-                        
+
                         selectedServerService = allNetCoreServers.Single(server => server is TcpServerService);
 
                     }
@@ -47,7 +48,7 @@ namespace GptUnityServer.Services.ServerManagerServices
 
                 case "UDP":
                     {
-                        
+
                         selectedServerService = allNetCoreServers.Single(server => server is UdpServerService);
 
                     }
@@ -61,11 +62,12 @@ namespace GptUnityServer.Services.ServerManagerServices
                     }
                     break;
             }
-            
+
         }
 
 
-       void DeactivateService() {
+        void DeactivateService()
+        {
 
             applicationLifetime.StopApplication();
         }

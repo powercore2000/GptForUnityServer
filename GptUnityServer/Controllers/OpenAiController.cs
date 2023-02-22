@@ -1,5 +1,4 @@
-﻿using GptUnityServer.Services.ServerManagerServices;
-using GptUnityServer.Services.UnityServerServices;
+﻿using GptUnityServer.Services.ServerManagment.ServerManagerServices;
 using Microsoft.AspNetCore.Mvc;
 using SharedLibrary;
 

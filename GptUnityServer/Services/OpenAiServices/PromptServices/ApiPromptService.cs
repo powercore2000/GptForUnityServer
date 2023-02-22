@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Text;
-using GptUnityServer.Models;
 using Newtonsoft.Json;
 using SharedLibrary;
 
-namespace GptUnityServer.Services.OpenAiServices.PromptSending
+namespace GptUnityServer.Services.OpenAiServices.PromptServices
 {
-    public class GenericOpenAiService : IOpenAiPromptService
+    using Models;
+    public class ApiPromptService : IOpenAiPromptService
     {
         private readonly Settings settings;
-        public GenericOpenAiService(Settings _settings)
+        public ApiPromptService(Settings _settings)
         {
 
             settings = _settings;

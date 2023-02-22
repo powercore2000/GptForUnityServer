@@ -1,4 +1,4 @@
-﻿namespace GptUnityServer.Services.OpenAiServices.PromptSettings
+﻿namespace GptUnityServer.Services.OpenAiServices.OpenAiData.PromptSettings
 {
     public interface IPromptSettingsService
     {

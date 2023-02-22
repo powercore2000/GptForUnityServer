@@ -1,5 +1,4 @@
-﻿using GptUnityServer.Services.ServerSetup;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -18,7 +17,7 @@ namespace GptUnityServer.Models
         public string ?AuthToken { get; set; }
 
         /// <summary>
-        /// Name of the Open Ai Model to call
+        /// The id of the organization your going to call
         /// </summary>
         public string? ProjectId { get; set; }
 

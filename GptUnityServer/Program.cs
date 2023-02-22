@@ -1,12 +1,12 @@
-using GptUnityServer.Services.UnityServerServices;
 using GptUnityServer.Models;
 using Microsoft.Extensions.DependencyInjection;
-using GptUnityServer.Services.ServerManagerServices;
 using GptUnityServer.Services.OpenAiServices;
 using GptUnityServer.Services.OpenAiServices.Api_Validation;
-using GptUnityServer.Services.OpenAiServices.PromptSending;
-using GptUnityServer.Services.ServerSetup;
-using GptUnityServer.Services.OpenAiServices.PromptSettings;
+using GptUnityServer.Services.ServerManagment.ServerManagerServices;
+using GptUnityServer.Services.ServerManagment.UnityServerServices;
+using GptUnityServer.Services.OpenAiServices.PromptServices;
+using GptUnityServer.Services.OpenAiServices.OpenAiData.PromptSettings;
+using GptUnityServer.Services.OpenAiServices.OpenAiData.ModelListing;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,14 +27,15 @@ builder.Services.AddSingleton(settings);
 builder.Services.AddSingleton(promptSettings);
 
 if(settings.ServerConfig == "Cloud")
-    builder.Services.AddTransient<IOpenAiPromptService, CloudFunctionPromptService>();
+    builder.Services.AddTransient<IOpenAiPromptService, CloudPromptService>();
 
 else if(settings.ServerConfig == "Api")
-    builder.Services.AddTransient<IOpenAiPromptService, GenericOpenAiService>();
+    builder.Services.AddTransient<IOpenAiPromptService, ApiPromptService>();
 
-builder.Services.AddTransient<IServerSetupService, ServerSetupService>();
+
+builder.Services.AddTransient<IOpenAiModelManager, ApiModelManager>();
 builder.Services.AddTransient<IPromptSettingsService, PromptSettingsService>();
-builder.Services.AddTransient<IApiKeyValidation, TestApiKeyValidationService>();
+builder.Services.AddTransient<IApiKeyValidation, ApiKeyValidationService>();
 
 builder.Services.AddTransient<IUnityNetCoreServer, TcpServerService>();
 builder.Services.AddTransient<IUnityNetCoreServer, UdpServerService>();

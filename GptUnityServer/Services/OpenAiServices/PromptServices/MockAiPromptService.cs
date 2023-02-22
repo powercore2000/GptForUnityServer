@@ -1,12 +1,9 @@
-﻿using System;
-using System.Text;
-using GptUnityServer.Models;
-using Newtonsoft.Json;
-using SharedLibrary;
+﻿using SharedLibrary;
 
 
-namespace GptUnityServer.Services.OpenAiServices.PromptSending
+namespace GptUnityServer.Services.OpenAiServices.PromptServices
 {
+    using Models;
     public class MockAiPromptService : IOpenAiPromptService
     {
         private readonly Settings settings;
@@ -21,7 +18,7 @@ namespace GptUnityServer.Services.OpenAiServices.PromptSending
         {
             string jsonOutPut = "";
 
-       
+
             AiResponse aiResponse = new AiResponse(jsonOutPut);
             string message = aiResponse.Message;
 

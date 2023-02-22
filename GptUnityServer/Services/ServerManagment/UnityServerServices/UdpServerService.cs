@@ -6,9 +6,8 @@ using System.Text;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.Extensions.DependencyInjection;
 using NetCoreServer;
-using GptUnityServer.Services.UnityServerServices;
 
-namespace GptUnityServer.Services.UnityServerServices
+namespace GptUnityServer.Services.ServerManagment.UnityServerServices
 {
 
     public class UdpServerService : UnityNetCoreServer
@@ -49,7 +48,7 @@ namespace GptUnityServer.Services.UnityServerServices
             {
 
                 string message = Encoding.UTF8.GetString(buffer, (int)offset, (int)size);
-                Console.WriteLine($"Displaying client message:\n { message}\n");
+                Console.WriteLine($"Displaying client message:\n {message}\n");
                 userEndpoint = endpoint;
                 OnClientMessageRecived.Invoke(message);
             }
@@ -78,7 +77,7 @@ namespace GptUnityServer.Services.UnityServerServices
 
         #endregion
 
-        AiChatServer ?server;
+        AiChatServer? server;
 
         public UdpServerService(IServiceProvider _serviceProvider) : base(_serviceProvider)
         {

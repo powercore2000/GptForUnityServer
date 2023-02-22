@@ -6,9 +6,8 @@ using System.Text;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.Extensions.DependencyInjection;
 using NetCoreServer;
-using GptUnityServer.Services.UnityServerServices;
 
-namespace GptUnityServer.Services.UnityServerServices
+namespace GptUnityServer.Services.ServerManagment.UnityServerServices
 {
 
     public class TcpServerService : UnityNetCoreServer
@@ -22,7 +21,7 @@ namespace GptUnityServer.Services.UnityServerServices
             public Action OnClientConnect;
             public AiChatSession(TcpServer server) : base(server)
             {
-      
+
                 if (server is AiChatServer)
                 {
 
@@ -82,9 +81,9 @@ namespace GptUnityServer.Services.UnityServerServices
 
         private class AiChatServer : TcpServer
         {
-            public Action<string> ?OnReciveAiMessage;
-            public Action<string> ?OnReciveClientMessage;
-            public Action ?OnClientConnect;
+            public Action<string>? OnReciveAiMessage;
+            public Action<string>? OnReciveClientMessage;
+            public Action? OnClientConnect;
 
 
             protected TcpServerService serverService;
@@ -93,7 +92,7 @@ namespace GptUnityServer.Services.UnityServerServices
             {
 
                 serverService = _serverService;
-                Console.WriteLine("Prepared to recive ai messages!");               
+                Console.WriteLine("Prepared to recive ai messages!");
 
 
             }
@@ -116,7 +115,7 @@ namespace GptUnityServer.Services.UnityServerServices
                 if (session is AiChatSession)
                 {
                     Console.WriteLine("An ai session is connecting!");
-                    AiChatSession ?aiChatSession = session as AiChatSession;
+                    AiChatSession? aiChatSession = session as AiChatSession;
                     aiChatSession.OnClientConnect += OnClientConnect.Invoke;
 
                     //When a valid session connects to the server,
@@ -132,7 +131,7 @@ namespace GptUnityServer.Services.UnityServerServices
                 if (session is AiChatSession)
                 {
 
-                    AiChatSession ?aiChatSession = session as AiChatSession;
+                    AiChatSession? aiChatSession = session as AiChatSession;
                     aiChatSession.OnClientMessageRecived -= OnReciveClientMessage.Invoke;
                     aiChatSession.OnClientConnect -= OnClientConnect.Invoke;
 
@@ -154,12 +153,12 @@ namespace GptUnityServer.Services.UnityServerServices
 
         #region Fields
 
-        AiChatServer ?server;
+        AiChatServer? server;
 
-       
+
         public Action OnClientConnect;
 
-       
+
         #endregion
 
         #region Constructor
@@ -167,7 +166,7 @@ namespace GptUnityServer.Services.UnityServerServices
 
         public TcpServerService(IServiceProvider _serviceProvider) : base(_serviceProvider)
         {
-            
+
             OnClientConnect += delegate { Console.WriteLine("Client connected!"); };
             onValidationFail += delegate { server?.DisconnectAll(); };
             serverType = "TCP";
@@ -216,7 +215,7 @@ namespace GptUnityServer.Services.UnityServerServices
         #endregion
 
         #region Service Managment
-        public override Task StartAsync(CancellationToken cancellationToken, bool _isKeyValid, Action  _onFailedValidation)
+        public override Task StartAsync(CancellationToken cancellationToken, bool _isKeyValid, Action _onFailedValidation)
         {
             base.StartAsync(cancellationToken, _isKeyValid, _onFailedValidation);
             StartServer();

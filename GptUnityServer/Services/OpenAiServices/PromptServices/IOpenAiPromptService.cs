@@ -1,6 +1,6 @@
 ﻿using SharedLibrary;
 
-namespace GptUnityServer.Services.OpenAiServices.PromptSending
+namespace GptUnityServer.Services.OpenAiServices.PromptServices
 {
     public interface IOpenAiPromptService
     {

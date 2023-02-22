@@ -1,25 +1,23 @@
 ﻿using Newtonsoft.Json;
 using System.Text;
 using SharedLibrary;
-using GptUnityServer.Models;
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
-using System.Reflection;
 using Newtonsoft.Json.Linq;
 
-namespace GptUnityServer.Services.OpenAiServices.PromptSending
+namespace GptUnityServer.Services.OpenAiServices.PromptServices
 {
-    public class CloudFunctionPromptService : IOpenAiPromptService
+    using Models;
+    public class CloudPromptService : IOpenAiPromptService
     {
 
         private readonly Settings settings;
         string url = "https://cloud-code.services.api.unity.com/v1/projects";
 
-        public CloudFunctionPromptService(Settings _settings)
+        public CloudPromptService(Settings _settings)
         {
 
             settings = _settings;
         }
-        
+
 
         public async Task<AiResponse> SendMessage(string prompt)
         {
@@ -52,7 +50,7 @@ namespace GptUnityServer.Services.OpenAiServices.PromptSending
         private async Task<HttpResponseMessage> CallCloudCode(string prompt)
         {
             HttpClient client = new HttpClient();
-    
+
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {settings.AuthToken}");
             var requestBody = new
             {
@@ -70,7 +68,7 @@ namespace GptUnityServer.Services.OpenAiServices.PromptSending
             var jsonString = JsonConvert.SerializeObject(requestBody);
             var httpContent = new StringContent(jsonString, Encoding.UTF8, "application/json");
 
-           
+
             string finalUrl = url + $"/{settings.ProjectId}/scripts/{settings.CloudFunctionName}";
             Console.WriteLine($"Making http request with url:{finalUrl}");
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, finalUrl);

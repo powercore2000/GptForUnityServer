@@ -1,4 +1,4 @@
-﻿namespace GptUnityServer.Services.UnityServerServices
+﻿namespace GptUnityServer.Services.ServerManagment.UnityServerServices
 {
     public interface IUnityNetCoreServer
     {
