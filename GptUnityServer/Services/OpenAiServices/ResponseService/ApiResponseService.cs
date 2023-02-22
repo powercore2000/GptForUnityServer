@@ -3,24 +3,27 @@ using System.Text;
 using Newtonsoft.Json;
 using SharedLibrary;
 
-namespace GptUnityServer.Services.OpenAiServices.PromptServices
+namespace GptUnityServer.Services.OpenAiServices.ResponseService
 {
     using Models;
-    public class ApiPromptService : IOpenAiPromptService
+    using Newtonsoft.Json.Linq;
+
+    public class ApiResponseService : IAiResponseService
     {
         private readonly Settings settings;
-        public ApiPromptService(Settings _settings)
+        private readonly PromptSettings promptSettings;
+        public ApiResponseService(Settings _settings, PromptSettings _promptSettings)
         {
 
             settings = _settings;
+            promptSettings = _promptSettings;
         }
 
 
         public async Task<AiResponse> SendMessage(string prompt)
         {
             string url = "https://api.openai.com/v1/completions";
-            string apiKey = settings.ApiKey;
-            string model = "text-davinci-002";
+            string apiKey = settings.AiApiKey;
 
             HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Add("Authorization", "Bearer " + apiKey);
@@ -32,11 +35,11 @@ namespace GptUnityServer.Services.OpenAiServices.PromptServices
             request.Content = new StringContent(JsonConvert.SerializeObject(new
             {
                 prompt,
-                model,
-                temperature = 1,
-                max_tokens = 50,
-                top_p = 1,
-                frequency_penalty = 0,
+                model = promptSettings.Model,
+                temperature = promptSettings.Temperature,
+                max_tokens = promptSettings.MaxTokens,
+                top_p = promptSettings.TopP,
+                frequency_penalty = promptSettings.FrequencyPenalty,
             }), Encoding.UTF8, "application/json");
 
 
@@ -44,13 +47,15 @@ namespace GptUnityServer.Services.OpenAiServices.PromptServices
             // Send the request and get the response
             HttpResponseMessage response = await client.SendAsync(request);
             string responseContent = await response.Content.ReadAsStringAsync();
-            Console.WriteLine($"\n{responseContent}\n");
-            AiResponse aiResponse = new AiResponse(responseContent);
-            string message = aiResponse.Message;
+            JObject responseJson = JObject.Parse(responseContent);
+            string message = responseJson["choices"][0]["text"].ToString();
+
+
+            AiResponse aiResponse = new AiResponse(responseContent, message);
 
 
             // Print the response
-            Console.WriteLine($"Ai responds with \n {message}");
+            //Console.WriteLine($"Ai responds with \n {message}");
             Console.WriteLine($"\n Raw Json output: {aiResponse.JsonRaw}\n\n");
             return aiResponse;
         }

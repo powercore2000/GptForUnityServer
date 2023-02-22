@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace GptUnityServer.Services.OpenAiServices.OpenAiData.PromptSettings
+namespace GptUnityServer.Services.OpenAiServices.OpenAiData
 {
     using SharedLibrary;
 

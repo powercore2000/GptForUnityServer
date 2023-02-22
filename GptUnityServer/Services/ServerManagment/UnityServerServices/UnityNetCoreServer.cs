@@ -1,12 +1,17 @@
-﻿using GptUnityServer.Services.OpenAiServices.PromptServices;
+﻿using GptUnityServer.Services.OpenAiServices.OpenAiData;
 using Newtonsoft.Json;
 using SharedLibrary;
+using GptUnityServer.Models;
+using Microsoft.Extensions.ObjectPool;
+using GptUnityServer.Services.OpenAiServices.ResponseService;
 
 namespace GptUnityServer.Services.ServerManagment.UnityServerServices
 {
+
     public abstract class UnityNetCoreServer : IUnityNetCoreServer
     {
-
+        
+     
         protected bool isKeyValid { get; set; }
         protected bool displayedStatusMessage { get; set; }
         protected Action onValidationFail { get; set; }
@@ -56,21 +61,20 @@ namespace GptUnityServer.Services.ServerManagment.UnityServerServices
         protected async void TriggerAiResponse(string clientMessage)
         {
 
-            if (displayedStatusMessage)
-            {
-                await ProcessClientInput(clientMessage);
-            }
-
-            else
+            if (clientMessage == "INITIALIZATION-MESSAGE")
             {
                 string response = CheckApiValidity();
 
 
                 OnAiMessageRecived.Invoke(response);
+
+                OnAiMessageRecived.Invoke(SendModelList().Result);
             }
 
-
-
+            else
+            
+                await ProcessClientInput(clientMessage);
+            
         }
 
         /*
@@ -124,7 +128,7 @@ namespace GptUnityServer.Services.ServerManagment.UnityServerServices
             // done with the transient service so it can be disposed
             using (var scope = serviceProvider.CreateScope())
             {
-                IOpenAiPromptService openAiService = scope.ServiceProvider.GetRequiredService<IOpenAiPromptService>();
+                IAiResponseService openAiService = scope.ServiceProvider.GetRequiredService<IAiResponseService>();
                 AiResponse response = await openAiService.SendMessage(message);
                 return response.Message;
             }
@@ -162,6 +166,28 @@ namespace GptUnityServer.Services.ServerManagment.UnityServerServices
 
                 return $"ERROR: Invalid Open Ai API Key With {serverType}";
             }
+
+
+        }
+
+        protected async virtual Task<string> SendModelList()
+        {
+            string message;
+            string[] modelList;
+
+
+            using (var scope = serviceProvider.CreateScope()) {
+
+                IOpenAiModelManager modelManager = scope.ServiceProvider.GetRequiredService<IOpenAiModelManager>();
+                modelList = await modelManager.GetAllModels();
+            }
+
+            var modelData = new {
+
+                models = modelList
+            };
+            message = JsonConvert.SerializeObject(modelData);
+            return message;
 
 
         }

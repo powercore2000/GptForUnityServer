@@ -1,16 +1,18 @@
-﻿using System.Diagnostics;
-using System.Net.Http.Headers;
-namespace GptUnityServer.Services.OpenAiServices.OpenAiData.ModelListing
+﻿namespace GptUnityServer.Services.OpenAiServices.OpenAiData
 {
-    using System.Reflection;
-    using System.Text.Json;
+    using System;
+    using System.Text;
     using Assets.GptToUnity.SharedLibrary;
     using Models;
-    
+    using Assets.GptToUnity.SharedLibrary;
+    using Newtonsoft.Json.Linq;
+    using Newtonsoft.Json;
+
     public class CloudModelManager : IOpenAiModelManager
     {
 
         private readonly Settings settings;
+        string url = "https://cloud-code.services.api.unity.com/v1/projects";
 
         public CloudModelManager(Settings _settings)
         {
@@ -18,33 +20,41 @@ namespace GptUnityServer.Services.OpenAiServices.OpenAiData.ModelListing
             settings = _settings;
         }
 
-        public async Task<ModelData[]> GetAllModels()
+        public async Task<string[]> GetAllModels()
         {
-            HttpClient httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", settings.ApiKey);
-            HttpResponseMessage response = await httpClient.GetAsync($"https://api.openai.com/v1/organizations/{settings.ProjectId}/models");
-            ModelsResponse models = new ModelsResponse();
+            Console.WriteLine("Running cloud based mode list fetch!");
+            List<string> modelList = new List<string>();
+            HttpClient client = new HttpClient();
+
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {settings.CloudAuthToken}");
+
+
+            string finalUrl = url + $"/{settings.CloudProjectId}/scripts/{settings.ModelListCloudFunction}";
+            Console.WriteLine($"Making http request with url:\n{finalUrl}");
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, finalUrl);
+
+
+            HttpResponseMessage response = await client.SendAsync(request);
 
             if (response.IsSuccessStatusCode)
             {
-                var responseContent = await response.Content.ReadAsStringAsync();
-                models = JsonSerializer.Deserialize<ModelsResponse>(responseContent);
-                foreach (var model in models.Data)
+                Console.WriteLine("Successfully aquired models!");
+                string responseContent = await response.Content.ReadAsStringAsync();
+                JObject responseJson = JObject.Parse(responseContent);
+
+                foreach (JObject element in responseJson["output"]["data"])
                 {
-                    Console.WriteLine(model.ModelName);
+                    modelList.Add(element["id"].ToString());
                 }
+                Console.WriteLine($"Got models with list length: {modelList.Count}");
             }
             else
             {
                 Console.WriteLine($"Failed to get models: {response.StatusCode} - {response.ReasonPhrase}");
             }
-            Console.WriteLine($"Returning list of models with count: {models.Data.Length}\nAnd with elements: {models.Data}");
-            return models.Data;
-        }
 
-        public class ModelsResponse
-        {
-            public ModelData[] Data { get; set; }
+
+            return modelList.ToArray();
         }
 
 

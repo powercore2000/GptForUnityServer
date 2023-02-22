@@ -1,12 +1,15 @@
 ﻿using System.Diagnostics;
 using System.Net.Http.Headers;
-namespace GptUnityServer.Services.OpenAiServices.OpenAiData.ModelListing
+namespace GptUnityServer.Services.OpenAiServices.OpenAiData
 {
     using System.Reflection;
     using System.Text.Json;
+    using System.Text.Json.Nodes;
     using Assets.GptToUnity.SharedLibrary;
+    using Microsoft.AspNetCore.DataProtection.KeyManagement;
     using Models;
-    
+    using Newtonsoft.Json.Linq;
+
     public class ApiModelManager : IOpenAiModelManager
     {
 
@@ -18,33 +21,31 @@ namespace GptUnityServer.Services.OpenAiServices.OpenAiData.ModelListing
             settings = _settings;
         }
 
-        public async Task<ModelData[]> GetAllModels()
+        public async Task<string[]> GetAllModels()
         {
+            List<string> modelList = new List<string>();
             HttpClient httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", settings.ApiKey);
-            HttpResponseMessage response = await httpClient.GetAsync($"https://api.openai.com/v1/organizations/{settings.ProjectId}/models");
-            ModelsResponse models = new ModelsResponse();
+            httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + settings.AiApiKey);
+            HttpResponseMessage response = await httpClient.GetAsync($"https://api.openai.com/v1/models");
 
             if (response.IsSuccessStatusCode)
             {
-                var responseContent = await response.Content.ReadAsStringAsync();
-                models = JsonSerializer.Deserialize<ModelsResponse>(responseContent);
-                foreach (var model in models.Data)
+                Console.WriteLine("Successfully aquired models!");
+                string responseContent = await response.Content.ReadAsStringAsync();
+                JObject responseJson = JObject.Parse(responseContent);
+
+                foreach (JObject element in responseJson["data"])
                 {
-                    Console.WriteLine(model.ModelName);
+                    modelList.Add(element["id"].ToString());
                 }
+                Console.WriteLine($"Got models with list length: {modelList.Count}");
             }
             else
             {
                 Console.WriteLine($"Failed to get models: {response.StatusCode} - {response.ReasonPhrase}");
             }
-            Console.WriteLine($"Returning list of models with count: {models.Data.Length}\nAnd with elements: {models.Data}");
-            return models.Data;
-        }
 
-        public class ModelsResponse
-        {
-            public ModelData[] Data { get; set; }
+            return modelList.ToArray();
         }
 
 

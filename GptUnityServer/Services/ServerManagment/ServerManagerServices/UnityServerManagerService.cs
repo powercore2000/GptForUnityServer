@@ -4,6 +4,7 @@ using GptUnityServer.Services.ServerManagment.UnityServerServices;
 
 namespace GptUnityServer.Services.ServerManagment.ServerManagerServices
 {
+    using GptUnityServer.Services.OpenAiServices.OpenAiData;
     using Models;
     public class UnityServerManagerService : IHostedService
     {
@@ -15,18 +16,21 @@ namespace GptUnityServer.Services.ServerManagment.ServerManagerServices
         public IUnityNetCoreServer CurrentServerService { get { return selectedServerService; } }
         protected readonly IApiKeyValidation validatonService;
         protected readonly IHostApplicationLifetime applicationLifetime;
+        protected readonly IOpenAiModelManager openAiModelManager;
         protected bool IsApiKeyValid { get; set; }
         public UnityServerManagerService(
             IEnumerable<IUnityNetCoreServer> _allNetCoreServers,
             Settings _settings,
             IApiKeyValidation _validationService,
-            IHostApplicationLifetime _applicationLifetime)
+            IHostApplicationLifetime _applicationLifetime,
+            IOpenAiModelManager _openAiModelManager)
         {
 
             validatonService = _validationService;
             settings = _settings;
             allNetCoreServers = _allNetCoreServers;
             applicationLifetime = _applicationLifetime;
+            openAiModelManager = _openAiModelManager;
             DetermineSelectedServerType(settings.ServerType);
 
         }
@@ -75,7 +79,10 @@ namespace GptUnityServer.Services.ServerManagment.ServerManagerServices
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            IsApiKeyValid = await validatonService.ValidateApiKey(settings.ApiKey);
+
+            IsApiKeyValid = await validatonService.ValidateApiKey(settings.AiApiKey);
+
+
             //Console.WriteLine($"Starting Unity Server service! \nCurrent key validation : {IsApiKeyValid}");           
             await selectedServerService.StartAsync(cancellationToken, IsApiKeyValid, DeactivateService);
 

@@ -1,39 +1,27 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
 
 namespace GptUnityServer.Models
 {
     public class Settings
     {
-        public string ?ApiKey { get; set; }
+        public string ?AiApiKey { get; set; }
 
-        public string ?DefaultServerType { get; set; }
+        public string ?DefaultProtocolType { get; set; }
+        public string ?DefaultConfigType { get; set; }
         public string ServerType { get { return ServerTypeEnum.ToString(); } }
         public string ServerConfig { get { return ServerConfigEnum.ToString(); } }
         /// <summary>
         /// JSON Web Token to indicate authentication privledges for serverless function calls
         /// </summary>
-        public string ?AuthToken { get; set; }
+        public string ?CloudAuthToken { get; set; }
 
         /// <summary>
         /// The id of the organization your going to call
         /// </summary>
-        public string? ProjectId { get; set; }
+        public string? CloudProjectId { get; set; }
 
-
-        /// <summary>
-        /// Name of the Open Ai Model to call
-        /// </summary>
-        public string ?AiModel { get; set; }
-
-
-        public string? CloudFunctionName { get; set; }
-        public int Temperature { get; set; }
-        public int MaxTokens { get; set; }
-        public int TopP { get; set; }
-        public int FrequencyPenalty { get; set; }
-
+        public string? ResponseCloudFunction { get; set; }
+        public string? ModelListCloudFunction { get; set; }
 
         //public bool IsApiKeyValid { get; set; }
 
@@ -45,10 +33,8 @@ namespace GptUnityServer.Models
             Console.WriteLine($"All arugments:\n {string.Join("\n",args)}");
             if (args.Length == 0)
             {
-                SetServerProtocol(DefaultServerType);
-                ServerConfigEnum = ServerConfigType.Api;
-                Console.WriteLine($"Using default dev values! In {ServerConfigEnum} config");
-                
+
+                StartDefaultDevMode();
             }
 
             else
@@ -71,6 +57,13 @@ namespace GptUnityServer.Models
             }
         }
 
+        void StartDefaultDevMode() {
+            SetServerProtocol(DefaultProtocolType);
+            SetServerConfig(DefaultConfigType);
+            Console.WriteLine($"Using default dev values! In {ServerConfigEnum} config");
+
+        }
+
        void SetServerProtocol(string newServerType) {
 
            ServerProtocolTypes serverType;
@@ -78,7 +71,7 @@ namespace GptUnityServer.Models
 
            if (!validType)
            {
-               ServerTypeEnum = Enum.Parse<ServerProtocolTypes>(DefaultServerType);
+               ServerTypeEnum = Enum.Parse<ServerProtocolTypes>(newServerType);
            }
            else {
                ServerTypeEnum = Enum.Parse<ServerProtocolTypes>(newServerType);
@@ -89,12 +82,33 @@ namespace GptUnityServer.Models
             //OnServerTypeChange.Invoke(newServerType);
         }
 
-       void SetApiKey(string newKey) {
+        void SetServerConfig(string newConfigType)
+        {
+
+            ServerConfigType serverConfig;
+            bool validType = ServerConfigType.TryParse(newConfigType, out serverConfig);
+
+            if (!validType)
+            {
+                ServerConfigEnum = Enum.Parse<ServerConfigType>(newConfigType);
+            }
+            else
+            {
+                ServerConfigEnum = Enum.Parse<ServerConfigType>(newConfigType);
+            }
+
+            Console.WriteLine($"Set server protocol to: {ServerTypeEnum}");
+
+            //OnServerTypeChange.Invoke(newServerType);
+        }
+
+
+        void SetApiKey(string newKey) {
 
            if (!string.IsNullOrEmpty(newKey)) {
                 Console.WriteLine($"Setting api key...");
                 ServerConfigEnum = ServerConfigType.Api;
-                ApiKey = newKey;
+                AiApiKey = newKey;
             }
         }
 
@@ -105,8 +119,8 @@ namespace GptUnityServer.Models
             Console.WriteLine($"Attemtping to deseralize: {setupDataJson}");
             ServerConfigEnum = ServerConfigType.Cloud;
             CloudServerSetupData setupData = JsonConvert.DeserializeObject<CloudServerSetupData>(setupDataJson);
-            AuthToken = setupData.PlayerAuthenticationToken;
-            CloudFunctionName = setupData.CloudFunctionName;
+            CloudAuthToken = setupData.PlayerAuthenticationToken;
+            ResponseCloudFunction = setupData.CloudFunctionName;
 
         }
 
