@@ -4,16 +4,17 @@ namespace GptUnityServer.Models
 {
     public class Settings
     {
-        public string ?AiApiKey { get; set; }
+        #region Fields
+        public string? AiApiKey { get; set; }
 
-        public string ?DefaultProtocolType { get; set; }
-        public string ?DefaultConfigType { get; set; }
+        public string? DefaultProtocolType { get; set; }
+        public string? DefaultConfigType { get; set; }
         public string ServerType { get { return ServerTypeEnum.ToString(); } }
         public string ServerConfig { get { return ServerConfigEnum.ToString(); } }
         /// <summary>
         /// JSON Web Token to indicate authentication privledges for serverless function calls
         /// </summary>
-        public string ?CloudAuthToken { get; set; }
+        public string? CloudAuthToken { get; set; }
 
         /// <summary>
         /// The id of the organization your going to call
@@ -28,54 +29,56 @@ namespace GptUnityServer.Models
         private ServerProtocolTypes ServerTypeEnum { get; set; }
         private ServerConfigType ServerConfigEnum { get; set; }
 
-        public void RunSetUp(string[] args) {
+        #endregion
 
-            Console.WriteLine($"All arugments:\n {string.Join("\n",args)}");
+        #region Initalization Methods
+        public void RunSetUp(string[] args)
+        {
+
+            Console.WriteLine($"All arugments:\n {string.Join("\n", args)}");
             if (args.Length == 0)
             {
 
                 StartDefaultDevMode();
+                return;
             }
 
-            else
-            {
-                if (args.Length >= 1)
-                    SetServerProtocol(args[0]);
 
-                if (args.Length >= 2) {
+            if (args.Length >= 1)
+                SetServerProtocol(args[0]);
 
-                    //If this argument is avalid JSON, use it as set up data for cloud code configuartion
-                    if (args[1].StartsWith("{") && args[1].EndsWith("}"))
-                        SetCloudServerData(args[1]);
+            if (args.Length >= 2)           
+                SetServerConfig(args[1]);            
 
-                    else
-                        SetApiKey(args[1]);
-                }
-                    
-
-
-            }
+            if (args.Length >= 3)
+                SetServerData(args[2]);
         }
 
-        void StartDefaultDevMode() {
+        void StartDefaultDevMode()
+        {
             SetServerProtocol(DefaultProtocolType);
             SetServerConfig(DefaultConfigType);
+            //SetServerData is not called because the data will be filled from enviroment secrets
             Console.WriteLine($"Using default dev values! In {ServerConfigEnum} config");
 
         }
+        #endregion
 
-       void SetServerProtocol(string newServerType) {
+        #region Server Setup Methods
+        void SetServerProtocol(string newServerType)
+        {
 
-           ServerProtocolTypes serverType;
-           bool validType = ServerProtocolTypes.TryParse(newServerType, out serverType);
+            ServerProtocolTypes serverType;
+            bool validType = ServerProtocolTypes.TryParse(newServerType, out serverType);
 
-           if (!validType)
-           {
-               ServerTypeEnum = Enum.Parse<ServerProtocolTypes>(newServerType);
-           }
-           else {
-               ServerTypeEnum = Enum.Parse<ServerProtocolTypes>(newServerType);
-           }
+            if (!validType)
+            {
+                ServerTypeEnum = Enum.Parse<ServerProtocolTypes>(newServerType);
+            }
+            else
+            {
+                ServerTypeEnum = Enum.Parse<ServerProtocolTypes>(newServerType);
+            }
 
             Console.WriteLine($"Set server protocol to: {ServerTypeEnum}");
 
@@ -102,32 +105,31 @@ namespace GptUnityServer.Models
             //OnServerTypeChange.Invoke(newServerType);
         }
 
-
-        void SetApiKey(string newKey) {
-
-           if (!string.IsNullOrEmpty(newKey)) {
-                Console.WriteLine($"Setting api key...");
-                ServerConfigEnum = ServerConfigType.Api;
-                AiApiKey = newKey;
-            }
-        }
-
-        void SetCloudServerData(string setupDataJson)
+        void SetServerData(string data)
         {
 
-            Console.WriteLine($"setting up server with cloud config data...");
-            Console.WriteLine($"Attemtping to deseralize: {setupDataJson}");
-            ServerConfigEnum = ServerConfigType.Cloud;
-            CloudServerSetupData setupData = JsonConvert.DeserializeObject<CloudServerSetupData>(setupDataJson);
-            CloudAuthToken = setupData.PlayerAuthenticationToken;
-            ResponseCloudFunction = setupData.CloudFunctionName;
+            if (string.IsNullOrEmpty(data))
+                return;
+
+            if (ServerConfigEnum == ServerConfigType.Api)
+                AiApiKey = data;
+
+            else if (ServerConfigEnum == ServerConfigType.Cloud && data.StartsWith("{") && data.EndsWith("}"))
+            {
+               
+                Console.WriteLine($"Attemtping to deseralize cloud data: {data}");
+                CloudServerSetupData setupData = JsonConvert.DeserializeObject<CloudServerSetupData>(data);
+                CloudAuthToken = setupData.PlayerAuthenticationToken;
+                ResponseCloudFunction = setupData.CloudFunctionName;
+
+            }
 
         }
+        #endregion
 
-        //public Action<string> OnServerTypeChange;
+        #region Enums
+        private enum ServerProtocolTypes {
 
-        private enum ServerProtocolTypes { 
-        
             TCP,
             UDP
         }
@@ -138,6 +140,8 @@ namespace GptUnityServer.Models
             Api,
             Cloud
         }
+        #endregion
+
 
     }
 }

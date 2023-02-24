@@ -19,7 +19,7 @@ namespace GptUnityServer.Services.OpenAiServices.OpenAiData
 
             if (!string.IsNullOrEmpty(promptDetails))
             {
-                Console.WriteLine($"Setting prompt settings to : {JsonConvert.DeserializeObject<PromptSettings>(promptDetails)}");
+                Console.WriteLine($"Setting prompt settings ");//to : {JsonConvert.DeserializeObject<PromptSettings>(promptDetails)}");
                 promptSettings.OverritePromptSettings(JsonConvert.DeserializeObject<PromptSettings>(promptDetails));
             }
         }
