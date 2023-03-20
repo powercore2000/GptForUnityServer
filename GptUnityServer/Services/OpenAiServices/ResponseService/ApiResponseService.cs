@@ -24,6 +24,7 @@ namespace GptUnityServer.Services.OpenAiServices.ResponseService
         {
             string url = "https://api.openai.com/v1/completions";
             string apiKey = settings.AiApiKey;
+            string message;
 
             HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Add("Authorization", "Bearer " + apiKey);
@@ -47,9 +48,16 @@ namespace GptUnityServer.Services.OpenAiServices.ResponseService
             // Send the request and get the response
             HttpResponseMessage response = await client.SendAsync(request);
             string responseContent = await response.Content.ReadAsStringAsync();
-            JObject responseJson = JObject.Parse(responseContent);
-            string message = responseJson["choices"][0]["text"].ToString();
+            if (response.IsSuccessStatusCode)
+            {
+                
+                JObject responseJson = JObject.Parse(responseContent);
+                message = responseJson["choices"][0]["text"].ToString();
+            }
 
+            else {
+                message = responseContent;
+            }
 
             AiResponse aiResponse = new AiResponse(responseContent, message);
 

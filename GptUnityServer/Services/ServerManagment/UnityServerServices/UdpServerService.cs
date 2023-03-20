@@ -84,11 +84,6 @@ namespace GptUnityServer.Services.ServerManagment.UnityServerServices
             serverType = "UDP";
         }
 
-        #region UnityNetCoreServer Methods
-
-
-        #endregion
-
 
         #region Server Management
         public override void StartServer(int _port = 1111)

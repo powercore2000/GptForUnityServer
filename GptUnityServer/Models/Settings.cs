@@ -22,6 +22,7 @@ namespace GptUnityServer.Models
         public string? CloudProjectId { get; set; }
 
         public string? ResponseCloudFunction { get; set; }
+        public string? ChatCloudFunction { get; set; }
         public string? ModelListCloudFunction { get; set; }
 
         //public bool IsApiKeyValid { get; set; }

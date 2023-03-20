@@ -10,6 +10,9 @@ namespace GptUnityServer.Services.OpenAiServices.OpenAiData
     using Models;
     using Newtonsoft.Json.Linq;
 
+    /// <summary>
+    /// THIS IS FOR TESTING ONLY. It is not recomended to use your API key on the client's machine to perform these operations.
+    /// </summary>
     public class ApiModelManager : IOpenAiModelManager
     {
 

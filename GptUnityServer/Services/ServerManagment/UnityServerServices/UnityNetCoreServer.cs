@@ -4,6 +4,7 @@ using SharedLibrary;
 using GptUnityServer.Models;
 using Microsoft.Extensions.ObjectPool;
 using GptUnityServer.Services.OpenAiServices.ResponseService;
+using GptUnityServer.Services.OpenAiServices.ChatResponseService;
 
 namespace GptUnityServer.Services.ServerManagment.UnityServerServices
 {
@@ -61,7 +62,7 @@ namespace GptUnityServer.Services.ServerManagment.UnityServerServices
         protected async void TriggerAiResponse(string clientMessage)
         {
 
-            if (clientMessage == "INITIALIZATION-MESSAGE")
+            if (clientMessage == CommunicationData.InitalizationIdText)
             {
                 string response = CheckApiValidity();
 
@@ -108,9 +109,23 @@ namespace GptUnityServer.Services.ServerManagment.UnityServerServices
 
         public virtual async Task ProcessClientInput(string clientMessage)
         {
-            if (clientMessage.Contains("PROMPT-SETTINGS:"))
-                SendPromptDetails(clientMessage.Replace("PROMPT-SETTINGS:", ""));
+            string promptIdText = CommunicationData.PromptIdText;
+            string messageIdText = CommunicationData.MessageIdText;
+            if (clientMessage.Contains(promptIdText))
+            {
 
+                    int startIndex = clientMessage.IndexOf(promptIdText) + promptIdText.Length;
+                    int endIndex = clientMessage.LastIndexOf(messageIdText) + messageIdText.Length;
+                   
+                    string prompt = clientMessage.Substring(startIndex, endIndex- startIndex).Replace(messageIdText, "");
+                    string finalResponse = clientMessage.Remove(startIndex, endIndex - startIndex).Replace(promptIdText, "");
+                    Console.WriteLine($"Indexing prompt {prompt}");
+                    await SendPromptDetails(prompt);
+
+                    string response = await SendMessage(finalResponse);
+                    Console.WriteLine($"displaying Ai response: {response}");
+                    OnAiMessageRecived.Invoke(response);            
+            }
 
             else
             {
@@ -120,7 +135,7 @@ namespace GptUnityServer.Services.ServerManagment.UnityServerServices
             }
 
         }
-
+        
         public virtual async Task<string> SendMessage(string message)
         {
 
@@ -134,13 +149,28 @@ namespace GptUnityServer.Services.ServerManagment.UnityServerServices
             }
 
         }
+        
+        public virtual async Task<string> SendChatMessage(string message)
+        {
 
-        protected virtual void SendPromptDetails(string promptDetailsString)
+            // The scope informs the service provider when you're
+            // done with the transient service so it can be disposed
+            using (var scope = serviceProvider.CreateScope())
+            {
+                IAiChatResponseService openAiService = scope.ServiceProvider.GetRequiredService<IAiChatResponseService>();
+                AiResponse response = await openAiService.SendMessage(message,new string[] { "you are a farmer who lives in kansas", "your favorite sport is baseball" });
+                return response.Message;
+            }
+
+        }
+
+        protected virtual Task SendPromptDetails(string promptDetailsString)
         {
             using (var scope = serviceProvider.CreateScope())
             {
                 IPromptSettingsService promptDetailService = scope.ServiceProvider.GetRequiredService<IPromptSettingsService>();
                 promptDetailService.SetPromptDetails(promptDetailsString);
+                return Task.CompletedTask;
 
             }
         }
@@ -153,7 +183,7 @@ namespace GptUnityServer.Services.ServerManagment.UnityServerServices
             if (isKeyValid)
             {
                 onValidationSucess?.Invoke();
-                Console.WriteLine($"UDP server api key is valid!");
+                Console.WriteLine($"{serverType} server api key is valid!");
                 //server.Me
                 return $"SUCCESS: Welcome to GPT to Unity using {serverType}";
             }
@@ -162,7 +192,7 @@ namespace GptUnityServer.Services.ServerManagment.UnityServerServices
             {
 
                 ValidationFailFunctions();
-                Console.WriteLine($"Invalid UDP server api key!");
+                Console.WriteLine($"Invalid {serverType} server api key!");
 
                 return $"ERROR: Invalid Open Ai API Key With {serverType}";
             }
