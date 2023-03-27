@@ -24,11 +24,11 @@ namespace GptUnityServer.Models
         /// </summary>
         public string? DefaultConfigType { get; set; }
         
-        public string ServerType { get { return ServerTypeEnum.ToString(); } }
-        public string ServerConfig { get { return ServerConfigEnum.ToString(); } }
+       // public string ServerProtocolType { get { return ServerProtocolEnum.ToString(); } }
+        //public string ServerServiceType { get { return ServerServiceEnum.ToString(); } }
 
-        private ServerProtocolTypes ServerTypeEnum { get; set; }
-        private ServerConfigType ServerConfigEnum { get; set; }
+        public ServerProtocolTypes ServerProtocolEnum { get; private set; }
+        public ServerServiceTypes ServerServiceEnum { get; private set; }
         #endregion
 
         #region Fields for Unity Cloud Code
@@ -63,6 +63,7 @@ namespace GptUnityServer.Models
         #endregion
 
         #region Initalization Methods
+        
         /// <summary>
         /// Parses data passed in via Program.Start() argument parameters to handle the server's protocol, config, and operation data
         /// </summary>
@@ -89,12 +90,15 @@ namespace GptUnityServer.Models
                 SetServerAuthenticationData(args[2]);
         }
 
+        /// <summary>
+        /// If no initalizaton arguments are provided when the server starts up, trigger dev mode and use default data provided in AppSettings and Secrets
+        /// </summary>
         void StartDefaultDevMode()
         {
             SetServerProtocol(DefaultProtocolType);
             SetServerConfig(DefaultConfigType);
             //SetServerData is not called because the data will be filled from enviroment secrets
-            Console.WriteLine($"Using default dev values! In {ServerConfigEnum} config");
+            Console.WriteLine($"Using default dev values! In {ServerServiceEnum} config");
 
         }
         #endregion
@@ -112,14 +116,14 @@ namespace GptUnityServer.Models
 
             if (!validType)
             {
-                ServerTypeEnum = Enum.Parse<ServerProtocolTypes>(newServerType);
+                ServerProtocolEnum = Enum.Parse<ServerProtocolTypes>(newServerType);
             }
             else
             {
-                ServerTypeEnum = Enum.Parse<ServerProtocolTypes>(newServerType);
+                ServerProtocolEnum = Enum.Parse<ServerProtocolTypes>(newServerType);
             }
 
-            Console.WriteLine($"Set server protocol to: {ServerTypeEnum}");
+            Console.WriteLine($"Set server protocol to: {ServerProtocolEnum}");
 
             //OnServerTypeChange.Invoke(newServerType);
         }
@@ -130,18 +134,18 @@ namespace GptUnityServer.Models
         void SetServerConfig(string newConfigType)
         {
 
-            ServerConfigType serverConfig;
-            bool validType = ServerConfigType.TryParse(newConfigType, out serverConfig);
+            ServerServiceTypes serverConfig;
+            bool validType = ServerServiceTypes.TryParse(newConfigType, out serverConfig);
 
             if (validType)            
-                ServerConfigEnum = Enum.Parse<ServerConfigType>(newConfigType);
+                ServerServiceEnum = Enum.Parse<ServerServiceTypes>(newConfigType);
             
             else
             {
                 Console.WriteLine($"ERROR: Unrecognized configuration type passed into Program.Start()\nNo Server config types corresponds to {newConfigType}");
             }
 
-            Console.WriteLine($"Set server protocol to: {ServerTypeEnum}");
+            Console.WriteLine($"Set server protocol to: {ServerProtocolEnum}");
 
             //OnServerTypeChange.Invoke(newServerType);
         }
@@ -158,38 +162,41 @@ namespace GptUnityServer.Models
             if (string.IsNullOrEmpty(data))
                 return;
 
-            if (ServerConfigEnum == ServerConfigType.Api)
+            if (ServerServiceEnum == ServerServiceTypes.Api)
                 AiApiKey = data;
 
-            else if (ServerConfigEnum == ServerConfigType.Cloud && data.StartsWith("{") && data.EndsWith("}"))
+            else if (ServerServiceEnum == ServerServiceTypes.UnityCloudCode && data.StartsWith("{") && data.EndsWith("}"))
             {
                
                 Console.WriteLine($"Attemtping to deseralize cloud JSON data: {data}");
                 CloudServerSetupData setupData = JsonConvert.DeserializeObject<CloudServerSetupData>(data);
                 CloudAuthToken = setupData.PlayerAuthenticationToken;
-                ResponseCloudFunction = setupData.CloudFunctionName;
-                ChatCloudFunction = setupData.Chat;
-
+                ResponseCloudFunction = setupData.ResponseFunctionName;
+                ChatCloudFunction = setupData.ChatFunctionName;
+                ModelListCloudFunction = setupData.ModelListCloudFunction;
             }
 
         }
         #endregion
 
-        #region Enums
-        private enum ServerProtocolTypes {
-
-            TCP,
-            UDP
-        }
-
-        private enum ServerConfigType
-        {
-
-            Api,
-            Cloud
-        }
-        #endregion
 
 
     }
+
+    #region Enums
+    public enum ServerProtocolTypes
+    {
+
+        TCP,
+        UDP
+    }
+
+    public enum ServerServiceTypes
+    {
+
+        Api,
+        UnityCloudCode
+    }
+    #endregion
+
 }

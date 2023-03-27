@@ -1,10 +1,10 @@
-﻿using GptUnityServer.Services.OpenAiServices;
-using Microsoft.Extensions.Hosting.Internal;
+﻿using Microsoft.Extensions.Hosting.Internal;
 using GptUnityServer.Services.ServerManagment.UnityServerServices;
 
 namespace GptUnityServer.Services.ServerManagment.ServerManagerServices
 {
-    using GptUnityServer.Services.OpenAiServices.OpenAiData;
+    //using GptUnityServer.Services.OpenAiServices.OpenAiData;
+    using GptUnityServer.Services.ServerManagment.ValidationServices;
     using Models;
     public class UnityServerManagerService : IHostedService
     {
@@ -14,35 +14,36 @@ namespace GptUnityServer.Services.ServerManagment.ServerManagerServices
         private IEnumerable<IUnityNetCoreServer> allNetCoreServers;
         private readonly Settings settings;
         public IUnityNetCoreServer CurrentServerService { get { return selectedServerService; } }
-        protected readonly IApiKeyValidation validatonService;
+        protected readonly IServerValidationService validatonService;
         protected readonly IHostApplicationLifetime applicationLifetime;
-        protected readonly IOpenAiModelManager openAiModelManager;
+        //protected readonly IOpenAiModelManager openAiModelManager;
         protected bool IsApiKeyValid { get; set; }
         public UnityServerManagerService(
             IEnumerable<IUnityNetCoreServer> _allNetCoreServers,
             Settings _settings,
-            IApiKeyValidation _validationService,
-            IHostApplicationLifetime _applicationLifetime,
-            IOpenAiModelManager _openAiModelManager)
+            IServerValidationService _validationService,
+            IHostApplicationLifetime _applicationLifetime//,
+            //IOpenAiModelManager _openAiModelManager
+            )
         {
 
             validatonService = _validationService;
             settings = _settings;
             allNetCoreServers = _allNetCoreServers;
             applicationLifetime = _applicationLifetime;
-            openAiModelManager = _openAiModelManager;
-            DetermineSelectedServerType(settings.ServerType);
+            //openAiModelManager = _openAiModelManager;
+            DetermineSelectedServerType(settings.ServerProtocolEnum);
 
         }
 
-        void DetermineSelectedServerType(string newServerType)
+        void DetermineSelectedServerType(ServerProtocolTypes newServerType)
         {
 
             Console.WriteLine($"Selected {newServerType} for server type!");
             switch (newServerType)
             {
 
-                case "TCP":
+                case ServerProtocolTypes.TCP:
                     {
 
                         selectedServerService = allNetCoreServers.Single(server => server is TcpServerService);
@@ -50,7 +51,7 @@ namespace GptUnityServer.Services.ServerManagment.ServerManagerServices
                     }
                     break;
 
-                case "UDP":
+                case ServerProtocolTypes.UDP:
                     {
 
                         selectedServerService = allNetCoreServers.Single(server => server is UdpServerService);
@@ -79,8 +80,16 @@ namespace GptUnityServer.Services.ServerManagment.ServerManagerServices
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
+            string validationKey = "";
+            if (settings.ServerServiceEnum == ServerServiceTypes.Api)
+                validationKey = settings.AiApiKey;
 
-            IsApiKeyValid = await validatonService.ValidateApiKey(settings.AiApiKey);
+            else if (settings.ServerServiceEnum == ServerServiceTypes.UnityCloudCode)
+                validationKey = settings.CloudAuthToken;
+
+
+
+            IsApiKeyValid = await validatonService.ValidateKey(validationKey);
 
 
             //Console.WriteLine($"Starting Unity Server service! \nCurrent key validation : {IsApiKeyValid}");           

@@ -3,11 +3,12 @@ using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace GptUnityServer.Services.OpenAiServices.Api_Validation
+namespace GptUnityServer.Services.ServerManagment.ValidationServices
 {
-    public class ApiKeyValidationService : IApiKeyValidation
+    public class ApiKeyValidationService : IServerValidationService
     {
-        public async Task<bool> ValidateApiKey(string key) {
+        public async Task<bool> ValidateKey(string key)
+        {
 
 
 
@@ -30,7 +31,7 @@ namespace GptUnityServer.Services.OpenAiServices.Api_Validation
                 }
             }
         }
-    
+
 
 
 

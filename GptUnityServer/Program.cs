@@ -1,11 +1,10 @@
 using GptUnityServer.Models;
-using GptUnityServer.Services.OpenAiServices;
-using GptUnityServer.Services.OpenAiServices.Api_Validation;
 using GptUnityServer.Services.ServerManagment.ServerManagerServices;
 using GptUnityServer.Services.ServerManagment.UnityServerServices;
 using GptUnityServer.Services.OpenAiServices.OpenAiData;
 using GptUnityServer.Services.OpenAiServices.ResponseService;
 using GptUnityServer.Services.OpenAiServices.ChatResponseService;
+using GptUnityServer.Services.ServerManagment.ValidationServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,20 +21,19 @@ settings.RunSetUp(args);
 builder.Services.AddSingleton(settings);
 builder.Services.AddSingleton(promptSettings);
 
-if (settings.ServerConfig == "Cloud")
+if (settings.ServerServiceEnum == ServerServiceTypes.UnityCloudCode)
 {
     builder.Services.AddTransient<IAiResponseService, CloudResponseService>();
     builder.Services.AddTransient<IOpenAiModelManager, CloudModelManager>();
-    builder.Services.AddTransient<IApiKeyValidation, MockApiKeyValidationService>();
+    builder.Services.AddTransient<IServerValidationService, CloudCodeValidationServices>();
     builder.Services.AddTransient<IAiChatResponseService, CloudChatResponseService>();
 }
 
-else if (settings.ServerConfig == "Api")
+else if (settings.ServerServiceEnum == ServerServiceTypes.Api)
 {
     builder.Services.AddTransient<IAiResponseService, ApiResponseService>();
-    builder.Services.AddTransient<IOpenAiModelManager, ApiModelManager>();
-    //builder.Services.AddTransient<IApiKeyValidation, ApiKeyValidationService>();
-    builder.Services.AddTransient<IApiKeyValidation, ApiKeyValidationService>();
+    builder.Services.AddTransient<IOpenAiModelManager, ApiModelManager>(); 
+    builder.Services.AddTransient<IServerValidationService, ApiKeyValidationService>();
     builder.Services.AddTransient<IAiChatResponseService, CloudChatResponseService>();
 }
 

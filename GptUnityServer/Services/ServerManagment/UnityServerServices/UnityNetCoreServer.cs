@@ -160,7 +160,6 @@ namespace GptUnityServer.Services.ServerManagment.UnityServerServices
         protected virtual string CheckApiValidity()
         {
             displayedStatusMessage = true;
-            //isKeyValid = validationService.ValidateApiKey();
             if (isKeyValid)
             {
                 onValidationSucess?.Invoke();

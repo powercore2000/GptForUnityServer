@@ -18,6 +18,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GptUnityServer", "GptUnityS
 		{F33A607C-FD02-F7E7-9E73-E8BF6745EA45} = {F33A607C-FD02-F7E7-9E73-E8BF6745EA45}
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GptUnityServerTests", "GptUnityServerTests\GptUnityServerTests.csproj", "{0399CFB2-D97D-4A57-A955-914C86D15326}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,6 +38,10 @@ Global
 		{CE1998F9-BA1E-4AF6-B6F9-242B5D0507D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CE1998F9-BA1E-4AF6-B6F9-242B5D0507D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CE1998F9-BA1E-4AF6-B6F9-242B5D0507D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0399CFB2-D97D-4A57-A955-914C86D15326}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0399CFB2-D97D-4A57-A955-914C86D15326}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0399CFB2-D97D-4A57-A955-914C86D15326}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0399CFB2-D97D-4A57-A955-914C86D15326}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
