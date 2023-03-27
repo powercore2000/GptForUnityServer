@@ -20,15 +20,15 @@ namespace GptUnityServer.Services.ServerManagment.UnityServerServices
         protected string serverType { get; set; }
 
         protected readonly IServiceProvider serviceProvider;
-        //protected readonly IServerSetupService serverSetupService;
+        protected readonly PromptSettings promptSettings;
 
         public Action<string> OnAiMessageRecived;
 
-        public UnityNetCoreServer(IServiceProvider _serviceProvider)
+        public UnityNetCoreServer(IServiceProvider _serviceProvider, PromptSettings _promptSettings)
         {
 
             serviceProvider = _serviceProvider;
-            //serverSetupService = _serverSetupService;
+            promptSettings = _promptSettings;
         }
 
         public virtual void RestartServer()
@@ -77,40 +77,18 @@ namespace GptUnityServer.Services.ServerManagment.UnityServerServices
                 await ProcessClientInput(clientMessage);
             
         }
-
-        /*
-        protected async void TriggerAiResponse(string clientMessage)
-        {
-
-            if (displayedStatusMessage)
-            {
-                await ProcessClientInput(clientMessage);
-            }
-
-            else
-            {              
-                string response = CheckApiValidity();
-                
-
-                using (var scope = serviceProvider.CreateScope())
-                {
-                    IServerSetupService serverSetupService = scope.ServiceProvider.GetRequiredService<IServerSetupService>();
-                    Console.WriteLine($"setting up server with data...");
-                    ServerSetupData setupData = JsonConvert.DeserializeObject<ServerSetupData>(clientMessage);
-                    serverSetupService.SetUpServer(setupData);
-                }
-                
-                OnAiMessageRecived.Invoke(response);
-            }
-
-            
-
-        }*/
-
+        /// <summary>
+        /// Parse the contents of the client message before sending it to a service
+        /// </summary>
+        /// <param name="clientMessage"></param>
+        /// <returns></returns>
         public virtual async Task ProcessClientInput(string clientMessage)
         {
             string promptIdText = CommunicationData.PromptIdText;
             string messageIdText = CommunicationData.MessageIdText;
+            string userMessage = clientMessage;
+            string response;
+
             if (clientMessage.Contains(promptIdText))
             {
 
@@ -118,24 +96,26 @@ namespace GptUnityServer.Services.ServerManagment.UnityServerServices
                     int endIndex = clientMessage.LastIndexOf(messageIdText) + messageIdText.Length;
                    
                     string prompt = clientMessage.Substring(startIndex, endIndex- startIndex).Replace(messageIdText, "");
-                    string finalResponse = clientMessage.Remove(startIndex, endIndex - startIndex).Replace(promptIdText, "");
+                    userMessage = clientMessage.Remove(startIndex, endIndex - startIndex).Replace(promptIdText, "");
                     Console.WriteLine($"Indexing prompt {prompt}");
-                    await SendPromptDetails(prompt);
-
-                    string response = await SendMessage(finalResponse);
-                    Console.WriteLine($"displaying Ai response: {response}");
-                    OnAiMessageRecived.Invoke(response);            
+                    SetPromptDetails(prompt);       
             }
 
-            else
-            {
-                string response = await SendMessage(clientMessage);
-                Console.WriteLine($"displaying Ai response: {response}");
-                OnAiMessageRecived.Invoke(response);
-            }
+
+            if (promptSettings.ServiceType == "Response")           
+                response = await SendMessage(userMessage);            
+            
+            else 
+                response = await SendChatMessage(userMessage);
+
+            
+
+            Console.WriteLine($"displaying Ai response: {response}");
+            OnAiMessageRecived.Invoke(response);
 
         }
-        
+
+        #region Service Callers
         public virtual async Task<string> SendMessage(string message)
         {
 
@@ -158,23 +138,24 @@ namespace GptUnityServer.Services.ServerManagment.UnityServerServices
             using (var scope = serviceProvider.CreateScope())
             {
                 IAiChatResponseService openAiService = scope.ServiceProvider.GetRequiredService<IAiChatResponseService>();
-                AiResponse response = await openAiService.SendMessage(message,new string[] { "you are a farmer who lives in kansas", "your favorite sport is baseball" });
+                AiResponse response = await openAiService.SendMessage(message,promptSettings.SystemStrings);
                 return response.Message;
             }
 
         }
 
-        protected virtual Task SendPromptDetails(string promptDetailsString)
+        protected void SetPromptDetails(string promptDetailsString)
         {
-            using (var scope = serviceProvider.CreateScope())
+
+            if (!string.IsNullOrEmpty(promptDetailsString))
             {
-                IPromptSettingsService promptDetailService = scope.ServiceProvider.GetRequiredService<IPromptSettingsService>();
-                promptDetailService.SetPromptDetails(promptDetailsString);
-                return Task.CompletedTask;
-
+                Console.WriteLine($"Setting prompt settings ");//to : {JsonConvert.DeserializeObject<PromptSettings>(promptDetails)}");
+                promptSettings.OverritePromptSettings(JsonConvert.DeserializeObject<PromptSettings>(promptDetailsString));
+                
             }
-        }
 
+        }
+       
 
         protected virtual string CheckApiValidity()
         {
@@ -221,15 +202,15 @@ namespace GptUnityServer.Services.ServerManagment.UnityServerServices
 
 
         }
-
+        
 
         async Task ValidationFailFunctions()
         {
-
+            //Why is this await here?
             await Task.Delay(300);
             onValidationFail?.Invoke();
         }
-
+        #endregion
 
 
 

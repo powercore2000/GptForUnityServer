@@ -6,6 +6,7 @@ using System.Text;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.Extensions.DependencyInjection;
 using NetCoreServer;
+using SharedLibrary;
 
 namespace GptUnityServer.Services.ServerManagment.UnityServerServices
 {
@@ -164,7 +165,7 @@ namespace GptUnityServer.Services.ServerManagment.UnityServerServices
         #region Constructor
 
 
-        public TcpServerService(IServiceProvider _serviceProvider) : base(_serviceProvider)
+        public TcpServerService(IServiceProvider _serviceProvider, PromptSettings _promptSettings) : base(_serviceProvider, _promptSettings)
         {
 
             OnClientConnect += delegate { Console.WriteLine("Client connected!"); };

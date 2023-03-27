@@ -23,13 +23,13 @@ namespace GptUnityServer.Services.OpenAiServices.ChatResponseService
 
         public async Task<AiResponse> SendMessage(string userMessage, string[] systemMessages)
         {
-            Console.WriteLine("Running cloud based response!");
+            Console.WriteLine("Running cloud based response for chat with system messages:");
 
             string formattedSystemMessages;
 
             formattedSystemMessages = "[";
             foreach (string message in systemMessages) {
-
+                Console.WriteLine($"-{message}");
                 formattedSystemMessages += "\n{";
                 formattedSystemMessages +=
                    "\"role\":\"system\"," +
@@ -43,8 +43,7 @@ namespace GptUnityServer.Services.OpenAiServices.ChatResponseService
                "\"role\":\"user\"," +
                 $"\"content\":\"{userMessage}\"";
             formattedSystemMessages += "}\n]";
-            //JObject messageJSON = JObject.Parse(formattedSystemMessages);
-            //Console.WriteLine($"{messageJSON.ToString()}");
+            Console.WriteLine("Displaying system messages in format:");
             Console.WriteLine($"{formattedSystemMessages}");
             HttpResponseMessage response = await CallCloudCode(formattedSystemMessages);
            

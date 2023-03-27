@@ -6,6 +6,7 @@ using System.Text;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.Extensions.DependencyInjection;
 using NetCoreServer;
+using SharedLibrary;
 
 namespace GptUnityServer.Services.ServerManagment.UnityServerServices
 {
@@ -79,7 +80,7 @@ namespace GptUnityServer.Services.ServerManagment.UnityServerServices
 
         AiChatServer? server;
 
-        public UdpServerService(IServiceProvider _serviceProvider) : base(_serviceProvider)
+        public UdpServerService(IServiceProvider _serviceProvider, PromptSettings _promptSettings) : base(_serviceProvider, _promptSettings)
         {
             serverType = "UDP";
         }
