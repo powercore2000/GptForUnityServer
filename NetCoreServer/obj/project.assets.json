@@ -2,7 +2,7 @@
   "version": 3,
   "targets": {
     "net6.0": {},
-    "net6.0/linux-x64": {}
+    "net6.0/win-x64": {}
   },
   "libraries": {},
   "projectFileDependencyGroups": {
@@ -74,7 +74,7 @@
       }
     },
     "runtimes": {
-      "linux-x64": {
+      "win-x64": {
         "#import": []
       }
     }

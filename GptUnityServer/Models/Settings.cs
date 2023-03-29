@@ -2,6 +2,7 @@
 
 namespace GptUnityServer.Models
 {
+    using SharedLibrary;
     public class Settings
     {
         #region Fields
