@@ -73,4 +73,4 @@ builder.Services.AddHostedService<UnityServerManagerService>();
 var app = builder.Build();
 
 
-app.Run();
+app.Run("http://localhost:6776");

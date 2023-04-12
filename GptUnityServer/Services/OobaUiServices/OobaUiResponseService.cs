@@ -34,7 +34,7 @@ namespace GptUnityServer.Services.OobaUiServices
                 temperature = promptSettings.Temperature,
                 max_new_tokens = promptSettings.MaxTokens,
                 top_p = promptSettings.TopP,
-                //seed = -1,
+                seed = -1,
                 //frequency_penalty = promptSettings.FrequencyPenalty,
             };
             
