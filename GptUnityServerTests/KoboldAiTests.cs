@@ -16,7 +16,8 @@ namespace GptUnityServerTests
         {
             promptSettings = new PromptSettings();
             promptSettings.Temperature = 0.3f;
-            promptSettings.Prompt = "You: How are you my wonderful mother?";
+            promptSettings.Prompt = "You: But I cant date anyone who cant beat me in hand to hand combat";
+            promptSettings.MaxTokens = 300;
         }
 
 
