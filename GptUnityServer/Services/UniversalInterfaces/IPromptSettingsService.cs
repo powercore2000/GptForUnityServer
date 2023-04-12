@@ -1,4 +1,4 @@
-﻿namespace GptUnityServer.Services.OpenAiServices.OpenAiData
+﻿namespace GptUnityServer.Services.UniversalInterfaces
 {
     public interface IPromptSettingsService
     {

@@ -3,6 +3,7 @@
 
 namespace GptUnityServer.Services.OpenAiServices.ResponseService
 {
+    using GptUnityServer.Services.UniversalInterfaces;
     using Models;
     public class MockAiResponseService : IAiResponseService
     {

@@ -196,7 +196,9 @@ namespace GptUnityServer.Models
     {
 
         Api,
-        UnityCloudCode
+        UnityCloudCode,
+        OobaUi,
+        KoboldAi
     }
     #endregion
 

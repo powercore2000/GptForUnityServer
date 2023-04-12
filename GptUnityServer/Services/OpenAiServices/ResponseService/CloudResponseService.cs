@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 
 namespace GptUnityServer.Services.OpenAiServices.ResponseService
 {
+    using GptUnityServer.Services.UniversalInterfaces;
     using Models;
     public class CloudResponseService : IAiResponseService
     {

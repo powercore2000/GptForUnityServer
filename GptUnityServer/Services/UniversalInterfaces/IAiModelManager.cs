@@ -1,7 +1,7 @@
-﻿namespace GptUnityServer.Services.OpenAiServices.OpenAiData
+﻿namespace GptUnityServer.Services.UniversalInterfaces
 {
     using Assets.GptToUnity.SharedLibrary;
-    public interface IOpenAiModelManager
+    public interface IAiModelManager
     {
 
         public Task<string[]> GetAllModels();

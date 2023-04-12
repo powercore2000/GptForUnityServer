@@ -16,4 +16,15 @@
     <PackageReference Include="coverlet.collector" Version="3.1.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\GptUnityServer\GptUnityServer.csproj" />
+    <ProjectReference Include="..\NetCoreServer\NetCoreServer.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="SharedLibrary">
+      <HintPath>..\..\GptToUnity\Library\ScriptAssemblies\SharedLibrary.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

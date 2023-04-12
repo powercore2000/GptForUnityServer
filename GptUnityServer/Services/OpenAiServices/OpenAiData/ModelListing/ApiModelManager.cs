@@ -6,6 +6,7 @@ namespace GptUnityServer.Services.OpenAiServices.OpenAiData
     using System.Text.Json;
     using System.Text.Json.Nodes;
     using Assets.GptToUnity.SharedLibrary;
+    using GptUnityServer.Services.UniversalInterfaces;
     using Microsoft.AspNetCore.DataProtection.KeyManagement;
     using Models;
     using Newtonsoft.Json.Linq;
@@ -13,7 +14,7 @@ namespace GptUnityServer.Services.OpenAiServices.OpenAiData
     /// <summary>
     /// THIS IS FOR TESTING ONLY. It is not recomended to use your API key on the client's machine to perform these operations.
     /// </summary>
-    public class ApiModelManager : IOpenAiModelManager
+    public class ApiModelManager : IAiModelManager
     {
 
         private readonly Settings settings;

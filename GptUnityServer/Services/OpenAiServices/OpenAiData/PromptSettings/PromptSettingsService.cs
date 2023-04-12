@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 
 namespace GptUnityServer.Services.OpenAiServices.OpenAiData
 {
+    using GptUnityServer.Services.UniversalInterfaces;
     using SharedLibrary;
 
     public class PromptSettingsService : IPromptSettingsService

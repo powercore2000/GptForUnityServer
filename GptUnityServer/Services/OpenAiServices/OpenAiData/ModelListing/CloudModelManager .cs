@@ -7,8 +7,9 @@
     using Assets.GptToUnity.SharedLibrary;
     using Newtonsoft.Json.Linq;
     using Newtonsoft.Json;
+    using GptUnityServer.Services.UniversalInterfaces;
 
-    public class CloudModelManager : IOpenAiModelManager
+    public class CloudModelManager : IAiModelManager
     {
 
         private readonly Settings settings;

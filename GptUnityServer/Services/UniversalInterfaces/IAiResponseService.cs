@@ -1,6 +1,6 @@
 ﻿using SharedLibrary;
 
-namespace GptUnityServer.Services.OpenAiServices.ResponseService
+namespace GptUnityServer.Services.UniversalInterfaces
 {
     public interface IAiResponseService
     {

@@ -1,10 +1,8 @@
-﻿using GptUnityServer.Services.OpenAiServices.OpenAiData;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using SharedLibrary;
 using GptUnityServer.Models;
 using Microsoft.Extensions.ObjectPool;
-using GptUnityServer.Services.OpenAiServices.ResponseService;
-using GptUnityServer.Services.OpenAiServices.ChatResponseService;
+using GptUnityServer.Services.UniversalInterfaces;
 
 namespace GptUnityServer.Services.ServerManagment.UnityServerServices
 {
@@ -188,7 +186,7 @@ namespace GptUnityServer.Services.ServerManagment.UnityServerServices
 
             using (var scope = serviceProvider.CreateScope()) {
 
-                IOpenAiModelManager modelManager = scope.ServiceProvider.GetRequiredService<IOpenAiModelManager>();
+                IAiModelManager modelManager = scope.ServiceProvider.GetRequiredService<IAiModelManager>();
                 modelList = await modelManager.GetAllModels();
             }
 

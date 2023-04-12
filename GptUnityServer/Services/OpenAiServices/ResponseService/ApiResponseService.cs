@@ -5,6 +5,7 @@ using SharedLibrary;
 
 namespace GptUnityServer.Services.OpenAiServices.ResponseService
 {
+    using GptUnityServer.Services.UniversalInterfaces;
     using Models;
     using Newtonsoft.Json.Linq;
 
