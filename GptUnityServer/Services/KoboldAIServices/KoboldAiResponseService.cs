@@ -33,11 +33,8 @@ namespace GptUnityServer.Services.KoboldAIServices
             request.Content = new StringContent(JsonConvert.SerializeObject(new
             {
                 prompt,
-                //model = promptSettings.Model,
                 temperature = promptSettings.Temperature,
-                //max_tokens = promptSettings.MaxTokens,
                 top_p = promptSettings.TopP,
-                //frequency_penalty = promptSettings.FrequencyPenalty,
             }), Encoding.UTF8, "application/json");
 
             // Send the request and get the response

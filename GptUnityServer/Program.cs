@@ -31,7 +31,7 @@ if (settings.ServerServiceEnum == ServerServiceTypes.UnityCloudCode)
     builder.Services.AddTransient<IAiChatResponseService, CloudChatResponseService>();
 }
 
-else if (settings.ServerServiceEnum == ServerServiceTypes.Api)
+else if (settings.ServerServiceEnum == ServerServiceTypes.OpenAi)
 {
     builder.Services.AddTransient<IAiResponseService, ApiResponseService>();
     builder.Services.AddTransient<IAiModelManager, ApiModelManager>(); 

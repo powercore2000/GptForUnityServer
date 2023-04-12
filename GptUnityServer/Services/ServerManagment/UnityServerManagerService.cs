@@ -80,7 +80,7 @@ namespace GptUnityServer.Services.ServerManagment
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             string validationKey = "";
-            if (settings.ServerServiceEnum == ServerServiceTypes.Api)
+            if (settings.ServerServiceEnum == ServerServiceTypes.OpenAi)
                 validationKey = settings.AiApiKey;
 
             else if (settings.ServerServiceEnum == ServerServiceTypes.UnityCloudCode)

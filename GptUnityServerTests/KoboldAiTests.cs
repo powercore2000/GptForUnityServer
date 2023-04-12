@@ -16,7 +16,7 @@ namespace GptUnityServerTests
         {
             promptSettings = new PromptSettings();
             promptSettings.Temperature = 0.3f;
-            promptSettings.Prompt = "You: How are you my wonderful girlfriend?";
+            promptSettings.Prompt = "You: How are you my wonderful mother?";
         }
 
 

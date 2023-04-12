@@ -29,6 +29,7 @@ namespace GptUnityServer.Models
         //public string ServerServiceType { get { return ServerServiceEnum.ToString(); } }
 
         public ServerProtocolTypes ServerProtocolEnum { get; private set; }
+
         public ServerServiceTypes ServerServiceEnum { get; private set; }
         #endregion
 
@@ -85,7 +86,7 @@ namespace GptUnityServer.Models
                 SetServerProtocol(args[0]);
 
             if (args.Length >= 2)           
-                SetServerConfig(args[1]);            
+                SetServerServices(args[1]);            
 
             if (args.Length >= 3)
                 SetServerAuthenticationData(args[2]);
@@ -97,7 +98,7 @@ namespace GptUnityServer.Models
         void StartDefaultDevMode()
         {
             SetServerProtocol(DefaultProtocolType);
-            SetServerConfig(DefaultConfigType);
+            SetServerServices(DefaultConfigType);
             //SetServerData is not called because the data will be filled from enviroment secrets
             Console.WriteLine($"Using default dev values! In {ServerServiceEnum} config");
 
@@ -131,22 +132,22 @@ namespace GptUnityServer.Models
         /// <summary>
         /// Sets the configuration type of the server to either be Cloud Based, API Based, or default
         /// </summary>
-        /// <param name="newConfigType"></param>
-        void SetServerConfig(string newConfigType)
+        /// <param name="newServiceType"></param>
+        void SetServerServices(string newServiceType)
         {
 
-            ServerServiceTypes serverConfig;
-            bool validType = ServerServiceTypes.TryParse(newConfigType, out serverConfig);
+            ServerServiceTypes targetServerService;
+            bool validType = Enum.TryParse(newServiceType, out targetServerService);
 
             if (validType)            
-                ServerServiceEnum = Enum.Parse<ServerServiceTypes>(newConfigType);
+                ServerServiceEnum = targetServerService;
             
             else
             {
-                Console.WriteLine($"ERROR: Unrecognized configuration type passed into Program.Start()\nNo Server config types corresponds to {newConfigType}");
+                Console.WriteLine($"ERROR: Unrecognized service type passed into Program.Start()\nNo Server service types corresponds to {newServiceType}");
             }
 
-            Console.WriteLine($"Set server protocol to: {ServerProtocolEnum}");
+            Console.WriteLine($"Setting server service to: {ServerServiceEnum}");
 
             //OnServerTypeChange.Invoke(newServerType);
         }
@@ -154,7 +155,7 @@ namespace GptUnityServer.Models
         /// <summary>
         /// Sets the authentication data needed for the server to make web requests:
         /// API Mode: Data contains the API Key used
-        /// Cloud Mode: JSON object containing the names of the endpoint functions used
+        /// Cloud Mode: Data is a JSON object containing the names of the endpoint functions used, and authentication data
         /// </summary>
         /// <param name="data"></param>
         void SetServerAuthenticationData(string data)
@@ -163,13 +164,13 @@ namespace GptUnityServer.Models
             if (string.IsNullOrEmpty(data))
                 return;
 
-            if (ServerServiceEnum == ServerServiceTypes.Api)
+            if (ServerServiceEnum == ServerServiceTypes.OpenAi)
                 AiApiKey = data;
 
             else if (ServerServiceEnum == ServerServiceTypes.UnityCloudCode && data.StartsWith("{") && data.EndsWith("}"))
             {
                
-                Console.WriteLine($"Attemtping to deseralize cloud JSON data: {data}");
+                Console.WriteLine($"Attemtping to deseralize CloudServerSetupData: {data}");
                 CloudServerSetupData setupData = JsonConvert.DeserializeObject<CloudServerSetupData>(data);
                 CloudAuthToken = setupData.PlayerAuthenticationToken;
                 ResponseCloudFunction = setupData.ResponseFunctionName;
@@ -194,10 +195,24 @@ namespace GptUnityServer.Models
 
     public enum ServerServiceTypes
     {
-
-        Api,
+        /// <summary>
+        /// Makes calls to Open Ai's Api directly. Should NOT be used on distributted software
+        /// </summary>
+        OpenAi,
+        
+        /// <summary>
+        /// Makes calls to Unity's Clode Code Api. Used as a template for other cloud service support
+        /// </summary>
         UnityCloudCode,
+
+        /// <summary>
+        /// Makes calls to a local instance of Oobabooga's text-generation-webui Api. 
+        /// </summary>
         OobaUi,
+
+        /// <summary>
+        /// Makes calls to a local instance of Kobold Ai's Api
+        /// </summary>
         KoboldAi
     }
     #endregion
