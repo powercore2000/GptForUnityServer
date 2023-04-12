@@ -1,4 +1,4 @@
-﻿namespace GptUnityServer.Services.OpenAiServices.OpenAiData
+﻿namespace GptUnityServer.Services.UnityCloudCode
 {
     using System;
     using System.Text;
@@ -7,7 +7,7 @@
     using Assets.GptToUnity.SharedLibrary;
     using Newtonsoft.Json.Linq;
     using Newtonsoft.Json;
-    using GptUnityServer.Services.UniversalInterfaces;
+    using GptUnityServer.Services.Universal;
 
     public class CloudModelManager : IAiModelManager
     {

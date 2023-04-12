@@ -1,9 +1,9 @@
 ﻿using SharedLibrary;
 
 
-namespace GptUnityServer.Services.OpenAiServices.ResponseService
+namespace GptUnityServer.Services._PlaceholderServices
 {
-    using GptUnityServer.Services.UniversalInterfaces;
+    using GptUnityServer.Services.Universal;
     using Models;
     public class MockAiResponseService : IAiResponseService
     {

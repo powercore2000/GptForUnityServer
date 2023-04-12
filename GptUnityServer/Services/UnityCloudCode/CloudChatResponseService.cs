@@ -3,9 +3,9 @@ using System.Text;
 using SharedLibrary;
 using Newtonsoft.Json.Linq;
 
-namespace GptUnityServer.Services.OpenAiServices.ChatResponseService
+namespace GptUnityServer.Services.UnityCloudCode
 {
-    using GptUnityServer.Services.UniversalInterfaces;
+    using GptUnityServer.Services.Universal;
     using Models;
     public class CloudChatResponseService : IAiChatResponseService
     {
@@ -29,13 +29,14 @@ namespace GptUnityServer.Services.OpenAiServices.ChatResponseService
             string formattedSystemMessages;
 
             formattedSystemMessages = "[";
-            foreach (string message in systemMessages) {
+            foreach (string message in systemMessages)
+            {
                 Console.WriteLine($"-{message}");
                 formattedSystemMessages += "\n{";
                 formattedSystemMessages +=
                    "\"role\":\"system\"," +
                     $"\"content\":\"{message}\"";
-                   formattedSystemMessages += "},\n";
+                formattedSystemMessages += "},\n";
 
             }
 
@@ -47,7 +48,7 @@ namespace GptUnityServer.Services.OpenAiServices.ChatResponseService
             Console.WriteLine("Displaying system messages in format:");
             Console.WriteLine($"{formattedSystemMessages}");
             HttpResponseMessage response = await CallCloudCode(formattedSystemMessages);
-           
+
             //Console.WriteLine("\nWhat returned was  " + response.Content);
             if (response.IsSuccessStatusCode)
             {

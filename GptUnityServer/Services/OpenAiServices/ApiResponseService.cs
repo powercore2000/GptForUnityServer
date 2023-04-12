@@ -3,9 +3,9 @@ using System.Text;
 using Newtonsoft.Json;
 using SharedLibrary;
 
-namespace GptUnityServer.Services.OpenAiServices.ResponseService
+namespace GptUnityServer.Services.OpenAiServices
 {
-    using GptUnityServer.Services.UniversalInterfaces;
+    using GptUnityServer.Services.Universal;
     using Models;
     using Newtonsoft.Json.Linq;
 
@@ -51,12 +51,13 @@ namespace GptUnityServer.Services.OpenAiServices.ResponseService
             string responseContent = await response.Content.ReadAsStringAsync();
             if (response.IsSuccessStatusCode)
             {
-                
+
                 JObject responseJson = JObject.Parse(responseContent);
                 message = responseJson["choices"][0]["text"].ToString();
             }
 
-            else {
+            else
+            {
                 message = responseContent;
             }
 

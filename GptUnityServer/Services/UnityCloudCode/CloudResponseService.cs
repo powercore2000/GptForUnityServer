@@ -3,9 +3,9 @@ using System.Text;
 using SharedLibrary;
 using Newtonsoft.Json.Linq;
 
-namespace GptUnityServer.Services.OpenAiServices.ResponseService
+namespace GptUnityServer.Services.UnityCloudCode
 {
-    using GptUnityServer.Services.UniversalInterfaces;
+    using GptUnityServer.Services.Universal;
     using Models;
     public class CloudResponseService : IAiResponseService
     {
@@ -43,7 +43,8 @@ namespace GptUnityServer.Services.OpenAiServices.ResponseService
                 return new AiResponse(trimmedData, parsedMessage);
             }
 
-            else {
+            else
+            {
 
                 Console.WriteLine($"Failed to get ai response: {response.StatusCode} --- {response.ReasonPhrase}\n{response.ToString()}");
                 return new AiResponse("", $"{response.StatusCode} --- {response.ReasonPhrase}");

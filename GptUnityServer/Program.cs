@@ -1,14 +1,12 @@
 using GptUnityServer.Models;
-using GptUnityServer.Services.ServerManagment.ServerManagerServices;
-using GptUnityServer.Services.ServerManagment.UnityServerServices;
-using GptUnityServer.Services.OpenAiServices.OpenAiData;
-using GptUnityServer.Services.OpenAiServices.ResponseService;
-using GptUnityServer.Services.OpenAiServices.ChatResponseService;
-using GptUnityServer.Services.ServerManagment.ValidationServices;
-using GptUnityServer.Services.UniversalInterfaces;
 using GptUnityServer.Services.OobaUiServices;
 using GptUnityServer.Services.KoboldAIServices;
 using GptUnityServer.Services._PlaceholderServices;
+using GptUnityServer.Services.UnityCloudCode;
+using GptUnityServer.Services.ServerManagment;
+using GptUnityServer.Services.OpenAiServices;
+using GptUnityServer.Services.Universal;
+using GptUnityServer.Services.NetCoreProtocol;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,24 +35,24 @@ else if (settings.ServerServiceEnum == ServerServiceTypes.Api)
 {
     builder.Services.AddTransient<IAiResponseService, ApiResponseService>();
     builder.Services.AddTransient<IAiModelManager, ApiModelManager>(); 
-    builder.Services.AddTransient<IServerValidationService, PlaceholderKeyValidationService>();
-    builder.Services.AddTransient<IAiChatResponseService, CloudChatResponseService>();
+    builder.Services.AddTransient<IServerValidationService, ApiKeyValidationService>();
+    builder.Services.AddTransient<IAiChatResponseService, MockChatService>();
 }
 
 else if (settings.ServerServiceEnum == ServerServiceTypes.OobaUi)
 {
     builder.Services.AddTransient<IAiResponseService, OobaUiResponseService>();
-    builder.Services.AddTransient<IAiModelManager, OobaUiModelManagerService>();
-    builder.Services.AddTransient<IServerValidationService, PlaceholderKeyValidationService>();
-    builder.Services.AddTransient<IAiChatResponseService, CloudChatResponseService>();
+    builder.Services.AddTransient<IAiModelManager, MockAiModelManagerService>();
+    builder.Services.AddTransient<IServerValidationService, MockApiKeyValidationService>();
+    builder.Services.AddTransient<IAiChatResponseService, MockChatService>();
 }
 
 else if (settings.ServerServiceEnum == ServerServiceTypes.KoboldAi)
 {
     builder.Services.AddTransient<IAiResponseService, KoboldAiResponseService>();
-    builder.Services.AddTransient<IAiModelManager, KoboldAiModelManagerService>();
-    builder.Services.AddTransient<IServerValidationService, ApiKeyValidationService>();
-    builder.Services.AddTransient<IAiChatResponseService, CloudChatResponseService>();
+    builder.Services.AddTransient<IAiModelManager, MockAiModelManagerService>();
+    builder.Services.AddTransient<IServerValidationService, MockApiKeyValidationService>();
+    builder.Services.AddTransient<IAiChatResponseService, MockChatService>();
 }
 
 

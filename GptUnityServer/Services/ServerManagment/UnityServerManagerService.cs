@@ -1,10 +1,9 @@
 ﻿using Microsoft.Extensions.Hosting.Internal;
-using GptUnityServer.Services.ServerManagment.UnityServerServices;
 
-namespace GptUnityServer.Services.ServerManagment.ServerManagerServices
+namespace GptUnityServer.Services.ServerManagment
 {
+    using GptUnityServer.Services.NetCoreProtocol;
     //using GptUnityServer.Services.OpenAiServices.OpenAiData;
-    using GptUnityServer.Services.ServerManagment.ValidationServices;
     using Models;
     public class UnityServerManagerService : IHostedService
     {
@@ -23,7 +22,7 @@ namespace GptUnityServer.Services.ServerManagment.ServerManagerServices
             Settings _settings,
             IServerValidationService _validationService,
             IHostApplicationLifetime _applicationLifetime//,
-            //IOpenAiModelManager _openAiModelManager
+                                                         //IOpenAiModelManager _openAiModelManager
             )
         {
 

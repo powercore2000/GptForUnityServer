@@ -1,6 +1,6 @@
 ﻿using SharedLibrary;
 
-namespace GptUnityServer.Services.UniversalInterfaces
+namespace GptUnityServer.Services.Universal
 {
     public interface IAiChatResponseService
     {

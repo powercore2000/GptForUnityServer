@@ -2,15 +2,15 @@
 using SharedLibrary;
 using GptUnityServer.Models;
 using Microsoft.Extensions.ObjectPool;
-using GptUnityServer.Services.UniversalInterfaces;
+using GptUnityServer.Services.Universal;
 
-namespace GptUnityServer.Services.ServerManagment.UnityServerServices
+namespace GptUnityServer.Services.NetCoreProtocol
 {
 
     public abstract class UnityNetCoreServer : IUnityNetCoreServer
     {
-        
-     
+
+
         protected bool isKeyValid { get; set; }
         protected bool displayedStatusMessage { get; set; }
         protected Action onValidationFail { get; set; }
@@ -71,9 +71,9 @@ namespace GptUnityServer.Services.ServerManagment.UnityServerServices
             }
 
             else
-            
+
                 await ProcessClientInput(clientMessage);
-            
+
         }
         /// <summary>
         /// Parse the contents of the client message before sending it to a service
@@ -90,23 +90,23 @@ namespace GptUnityServer.Services.ServerManagment.UnityServerServices
             if (clientMessage.Contains(promptIdText))
             {
 
-                    int startIndex = clientMessage.IndexOf(promptIdText) + promptIdText.Length;
-                    int endIndex = clientMessage.LastIndexOf(messageIdText) + messageIdText.Length;
-                   
-                    string prompt = clientMessage.Substring(startIndex, endIndex- startIndex).Replace(messageIdText, "");
-                    userMessage = clientMessage.Remove(startIndex, endIndex - startIndex).Replace(promptIdText, "");
-                    Console.WriteLine($"Indexing prompt {prompt}");
-                    SetPromptDetails(prompt);       
+                int startIndex = clientMessage.IndexOf(promptIdText) + promptIdText.Length;
+                int endIndex = clientMessage.LastIndexOf(messageIdText) + messageIdText.Length;
+
+                string prompt = clientMessage.Substring(startIndex, endIndex - startIndex).Replace(messageIdText, "");
+                userMessage = clientMessage.Remove(startIndex, endIndex - startIndex).Replace(promptIdText, "");
+                Console.WriteLine($"Indexing prompt {prompt}");
+                SetPromptDetails(prompt);
             }
 
 
-            if (promptSettings.ServiceType == "Response")           
-                response = await SendMessage(userMessage);            
-            
-            else 
+            if (promptSettings.ServiceType == "Response")
+                response = await SendMessage(userMessage);
+
+            else
                 response = await SendChatMessage(userMessage);
 
-            
+
 
             Console.WriteLine($"displaying Ai response: {response}");
             OnAiMessageRecived.Invoke(response);
@@ -127,7 +127,7 @@ namespace GptUnityServer.Services.ServerManagment.UnityServerServices
             }
 
         }
-        
+
         public virtual async Task<string> SendChatMessage(string message)
         {
 
@@ -136,7 +136,7 @@ namespace GptUnityServer.Services.ServerManagment.UnityServerServices
             using (var scope = serviceProvider.CreateScope())
             {
                 IAiChatResponseService openAiService = scope.ServiceProvider.GetRequiredService<IAiChatResponseService>();
-                AiResponse response = await openAiService.SendMessage(message,promptSettings.SystemStrings);
+                AiResponse response = await openAiService.SendMessage(message, promptSettings.SystemStrings);
                 return response.Message;
             }
 
@@ -149,11 +149,11 @@ namespace GptUnityServer.Services.ServerManagment.UnityServerServices
             {
                 Console.WriteLine($"Setting prompt settings ");//to : {JsonConvert.DeserializeObject<PromptSettings>(promptDetails)}");
                 promptSettings.OverritePromptSettings(JsonConvert.DeserializeObject<PromptSettings>(promptDetailsString));
-                
+
             }
 
         }
-       
+
 
         protected virtual string CheckApiValidity()
         {
@@ -184,13 +184,15 @@ namespace GptUnityServer.Services.ServerManagment.UnityServerServices
             string[] modelList;
 
 
-            using (var scope = serviceProvider.CreateScope()) {
+            using (var scope = serviceProvider.CreateScope())
+            {
 
                 IAiModelManager modelManager = scope.ServiceProvider.GetRequiredService<IAiModelManager>();
                 modelList = await modelManager.GetAllModels();
             }
 
-            var modelData = new {
+            var modelData = new
+            {
 
                 models = modelList
             };
@@ -199,7 +201,7 @@ namespace GptUnityServer.Services.ServerManagment.UnityServerServices
 
 
         }
-        
+
 
         async Task ValidationFailFunctions()
         {

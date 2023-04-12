@@ -1,12 +1,13 @@
 ﻿using System.Diagnostics;
 using System.Net.Http.Headers;
-namespace GptUnityServer.Services.OpenAiServices.OpenAiData
+
+namespace GptUnityServer.Services.OpenAiServices
 {
     using System.Reflection;
     using System.Text.Json;
     using System.Text.Json.Nodes;
     using Assets.GptToUnity.SharedLibrary;
-    using GptUnityServer.Services.UniversalInterfaces;
+    using GptUnityServer.Services.Universal;
     using Microsoft.AspNetCore.DataProtection.KeyManagement;
     using Models;
     using Newtonsoft.Json.Linq;

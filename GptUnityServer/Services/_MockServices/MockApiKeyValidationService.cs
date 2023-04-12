@@ -1,4 +1,6 @@
-﻿namespace GptUnityServer.Services.ServerManagment.ValidationServices
+﻿using GptUnityServer.Services.ServerManagment;
+
+namespace GptUnityServer.Services._PlaceholderServices
 {
     public class MockApiKeyValidationService : IServerValidationService
     {

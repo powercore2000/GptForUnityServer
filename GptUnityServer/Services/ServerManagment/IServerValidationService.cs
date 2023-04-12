@@ -1,4 +1,4 @@
-﻿namespace GptUnityServer.Services.ServerManagment.ValidationServices
+﻿namespace GptUnityServer.Services.ServerManagment
 {
     public interface IServerValidationService
     {

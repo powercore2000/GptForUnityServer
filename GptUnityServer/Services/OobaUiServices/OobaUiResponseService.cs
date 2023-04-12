@@ -1,9 +1,9 @@
 ﻿using System.Text;
 using GptUnityServer.Models;
-using GptUnityServer.Services.UniversalInterfaces;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using SharedLibrary;
+using GptUnityServer.Services.Universal;
 
 namespace GptUnityServer.Services.OobaUiServices
 {

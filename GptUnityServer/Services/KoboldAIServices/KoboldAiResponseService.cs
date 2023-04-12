@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using System.Text;
-using GptUnityServer.Services.UniversalInterfaces;
 using SharedLibrary;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using GptUnityServer.Services.Universal;
 
 namespace GptUnityServer.Services.KoboldAIServices
 {

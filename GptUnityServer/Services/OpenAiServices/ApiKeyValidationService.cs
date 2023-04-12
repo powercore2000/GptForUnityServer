@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.DataProtection.KeyManagement;
+﻿using GptUnityServer.Services.ServerManagment;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace GptUnityServer.Services.ServerManagment.ValidationServices
+namespace GptUnityServer.Services.OpenAiServices
 {
     public class ApiKeyValidationService : IServerValidationService
     {
