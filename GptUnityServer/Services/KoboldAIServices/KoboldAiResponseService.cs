@@ -28,13 +28,15 @@ namespace GptUnityServer.Services.KoboldAIServices
             client.DefaultRequestHeaders.Add("accept", "application/json");
             // Set up the request
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, url);
-            //request.Content = new StringContent("{\"prompt\":\"" + prompt + "\",\"temperature\":0.5}");
-            //request.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+            
             request.Content = new StringContent(JsonConvert.SerializeObject(new
             {
                 prompt,
                 temperature = promptSettings.Temperature,
                 top_p = promptSettings.TopP,
+                //no_repeat_ngram_size = 1,
+                early_stopping = true,
+                stopping_strings = new string[] { "You:", "\n[", "]:", "##", "###", "<noinput>", "\\end" },
             }), Encoding.UTF8, "application/json");
 
             // Send the request and get the response

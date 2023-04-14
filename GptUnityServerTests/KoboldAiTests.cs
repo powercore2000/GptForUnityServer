@@ -33,6 +33,23 @@ namespace GptUnityServerTests
         }
 
         [Test]
+        public void Conext_Ooba_Test()
+        {
+
+            promptSettings.Prompt = "*A shy girl in a white dress enters the room and stares at you blankly*" +
+                "You: Sally have you seen my dog? His name is Jimbo" +
+                "*Sally does not respond*" +
+                "You: Are you alright Sally?" +
+                "Sally:...Hmm? Oh sorry, I was lost in thought." +
+                "You:Do you even know my dogs name Sally?"
+                ;
+            var responseServie = new KoboldAiResponseService(promptSettings);
+            var response = responseServie.SendMessage(promptSettings.Prompt).Result;
+            Console.WriteLine(response.Message);
+            Assert.IsNotNull(response);
+        }
+
+        [Test]
         public void Get_Ai_Response_From_Kobold()
         {
 
