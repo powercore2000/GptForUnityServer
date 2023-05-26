@@ -23,6 +23,8 @@ settings.RunSetUp(args);
 builder.Services.AddSingleton(settings);
 builder.Services.AddSingleton(promptSettings);
 
+
+
 if (settings.ServerServiceEnum == ServerServiceTypes.UnityCloudCode)
 {
     builder.Services.AddTransient<IAiResponseService, CloudResponseService>();
@@ -31,7 +33,8 @@ if (settings.ServerServiceEnum == ServerServiceTypes.UnityCloudCode)
     builder.Services.AddTransient<IAiChatResponseService, CloudChatResponseService>();
 }
 
-else if (settings.ServerServiceEnum == ServerServiceTypes.OpenAi)
+//For Debuggin Purposes only. DO NOT CALL USE IN PRODUCTION
+else if (settings.ServerServiceEnum == ServerServiceTypes.AiApi)
 {
     builder.Services.AddTransient<IAiResponseService, ApiResponseService>();
     builder.Services.AddTransient<IAiModelManager, ApiModelManager>(); 
@@ -63,14 +66,42 @@ builder.Services.AddTransient<IUnityNetCoreServer, TcpServerService>();
 builder.Services.AddTransient<IUnityNetCoreServer, UdpServerService>();
 
 
+if (settings.ServerProtocolEnum == ServerProtocolTypes.RestApi)
+{
+
+    builder.Services.AddControllers();
+    // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+    builder.Services.AddEndpointsApiExplorer();
+    builder.Services.AddSwaggerGen();
+}
 
 
-builder.Services.AddHostedService<UnityServerManagerService>();
+    var app = builder.Build();
 
 
 
+if (settings.ServerProtocolEnum == ServerProtocolTypes.RestApi)
+{
 
-var app = builder.Build();
+
+    // Configure the HTTP request pipeline.
+    //if (app.Environment.IsDevelopment())
+    //{
+        app.UseSwagger();
+        app.UseSwaggerUI();
+    //}
+
+    app.UseHttpsRedirection();
+
+    app.UseAuthorization();
+
+    app.MapControllers();
 
 
-app.Run("http://localhost:6776");
+    app.Run("http://localhost:6776");
+}
+
+else {
+    builder.Services.AddHostedService<UnityServerManagerService>();
+    app.Run("http://localhost:6776");
+}

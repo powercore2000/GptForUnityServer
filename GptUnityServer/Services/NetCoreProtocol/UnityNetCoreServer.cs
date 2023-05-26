@@ -121,8 +121,8 @@ namespace GptUnityServer.Services.NetCoreProtocol
             // done with the transient service so it can be disposed
             using (var scope = serviceProvider.CreateScope())
             {
-                IAiResponseService openAiService = scope.ServiceProvider.GetRequiredService<IAiResponseService>();
-                AiResponse response = await openAiService.SendMessage(message);
+                IAiResponseService aiResponseService = scope.ServiceProvider.GetRequiredService<IAiResponseService>();
+                AiResponse response = await aiResponseService.SendMessage(message);
                 return response.Message;
             }
 

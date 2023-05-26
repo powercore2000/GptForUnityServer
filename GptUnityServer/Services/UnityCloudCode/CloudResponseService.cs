@@ -79,7 +79,7 @@ namespace GptUnityServer.Services.UnityCloudCode
             var httpContent = new StringContent(jsonString, Encoding.UTF8, "application/json");
 
 
-            string finalUrl = url + $"/{settings.CloudProjectId}/scripts/{settings.ResponseCloudFunction}";
+            string finalUrl = url + $"/{settings.CloudProjectId}/scripts/{settings.CloudResponseFunction}";
             Console.WriteLine($"Making http request to Cloude Code with url:{finalUrl}");
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, finalUrl);
             request.Content = httpContent;

@@ -7,14 +7,19 @@ namespace GptUnityServer.Models
     {
         #region Fields
 
-
+        #region Ai Api Fields
         /// <summary>
-        /// Only populated in test or debug senarios!
+        /// WARNING: Only populated in test or debug senarios!
         /// </summary>
         public string? AiApiKey { get; set; }
+        /// <summary>
+        /// WARNING: Only populated in test or debug senarios!
+        /// </summary>
+        public string? AiApiUrl { get; set; }
+        #endregion
 
         #region Universal Server Fields
-       
+
         /// <summary>
         /// The protocol type to fall back to if none is provides when server is initalized, or started in dev mode.
         /// </summary>
@@ -46,21 +51,18 @@ namespace GptUnityServer.Models
         /// <summary>
         /// Endpoint name of response based cloud functions
         /// </summary>
-        public string? ResponseCloudFunction { get; set; }
+        public string? CloudResponseFunction { get; set; }
 
         /// <summary>
         /// Endpoint name of response chat based cloud function
         /// </summary>
-        public string? ChatCloudFunction { get; set; }
+        public string? CloudChatFunction { get; set; }
 
         /// <summary>
         /// Endpoint name of for cloud funtion that retrives the model listing
         /// </summary>
-        public string? ModelListCloudFunction { get; set; }
+        public string? CloudModelListFunction { get; set; }
         #endregion
-
-        //public bool IsApiKeyValid { get; set; }
-
 
         #endregion
 
@@ -118,7 +120,7 @@ namespace GptUnityServer.Models
 
             if (!validType)
             {
-                ServerProtocolEnum = Enum.Parse<ServerProtocolTypes>(newServerType);
+                ServerProtocolEnum = Enum.Parse<ServerProtocolTypes>(DefaultProtocolType);
             }
             else
             {
@@ -164,7 +166,7 @@ namespace GptUnityServer.Models
             if (string.IsNullOrEmpty(data))
                 return;
 
-            if (ServerServiceEnum == ServerServiceTypes.OpenAi)
+            if (ServerServiceEnum == ServerServiceTypes.AiApi)
                 AiApiKey = data;
 
             else if (ServerServiceEnum == ServerServiceTypes.UnityCloudCode && data.StartsWith("{") && data.EndsWith("}"))
@@ -173,9 +175,9 @@ namespace GptUnityServer.Models
                 Console.WriteLine($"Attemtping to deseralize CloudServerSetupData: {data}");
                 CloudServerSetupData setupData = JsonConvert.DeserializeObject<CloudServerSetupData>(data);
                 CloudAuthToken = setupData.PlayerAuthenticationToken;
-                ResponseCloudFunction = setupData.ResponseFunctionName;
-                ChatCloudFunction = setupData.ChatFunctionName;
-                ModelListCloudFunction = setupData.ModelListCloudFunction;
+                CloudResponseFunction = setupData.ResponseFunctionName;
+                CloudChatFunction = setupData.ChatFunctionName;
+                CloudModelListFunction = setupData.ModelListCloudFunction;
             }
 
         }
@@ -190,15 +192,16 @@ namespace GptUnityServer.Models
     {
 
         TCP,
-        UDP
+        UDP,
+        RestApi
     }
 
     public enum ServerServiceTypes
     {
         /// <summary>
-        /// Makes calls to Open Ai's Api directly. Should NOT be used on distributted software
+        /// Makes calls to a generic Ai's Api directly. Must assign AiApiKey and AiApiUrl varables on start up in app settings. Should NOT be used on distributted software
         /// </summary>
-        OpenAi,
+        AiApi,
         
         /// <summary>
         /// Makes calls to Unity's Clode Code Api. Used as a template for other cloud service support

@@ -57,7 +57,13 @@ namespace GptUnityServer.Services.ServerManagment
 
                     }
                     break;
+                case ServerProtocolTypes.RestApi:
+                    {
+                        Console.WriteLine("Rest Api Detected, not activating UnityServer...");
+                        //selectedServerService = allNetCoreServers.Single(server => server is UdpServerService);
 
+                    }
+                    break;
 
                 default:
                     {
@@ -80,7 +86,7 @@ namespace GptUnityServer.Services.ServerManagment
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             string validationKey = "";
-            if (settings.ServerServiceEnum == ServerServiceTypes.OpenAi)
+            if (settings.ServerServiceEnum == ServerServiceTypes.AiApi)
                 validationKey = settings.AiApiKey;
 
             else if (settings.ServerServiceEnum == ServerServiceTypes.UnityCloudCode)
@@ -89,10 +95,10 @@ namespace GptUnityServer.Services.ServerManagment
 
 
             IsApiKeyValid = await validatonService.ValidateKey(validationKey);
+            //Console.WriteLine($"Starting Unity Server service! \nCurrent key validation : {IsApiKeyValid}");         
 
-
-            //Console.WriteLine($"Starting Unity Server service! \nCurrent key validation : {IsApiKeyValid}");           
-            await selectedServerService.StartAsync(cancellationToken, IsApiKeyValid, DeactivateService);
+            if (settings.ServerProtocolEnum != ServerProtocolTypes.RestApi) 
+                await selectedServerService.StartAsync(cancellationToken, IsApiKeyValid, DeactivateService);
 
         }
 

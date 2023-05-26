@@ -12,10 +12,6 @@ namespace GptUnityServer.Services.OobaUiServices
 
         private readonly PromptSettings promptSettings;
 
-        public OobaUiResponseService()
-        {
-        }
-
         public OobaUiResponseService(PromptSettings _promptSettings)
         {
 

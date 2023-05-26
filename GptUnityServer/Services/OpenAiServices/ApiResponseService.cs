@@ -23,7 +23,7 @@ namespace GptUnityServer.Services.OpenAiServices
 
         public async Task<AiResponse> SendMessage(string prompt)
         {
-            string url = "https://api.openai.com/v1/completions";
+            string url = settings.AiApiUrl;
             string apiKey = settings.AiApiKey;
             string message;
 
@@ -32,8 +32,7 @@ namespace GptUnityServer.Services.OpenAiServices
 
             // Set up the request
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, url);
-            //request.Content = new StringContent("{\"prompt\":\"" + prompt + "\",\"temperature\":0.5}");
-            //request.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+
             request.Content = new StringContent(JsonConvert.SerializeObject(new
             {
                 prompt,

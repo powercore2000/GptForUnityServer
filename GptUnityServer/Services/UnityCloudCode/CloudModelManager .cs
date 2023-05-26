@@ -30,7 +30,7 @@
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {settings.CloudAuthToken}");
 
 
-            string finalUrl = url + $"/{settings.CloudProjectId}/scripts/{settings.ModelListCloudFunction}";
+            string finalUrl = url + $"/{settings.CloudProjectId}/scripts/{settings.CloudModelListFunction}";
             Console.WriteLine($"Making http request with url:\n{finalUrl}");
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, finalUrl);
 
