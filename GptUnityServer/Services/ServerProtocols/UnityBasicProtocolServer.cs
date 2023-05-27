@@ -4,10 +4,10 @@ using GptUnityServer.Models;
 using Microsoft.Extensions.ObjectPool;
 using GptUnityServer.Services.Universal;
 
-namespace GptUnityServer.Services.NetCoreProtocol
+namespace GptUnityServer.Services.ServerProtocols
 {
 
-    public abstract class UnityNetCoreServer : IUnityNetCoreServer
+    public abstract class UnityBasicProtocolServer : IUnityProtocolServer
     {
 
 
@@ -22,7 +22,7 @@ namespace GptUnityServer.Services.NetCoreProtocol
 
         public Action<string> OnAiMessageRecived;
 
-        public UnityNetCoreServer(IServiceProvider _serviceProvider, PromptSettings _promptSettings)
+        public UnityBasicProtocolServer(IServiceProvider _serviceProvider, PromptSettings _promptSettings)
         {
 
             serviceProvider = _serviceProvider;

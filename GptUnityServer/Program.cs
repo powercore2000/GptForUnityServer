@@ -6,7 +6,9 @@ using GptUnityServer.Services.UnityCloudCode;
 using GptUnityServer.Services.ServerManagment;
 using GptUnityServer.Services.OpenAiServices;
 using GptUnityServer.Services.Universal;
-using GptUnityServer.Services.NetCoreProtocol;
+using GptUnityServer.Services.ServerProtocols;
+using Microsoft.AspNetCore.Mvc;
+using GptUnityServer.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,7 +40,7 @@ else if (settings.ServerServiceEnum == ServerServiceTypes.AiApi)
 {
     builder.Services.AddTransient<IAiResponseService, ApiResponseService>();
     builder.Services.AddTransient<IAiModelManager, ApiModelManager>(); 
-    builder.Services.AddTransient<IServerValidationService, ApiKeyValidationService>();
+    builder.Services.AddTransient<IServerValidationService, AiApiKeyValidationService>();
     builder.Services.AddTransient<IAiChatResponseService, MockChatService>();
 }
 
@@ -62,9 +64,15 @@ else if (settings.ServerServiceEnum == ServerServiceTypes.KoboldAi)
 
 
 builder.Services.AddTransient<IPromptSettingsService, PromptSettingsService>();
-builder.Services.AddTransient<IUnityNetCoreServer, TcpServerService>();
-builder.Services.AddTransient<IUnityNetCoreServer, UdpServerService>();
 
+//Add all protocol NetCoreServer Types here
+builder.Services.AddTransient<IUnityProtocolServer, TcpServerService>();
+builder.Services.AddTransient<IUnityProtocolServer, UdpServerService>();
+builder.Services.AddTransient<IUnityProtocolServer, RestApiServerService>();
+
+//builder.Services.AddHostedService<UnityServerManagerService>();
+builder.Services.AddSingleton<UnityServerManagerService>();
+builder.Services.AddHostedService<UnityServerManagerService>(provider => provider.GetService<UnityServerManagerService>());
 
 if (settings.ServerProtocolEnum == ServerProtocolTypes.RestApi)
 {
@@ -76,20 +84,23 @@ if (settings.ServerProtocolEnum == ServerProtocolTypes.RestApi)
 }
 
 
-    var app = builder.Build();
+
+
+var app = builder.Build();
 
 
 
 if (settings.ServerProtocolEnum == ServerProtocolTypes.RestApi)
 {
 
-
+    Console.WriteLine("Rest Api connect");
     // Configure the HTTP request pipeline.
-    //if (app.Environment.IsDevelopment())
-    //{
+    if (app.Environment.IsDevelopment())
+    {
+        Console.WriteLine("Dev enviroment");
         app.UseSwagger();
         app.UseSwaggerUI();
-    //}
+    }
 
     app.UseHttpsRedirection();
 
@@ -97,11 +108,9 @@ if (settings.ServerProtocolEnum == ServerProtocolTypes.RestApi)
 
     app.MapControllers();
 
-
-    app.Run("http://localhost:6776");
 }
 
-else {
-    builder.Services.AddHostedService<UnityServerManagerService>();
-    app.Run("http://localhost:6776");
-}
+
+
+//app.Run("http://localhost:6776");
+app.Run();

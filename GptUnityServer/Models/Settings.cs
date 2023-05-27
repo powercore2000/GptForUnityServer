@@ -16,6 +16,11 @@ namespace GptUnityServer.Models
         /// WARNING: Only populated in test or debug senarios!
         /// </summary>
         public string? AiApiUrl { get; set; }
+
+        /// <summary>
+        /// Url to check if the AiApiKey is valid
+        /// </summary>
+        public string? AiApiKeyValidationUrl { get; set; }
         #endregion
 
         #region Universal Server Fields

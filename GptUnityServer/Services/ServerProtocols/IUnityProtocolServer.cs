@@ -1,6 +1,6 @@
-﻿namespace GptUnityServer.Services.NetCoreProtocol
+﻿namespace GptUnityServer.Services.ServerProtocols
 {
-    public interface IUnityNetCoreServer
+    public interface IUnityProtocolServer
     {
 
         //public Action<string> OnReciveAiMessage { get; set; }

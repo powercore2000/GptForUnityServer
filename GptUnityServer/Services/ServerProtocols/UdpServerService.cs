@@ -8,10 +8,10 @@ using Microsoft.Extensions.DependencyInjection;
 using NetCoreServer;
 using SharedLibrary;
 
-namespace GptUnityServer.Services.NetCoreProtocol
+namespace GptUnityServer.Services.ServerProtocols
 {
 
-    public class UdpServerService : UnityNetCoreServer
+    public class UdpServerService : UnityBasicProtocolServer
     {
 
         #region Class Definitions

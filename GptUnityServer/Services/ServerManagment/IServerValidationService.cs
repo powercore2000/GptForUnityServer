@@ -2,6 +2,6 @@
 {
     public interface IServerValidationService
     {
-        public Task<bool> ValidateKey(string key);
+        public Task<bool> ValidateKey(string key, string validationUrl);
     }
 }

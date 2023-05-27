@@ -8,10 +8,10 @@ using Microsoft.Extensions.DependencyInjection;
 using NetCoreServer;
 using SharedLibrary;
 
-namespace GptUnityServer.Services.NetCoreProtocol
+namespace GptUnityServer.Services.ServerProtocols
 {
 
-    public class TcpServerService : UnityNetCoreServer
+    public class TcpServerService : UnityBasicProtocolServer
     {
 
         #region Class Definitions
@@ -179,8 +179,6 @@ namespace GptUnityServer.Services.NetCoreProtocol
 
         #region UnityNetCoreServer Methods
 
-        #endregion
-
         #region Server Management
         public override void StartServer(int _port = 1111)
         {
@@ -233,6 +231,8 @@ namespace GptUnityServer.Services.NetCoreProtocol
             return Task.CompletedTask;
         }
 
+
+        #endregion
 
         #endregion
     }

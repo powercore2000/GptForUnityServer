@@ -2,23 +2,24 @@
 
 namespace GptUnityServer.Services.ServerManagment
 {
-    using GptUnityServer.Services.NetCoreProtocol;
+    using GptUnityServer.Controllers;
+    using GptUnityServer.Services.ServerProtocols;
     //using GptUnityServer.Services.OpenAiServices.OpenAiData;
     using Models;
     public class UnityServerManagerService : IHostedService
     {
 
         //private readonly IServiceProvider serviceProvider;
-        private IUnityNetCoreServer selectedServerService;
-        private IEnumerable<IUnityNetCoreServer> allNetCoreServers;
+        private IUnityProtocolServer selectedServerService;
+        private IEnumerable<IUnityProtocolServer> allNetCoreServers;
         private readonly Settings settings;
-        public IUnityNetCoreServer CurrentServerService { get { return selectedServerService; } }
+        public IUnityProtocolServer CurrentServerService { get { return selectedServerService; } }
         protected readonly IServerValidationService validatonService;
         protected readonly IHostApplicationLifetime applicationLifetime;
         //protected readonly IOpenAiModelManager openAiModelManager;
         protected bool IsApiKeyValid { get; set; }
         public UnityServerManagerService(
-            IEnumerable<IUnityNetCoreServer> _allNetCoreServers,
+            IEnumerable<IUnityProtocolServer> _allNetCoreServers,
             Settings _settings,
             IServerValidationService _validationService,
             IHostApplicationLifetime _applicationLifetime//,
@@ -59,8 +60,8 @@ namespace GptUnityServer.Services.ServerManagment
                     break;
                 case ServerProtocolTypes.RestApi:
                     {
-                        Console.WriteLine("Rest Api Detected, not activating UnityServer...");
-                        //selectedServerService = allNetCoreServers.Single(server => server is UdpServerService);
+                        Console.WriteLine("Rest Api Detected, grabbing API Controller Server...");
+                        selectedServerService = allNetCoreServers.Single(server => server is RestApiServerService);
 
                     }
                     break;
@@ -86,19 +87,22 @@ namespace GptUnityServer.Services.ServerManagment
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             string validationKey = "";
-            if (settings.ServerServiceEnum == ServerServiceTypes.AiApi)
+            string validationUrl = "";
+            if (settings.ServerServiceEnum == ServerServiceTypes.AiApi) {
                 validationKey = settings.AiApiKey;
+                validationUrl = settings.AiApiKeyValidationUrl;
+                    }
 
-            else if (settings.ServerServiceEnum == ServerServiceTypes.UnityCloudCode)
+            else if (settings.ServerServiceEnum == ServerServiceTypes.UnityCloudCode) {
                 validationKey = settings.CloudAuthToken;
+                validationUrl = "";
+            }
 
 
-
-            IsApiKeyValid = await validatonService.ValidateKey(validationKey);
+            IsApiKeyValid = await validatonService.ValidateKey(validationKey, validationUrl);
             //Console.WriteLine($"Starting Unity Server service! \nCurrent key validation : {IsApiKeyValid}");         
 
-            if (settings.ServerProtocolEnum != ServerProtocolTypes.RestApi) 
-                await selectedServerService.StartAsync(cancellationToken, IsApiKeyValid, DeactivateService);
+            await selectedServerService.StartAsync(cancellationToken, IsApiKeyValid, DeactivateService);
 
         }
 
