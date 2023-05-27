@@ -4,6 +4,7 @@ namespace GptUnityServer.Services.ServerManagment
 {
     using GptUnityServer.Controllers;
     using GptUnityServer.Services.ServerProtocols;
+    using GptUnityServer.Services.Universal;
     //using GptUnityServer.Services.OpenAiServices.OpenAiData;
     using Models;
     public class UnityServerManagerService : IHostedService
@@ -11,25 +12,24 @@ namespace GptUnityServer.Services.ServerManagment
 
         //private readonly IServiceProvider serviceProvider;
         private IUnityProtocolServer selectedServerService;
-        private IEnumerable<IUnityProtocolServer> allNetCoreServers;
+        private IEnumerable<IUnityProtocolServer> allProtocolServers;
         private readonly Settings settings;
         public IUnityProtocolServer CurrentServerService { get { return selectedServerService; } }
-        protected readonly IServerValidationService validatonService;
+        protected readonly IKeyValidationService validatonService;
         protected readonly IHostApplicationLifetime applicationLifetime;
         //protected readonly IOpenAiModelManager openAiModelManager;
         protected bool IsApiKeyValid { get; set; }
         public UnityServerManagerService(
-            IEnumerable<IUnityProtocolServer> _allNetCoreServers,
+            IEnumerable<IUnityProtocolServer> _allProtocolServers,
             Settings _settings,
-            IServerValidationService _validationService,
-            IHostApplicationLifetime _applicationLifetime//,
-                                                         //IOpenAiModelManager _openAiModelManager
+            IKeyValidationService _validationService,
+            IHostApplicationLifetime _applicationLifetime
             )
         {
 
             validatonService = _validationService;
             settings = _settings;
-            allNetCoreServers = _allNetCoreServers;
+            allProtocolServers = _allProtocolServers;
             applicationLifetime = _applicationLifetime;
             //openAiModelManager = _openAiModelManager;
             DetermineSelectedServerType(settings.ServerProtocolEnum);
@@ -46,7 +46,7 @@ namespace GptUnityServer.Services.ServerManagment
                 case ServerProtocolTypes.TCP:
                     {
 
-                        selectedServerService = allNetCoreServers.Single(server => server is TcpServerService);
+                        selectedServerService = allProtocolServers.Single(server => server is TcpServerService);
 
                     }
                     break;
@@ -54,14 +54,14 @@ namespace GptUnityServer.Services.ServerManagment
                 case ServerProtocolTypes.UDP:
                     {
 
-                        selectedServerService = allNetCoreServers.Single(server => server is UdpServerService);
+                        selectedServerService = allProtocolServers.Single(server => server is UdpServerService);
 
                     }
                     break;
-                case ServerProtocolTypes.RestApi:
+                case ServerProtocolTypes.HTTP:
                     {
                         Console.WriteLine("Rest Api Detected, grabbing API Controller Server...");
-                        selectedServerService = allNetCoreServers.Single(server => server is RestApiServerService);
+                        selectedServerService = allProtocolServers.Single(server => server is RestApiServerService);
 
                     }
                     break;
@@ -69,7 +69,7 @@ namespace GptUnityServer.Services.ServerManagment
                 default:
                     {
                         Console.WriteLine($"Defaulted to TCP due to unrecognized server type!!");
-                        selectedServerService = allNetCoreServers.Single(server => server is TcpServerService);
+                        selectedServerService = allProtocolServers.Single(server => server is TcpServerService);
                     }
                     break;
             }

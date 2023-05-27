@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Net.Http.Headers;
 
-namespace GptUnityServer.Services.OpenAiServices
+namespace GptUnityServer.Services.AiApiServices
 {
     using System.Reflection;
     using System.Text.Json;
@@ -31,7 +31,7 @@ namespace GptUnityServer.Services.OpenAiServices
             List<string> modelList = new List<string>();
             HttpClient httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + settings.AiApiKey);
-            HttpResponseMessage response = await httpClient.GetAsync($"https://api.openai.com/v1/models");
+            HttpResponseMessage response = await httpClient.GetAsync(settings.AiApiKeyValidationUrl);
 
             if (response.IsSuccessStatusCode)
             {

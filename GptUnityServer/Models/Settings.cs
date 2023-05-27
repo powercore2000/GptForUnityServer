@@ -53,6 +53,8 @@ namespace GptUnityServer.Models
         /// The id of the organization your going to call. MUST BE SET MANUALLY IN APP SETTINGS
         /// </summary>
         public string? CloudProjectId { get; set; }
+
+        public string? CloudCodeEndpoint { get; set; }
         /// <summary>
         /// Endpoint name of response based cloud functions
         /// </summary>
@@ -198,7 +200,7 @@ namespace GptUnityServer.Models
 
         TCP,
         UDP,
-        RestApi
+        HTTP
     }
 
     public enum ServerServiceTypes

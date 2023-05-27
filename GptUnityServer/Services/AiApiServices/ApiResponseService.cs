@@ -3,7 +3,7 @@ using System.Text;
 using Newtonsoft.Json;
 using SharedLibrary;
 
-namespace GptUnityServer.Services.OpenAiServices
+namespace GptUnityServer.Services.AiApiServices
 {
     using GptUnityServer.Services.Universal;
     using Models;

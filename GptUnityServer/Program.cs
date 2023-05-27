@@ -4,7 +4,7 @@ using GptUnityServer.Services.KoboldAIServices;
 using GptUnityServer.Services._PlaceholderServices;
 using GptUnityServer.Services.UnityCloudCode;
 using GptUnityServer.Services.ServerManagment;
-using GptUnityServer.Services.OpenAiServices;
+using GptUnityServer.Services.AiApiServices;
 using GptUnityServer.Services.Universal;
 using GptUnityServer.Services.ServerProtocols;
 using Microsoft.AspNetCore.Mvc;
@@ -31,7 +31,7 @@ if (settings.ServerServiceEnum == ServerServiceTypes.UnityCloudCode)
 {
     builder.Services.AddTransient<IAiResponseService, CloudResponseService>();
     builder.Services.AddTransient<IAiModelManager, CloudModelManager>();
-    builder.Services.AddTransient<IServerValidationService, CloudCodeValidationServices>();
+    builder.Services.AddTransient<IKeyValidationService, CloudCodeValidationServices>();
     builder.Services.AddTransient<IAiChatResponseService, CloudChatResponseService>();
 }
 
@@ -40,7 +40,7 @@ else if (settings.ServerServiceEnum == ServerServiceTypes.AiApi)
 {
     builder.Services.AddTransient<IAiResponseService, ApiResponseService>();
     builder.Services.AddTransient<IAiModelManager, ApiModelManager>(); 
-    builder.Services.AddTransient<IServerValidationService, AiApiKeyValidationService>();
+    builder.Services.AddTransient<IKeyValidationService, AiApiKeyValidationService>();
     builder.Services.AddTransient<IAiChatResponseService, MockChatService>();
 }
 
@@ -48,7 +48,7 @@ else if (settings.ServerServiceEnum == ServerServiceTypes.OobaUi)
 {
     builder.Services.AddTransient<IAiResponseService, OobaUiResponseService>();
     builder.Services.AddTransient<IAiModelManager, MockAiModelManagerService>();
-    builder.Services.AddTransient<IServerValidationService, MockApiKeyValidationService>();
+    builder.Services.AddTransient<IKeyValidationService, MockApiKeyValidationService>();
     builder.Services.AddTransient<IAiChatResponseService, MockChatService>();
 }
 
@@ -56,7 +56,7 @@ else if (settings.ServerServiceEnum == ServerServiceTypes.KoboldAi)
 {
     builder.Services.AddTransient<IAiResponseService, KoboldAiResponseService>();
     builder.Services.AddTransient<IAiModelManager, MockAiModelManagerService>();
-    builder.Services.AddTransient<IServerValidationService, MockApiKeyValidationService>();
+    builder.Services.AddTransient<IKeyValidationService, MockApiKeyValidationService>();
     builder.Services.AddTransient<IAiChatResponseService, MockChatService>();
 }
 
@@ -74,7 +74,7 @@ builder.Services.AddTransient<IUnityProtocolServer, RestApiServerService>();
 builder.Services.AddSingleton<UnityServerManagerService>();
 builder.Services.AddHostedService<UnityServerManagerService>(provider => provider.GetService<UnityServerManagerService>());
 
-if (settings.ServerProtocolEnum == ServerProtocolTypes.RestApi)
+if (settings.ServerProtocolEnum == ServerProtocolTypes.HTTP)
 {
 
     builder.Services.AddControllers();
@@ -90,7 +90,7 @@ var app = builder.Build();
 
 
 
-if (settings.ServerProtocolEnum == ServerProtocolTypes.RestApi)
+if (settings.ServerProtocolEnum == ServerProtocolTypes.HTTP)
 {
 
     Console.WriteLine("Rest Api connect");

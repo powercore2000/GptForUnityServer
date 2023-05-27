@@ -30,7 +30,7 @@
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {settings.CloudAuthToken}");
 
 
-            string finalUrl = url + $"/{settings.CloudProjectId}/scripts/{settings.CloudModelListFunction}";
+            string finalUrl = url + $"/{settings.CloudProjectId}/{settings.CloudCodeEndpoint}/{settings.CloudModelListFunction}";
             Console.WriteLine($"Making http request with url:\n{finalUrl}");
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, finalUrl);
 
@@ -41,12 +41,22 @@
             {
                 Console.WriteLine("Successfully aquired models!");
                 string responseContent = await response.Content.ReadAsStringAsync();
-                JObject responseJson = JObject.Parse(responseContent);
+                JObject listObject = JObject.Parse(responseContent);
+                JArray responseJson = JArray.Parse(listObject["output"].ToString());
+                dynamic jsonList = JsonConvert.DeserializeObject(responseJson.ToString());
+                //Ugly hack solution because im tired :(
+                for (int i = 0; i < responseJson.Count; i++)
+                    {
 
-                foreach (JObject element in responseJson["output"]["data"])
+                        modelList.Add(responseJson[i].ToString());
+
+                    }
+
+                /*
+                foreach (JObject element in responseJson["output"])
                 {
                     modelList.Add(element["id"].ToString());
-                }
+                }*/
                 Console.WriteLine($"Got models with list length: {modelList.Count}");
             }
             else

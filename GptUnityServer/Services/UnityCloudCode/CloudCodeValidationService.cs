@@ -1,8 +1,8 @@
-﻿using GptUnityServer.Services.ServerManagment;
+﻿using GptUnityServer.Services.Universal;
 
 namespace GptUnityServer.Services.UnityCloudCode
 {
-    public class CloudCodeValidationServices : IServerValidationService
+    public class CloudCodeValidationServices : IKeyValidationService
     {
 
         public Task<bool> ValidateKey(string key, string valdiationUrl)

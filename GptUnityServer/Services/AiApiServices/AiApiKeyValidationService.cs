@@ -1,13 +1,13 @@
 ﻿using GptUnityServer.Models;
-using GptUnityServer.Services.ServerManagment;
+using GptUnityServer.Services.Universal;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace GptUnityServer.Services.OpenAiServices
+namespace GptUnityServer.Services.AiApiServices
 {
-    public class AiApiKeyValidationService : IServerValidationService
+    public class AiApiKeyValidationService : IKeyValidationService
     {
 
         public async Task<bool> ValidateKey(string key, string validationUrl)

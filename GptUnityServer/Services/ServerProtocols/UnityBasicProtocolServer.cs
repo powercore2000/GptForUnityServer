@@ -3,6 +3,7 @@ using SharedLibrary;
 using GptUnityServer.Models;
 using Microsoft.Extensions.ObjectPool;
 using GptUnityServer.Services.Universal;
+using Newtonsoft.Json.Linq;
 
 namespace GptUnityServer.Services.ServerProtocols
 {
@@ -66,8 +67,8 @@ namespace GptUnityServer.Services.ServerProtocols
 
 
                 OnAiMessageRecived.Invoke(response);
-
-                OnAiMessageRecived.Invoke(SendModelList().Result);
+                string modelList = await SendModelList();
+                OnAiMessageRecived.Invoke(modelList);
             }
 
             else
@@ -191,13 +192,10 @@ namespace GptUnityServer.Services.ServerProtocols
                 modelList = await modelManager.GetAllModels();
             }
 
-            var modelData = new
-            {
-
-                models = modelList
-            };
-            message = JsonConvert.SerializeObject(modelData);
-            return message;
+            JArray modelData = JArray.FromObject(modelList);
+            
+            //message = JsonConvert.SerializeObject(modelData);
+            return "{ \"models\":" + modelData.ToString() + "}";
 
 
         }
