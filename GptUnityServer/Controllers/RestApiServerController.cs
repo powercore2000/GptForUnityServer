@@ -15,15 +15,6 @@ namespace GptUnityServer.Controllers
     [Route("[controller]")]
     public class RestApiServerController : ControllerBase
     {
-        /*
-         Sets for adding a new Unity -> GptToUnity Server:
-            -Add communication method as an IUnityProtocolServer class
-            - Either add addiotnal features of communication to the class or make another class that access the IUnityProtocolServer class
-            -Pull that specific class from the allProtocolServers variable inside of UnityServerManagerService
-            -Make that server add a specific validation method to the validation service
-            -Set up the Start Async and Stop Async methods in that IUnityProtocolServer class
-         */
-
         private readonly ILogger<RestApiServerController> logger;
         private readonly IAiResponseService aiResponseService;
         private readonly IAiModelManager aiModelManager;
