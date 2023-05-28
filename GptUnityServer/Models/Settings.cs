@@ -33,7 +33,7 @@ namespace GptUnityServer.Models
         /// <summary>
         /// The config type to fall back to if none is provides when server is initalized, or started in dev mode.
         /// </summary>
-        public string? DefaultConfigType { get; set; }
+        public string? DefaultServiceType { get; set; }
         
        // public string ServerProtocolType { get { return ServerProtocolEnum.ToString(); } }
         //public string ServerServiceType { get { return ServerServiceEnum.ToString(); } }
@@ -107,7 +107,7 @@ namespace GptUnityServer.Models
         void StartDefaultDevMode()
         {
             SetServerProtocol(DefaultProtocolType);
-            SetServerServices(DefaultConfigType);
+            SetServerServices(DefaultServiceType);
             //SetServerData is not called because the data will be filled from enviroment secrets
             Console.WriteLine($"Using default dev values! In {ServerServiceEnum} config");
 
