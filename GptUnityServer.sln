@@ -8,6 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2F320123-F272-4415-8880-DE94D3F7F5EE}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		README.md = README.md
 		..\GptToUnity\Library\ScriptAssemblies\SharedLibrary.dll = ..\GptToUnity\Library\ScriptAssemblies\SharedLibrary.dll
 	EndProjectSection
 EndProject

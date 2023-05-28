@@ -28,7 +28,9 @@ This uses the NetCoreServer repository to create a client-server relationship wi
 - By the `launchsettings.json` file inside the server, under the `DefaultProtocol` variable.
 - Being passed into the startup `args[0]` parameter by the Unity Client.
 
-The HTTP protocol can be freely used and accessed from Unity using UnityWebRequest. The TCP and UDP protocol clients are available in the [Unity Asset Store page]() for this tool.
+The HTTP protocol can be freely used and accessed from Unity using UnityWebRequest. The TCP and UDP protocols can be tested by creating instances of TCP/UDP clients found in the `NetCoreServer.csproj`
+
+The TCP and UDP Unity clients are available in the [Unity Asset Store page]() for this tool.
 
 
 ### Note for HTTP

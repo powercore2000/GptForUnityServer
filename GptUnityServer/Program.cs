@@ -35,7 +35,7 @@ if (settings.ServerServiceEnum == ServerServiceTypes.UnityCloudCode)
     builder.Services.AddTransient<IAiChatResponseService, CloudChatResponseService>();
 }
 
-//For Debuggin Purposes only. DO NOT CALL USE IN PRODUCTION
+//For Debuggin Purposes mainly. DO NOT USE IN PRODUCTION UNLESS YOU KNOW WHAT YOU ARE DOING
 else if (settings.ServerServiceEnum == ServerServiceTypes.AiApi)
 {
     builder.Services.AddTransient<IAiResponseService, ApiResponseService>();
@@ -70,7 +70,6 @@ builder.Services.AddTransient<IUnityProtocolServer, TcpServerService>();
 builder.Services.AddTransient<IUnityProtocolServer, UdpServerService>();
 builder.Services.AddTransient<IUnityProtocolServer, RestApiServerService>();
 
-//builder.Services.AddHostedService<UnityServerManagerService>();
 builder.Services.AddSingleton<UnityServerManagerService>();
 builder.Services.AddHostedService<UnityServerManagerService>(provider => provider.GetService<UnityServerManagerService>());
 
