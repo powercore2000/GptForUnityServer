@@ -163,7 +163,7 @@ namespace GptUnityServer.Models
 
         /// <summary>
         /// Sets the authentication data needed for the server to make web requests:
-        /// API Mode: Data contains the API Key used
+        /// API Mode: Data is a JSON object containing the ApiKey, the Api Url, and the Url for Api Key Validation
         /// Cloud Mode: Data is a JSON object containing the names of the endpoint functions used, and authentication data
         /// </summary>
         /// <param name="data"></param>
@@ -173,18 +173,28 @@ namespace GptUnityServer.Models
             if (string.IsNullOrEmpty(data))
                 return;
 
-            if (ServerServiceEnum == ServerServiceTypes.AiApi)
-                AiApiKey = data;
+            if (ServerServiceEnum == ServerServiceTypes.AiApi && data.StartsWith("{") && data.EndsWith("}")){
+
+                //Console.WriteLine($"Attemtping to deseralize AiApiData: {data}");
+                AiApiSetupData setupData = JsonConvert.DeserializeObject<AiApiSetupData>(data);
+                AiApiKey = setupData.ApiKey;
+                AiApiUrl = setupData.ApiUrl;
+                AiApiKeyValidationUrl = setupData.ApiKeyValidationUrl;
+
+            }
 
             else if (ServerServiceEnum == ServerServiceTypes.UnityCloudCode && data.StartsWith("{") && data.EndsWith("}"))
             {
                
-                Console.WriteLine($"Attemtping to deseralize CloudServerSetupData: {data}");
+                //Console.WriteLine($"Attemtping to deseralize CloudServerSetupData: {data}");
                 CloudServerSetupData setupData = JsonConvert.DeserializeObject<CloudServerSetupData>(data);
                 CloudAuthToken = setupData.PlayerAuthenticationToken;
                 CloudResponseFunction = setupData.ResponseFunctionName;
                 CloudChatFunction = setupData.ChatFunctionName;
                 CloudModelListFunction = setupData.ModelListCloudFunction;
+                CloudProjectId = setupData.CloudProjectId;
+                CloudCodeEndpoint = setupData.CloudCodeEndpoint;
+                
             }
 
         }

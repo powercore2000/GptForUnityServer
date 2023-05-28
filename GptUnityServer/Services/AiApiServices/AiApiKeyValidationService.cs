@@ -15,6 +15,7 @@ namespace GptUnityServer.Services.AiApiServices
 
             using (HttpClient client = new HttpClient())
             {
+                
                 client.DefaultRequestHeaders.Add("Authorization", $"Bearer {key}");
 
                 var response = await client.GetAsync(validationUrl);

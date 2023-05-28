@@ -2,6 +2,7 @@
 
 namespace GptUnityServer.Services.ServerManagment
 {
+    using System;
     using GptUnityServer.Controllers;
     using GptUnityServer.Services.ServerProtocols;
     using GptUnityServer.Services.Universal;
@@ -95,7 +96,7 @@ namespace GptUnityServer.Services.ServerManagment
 
             else if (settings.ServerServiceEnum == ServerServiceTypes.UnityCloudCode) {
                 validationKey = settings.CloudAuthToken;
-                validationUrl = "";
+                validationUrl = "https://cloud-code.services.api.unity.com/v1/projects" + $"/{settings.CloudProjectId}/{settings.CloudCodeEndpoint}/{settings.CloudModelListFunction}";
             }
 
 
