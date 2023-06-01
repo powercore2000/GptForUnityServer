@@ -16,6 +16,8 @@ namespace GptUnityServer.Services.ServerManagment
         private IUnityProtocolServer selectedServerService;
         private IEnumerable<IUnityProtocolServer> allProtocolServers;
         private readonly Settings settings;
+        private readonly AiApiSetupData aiApiSetupData;
+        private readonly UnityCloudSetupData UnityCloudSetupData;
         public IUnityProtocolServer CurrentServerService { get { return selectedServerService; } }
         protected readonly IKeyValidationService validatonService;
         protected readonly IHostApplicationLifetime applicationLifetime;
@@ -24,6 +26,8 @@ namespace GptUnityServer.Services.ServerManagment
         public UnityServerManagerService(
             IEnumerable<IUnityProtocolServer> _allProtocolServers,
             Settings _settings,
+            AiApiSetupData _aiApiSetupData,
+            UnityCloudSetupData _UnityCloudSetupData,
             IKeyValidationService _validationService,
             IHostApplicationLifetime _applicationLifetime
             )
@@ -31,6 +35,8 @@ namespace GptUnityServer.Services.ServerManagment
 
             validatonService = _validationService;
             settings = _settings;
+            aiApiSetupData = _aiApiSetupData;
+            UnityCloudSetupData = _UnityCloudSetupData;
             allProtocolServers = _allProtocolServers;
             applicationLifetime = _applicationLifetime;
             //openAiModelManager = _openAiModelManager;
@@ -91,13 +97,13 @@ namespace GptUnityServer.Services.ServerManagment
             string validationKey = "";
             string validationUrl = "";
             if (settings.ServerServiceEnum == ServerServiceTypes.AiApi) {
-                validationKey = settings.AiApiKey;
-                validationUrl = settings.AiApiKeyValidationUrl;
+                validationKey = aiApiSetupData.ApiKey;
+                validationUrl = aiApiSetupData.ApiKeyValidationUrl;
                     }
 
-            else if (settings.ServerServiceEnum == ServerServiceTypes.UnityCloudCode) {
-                validationKey = settings.CloudAuthToken;
-                validationUrl = "https://cloud-code.services.api.unity.com/v1/projects" + $"/{settings.CloudProjectId}/{settings.CloudCodeEndpoint}/{settings.CloudModelListFunction}";
+            else if (settings.ServerServiceEnum == ServerServiceTypes.UnityCloud) {
+                validationKey = UnityCloudSetupData.UnityCloudPlayerToken;
+                validationUrl = "https://cloud-code.services.api.unity.com/v1/projects" + $"/{UnityCloudSetupData.UnityCloudProjectId}/{UnityCloudSetupData.UnityCloudEndpoint}/{UnityCloudSetupData.UnityCloudModelsFunction}";
             }
 
 

@@ -7,21 +7,6 @@ namespace GptUnityServer.Models
     {
         #region Fields
 
-        #region Ai Api Fields
-        /// <summary>
-        /// WARNING: Only populated in test or debug senarios!
-        /// </summary>
-        public string? AiApiKey { get; set; }
-        /// <summary>
-        /// WARNING: Only populated in test or debug senarios!
-        /// </summary>
-        public string? AiApiUrl { get; set; }
-
-        /// <summary>
-        /// Url to check if the AiApiKey is valid
-        /// </summary>
-        public string? AiApiKeyValidationUrl { get; set; }
-        #endregion
 
         #region Universal Server Fields
 
@@ -41,34 +26,6 @@ namespace GptUnityServer.Models
         public ServerProtocolTypes ServerProtocolEnum { get; private set; }
 
         public ServerServiceTypes ServerServiceEnum { get; private set; }
-        #endregion
-
-        #region Fields for Unity Cloud Code
-        /// <summary>
-        /// JSON Web Token to indicate authentication privledges for cloud function calls
-        /// </summary>
-        public string? CloudAuthToken { get; set; }
-
-        /// <summary>
-        /// The id of the organization your going to call. MUST BE SET MANUALLY IN APP SETTINGS
-        /// </summary>
-        public string? CloudProjectId { get; set; }
-
-        public string? CloudCodeEndpoint { get; set; }
-        /// <summary>
-        /// Endpoint name of response based cloud functions
-        /// </summary>
-        public string? CloudResponseFunction { get; set; }
-
-        /// <summary>
-        /// Endpoint name of response chat based cloud function
-        /// </summary>
-        public string? CloudChatFunction { get; set; }
-
-        /// <summary>
-        /// Endpoint name of for cloud funtion that retrives the model listing
-        /// </summary>
-        public string? CloudModelListFunction { get; set; }
         #endregion
 
         #endregion
@@ -97,8 +54,6 @@ namespace GptUnityServer.Models
             if (args.Length >= 2)           
                 SetServerServices(args[1]);            
 
-            if (args.Length >= 3)
-                SetServerAuthenticationData(args[2]);
         }
 
         /// <summary>
@@ -161,43 +116,7 @@ namespace GptUnityServer.Models
             //OnServerTypeChange.Invoke(newServerType);
         }
 
-        /// <summary>
-        /// Sets the authentication data needed for the server to make web requests:
-        /// API Mode: Data is a JSON object containing the ApiKey, the Api Url, and the Url for Api Key Validation
-        /// Cloud Mode: Data is a JSON object containing the names of the endpoint functions used, and authentication data
-        /// </summary>
-        /// <param name="data"></param>
-        void SetServerAuthenticationData(string data)
-        {
 
-            if (string.IsNullOrEmpty(data))
-                return;
-
-            if (ServerServiceEnum == ServerServiceTypes.AiApi && data.StartsWith("{") && data.EndsWith("}")){
-
-                //Console.WriteLine($"Attemtping to deseralize AiApiData: {data}");
-                AiApiSetupData setupData = JsonConvert.DeserializeObject<AiApiSetupData>(data);
-                AiApiKey = setupData.ApiKey;
-                AiApiUrl = setupData.ApiUrl;
-                AiApiKeyValidationUrl = setupData.ApiKeyValidationUrl;
-
-            }
-
-            else if (ServerServiceEnum == ServerServiceTypes.UnityCloudCode && data.StartsWith("{") && data.EndsWith("}"))
-            {
-               
-                //Console.WriteLine($"Attemtping to deseralize CloudServerSetupData: {data}");
-                CloudServerSetupData setupData = JsonConvert.DeserializeObject<CloudServerSetupData>(data);
-                CloudAuthToken = setupData.PlayerAuthenticationToken;
-                CloudResponseFunction = setupData.ResponseFunctionName;
-                CloudChatFunction = setupData.ChatFunctionName;
-                CloudModelListFunction = setupData.ModelListCloudFunction;
-                CloudProjectId = setupData.CloudProjectId;
-                CloudCodeEndpoint = setupData.CloudCodeEndpoint;
-                
-            }
-
-        }
         #endregion
 
 

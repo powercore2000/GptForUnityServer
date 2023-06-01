@@ -4,7 +4,7 @@ namespace GptUnityServerTests
     using GptUnityServer.Services.OobaUiServices;
     
 
-    public class Tests
+    public class OobaWebUiTests
     {
         PromptSettings promptSettings;
 

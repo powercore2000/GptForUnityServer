@@ -1,10 +1,10 @@
-﻿namespace GptUnityServer.Services.UnityCloudCode
+﻿namespace GptUnityServer.Services.UnityCloud
 {
     using System;
     using System.Text;
     using Assets.GptToUnity.SharedLibrary;
     using Models;
-    using Assets.GptToUnity.SharedLibrary;
+    using SharedLibrary;
     using Newtonsoft.Json.Linq;
     using Newtonsoft.Json;
     using GptUnityServer.Services.Universal;
@@ -12,10 +12,10 @@
     public class CloudModelManager : IAiModelManager
     {
 
-        private readonly Settings settings;
+        private readonly UnityCloudSetupData settings;
         string url = "https://cloud-code.services.api.unity.com/v1/projects";
 
-        public CloudModelManager(Settings _settings)
+        public CloudModelManager(UnityCloudSetupData _settings)
         {
 
             settings = _settings;
@@ -27,10 +27,10 @@
             List<string> modelList = new List<string>();
             HttpClient client = new HttpClient();
 
-            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {settings.CloudAuthToken}");
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {settings.UnityCloudPlayerToken}");
 
 
-            string finalUrl = url + $"/{settings.CloudProjectId}/{settings.CloudCodeEndpoint}/{settings.CloudModelListFunction}";
+            string finalUrl = url + $"/{settings.UnityCloudProjectId}/{settings.UnityCloudEndpoint}/{settings.UnityCloudModelsFunction}";
             Console.WriteLine($"Making http request with url:\n{finalUrl}");
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, finalUrl);
 

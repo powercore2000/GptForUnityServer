@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 using GptUnityServer.Models;
 using static System.Net.WebRequestMethods;
 
-namespace GptUnityServer.Services.UnityCloudCode
+namespace GptUnityServer.Services.UnityCloud
 {
     public class CloudCodeValidationServices : IKeyValidationService
     {

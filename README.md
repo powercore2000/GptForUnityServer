@@ -82,14 +82,14 @@ The service is meant to be generic and handle most current and future Cloud AI A
 
 ### Unity Cloud Code Services
 
-For production use, I recommend using the UnityCloudCode service type. This allows for calling Unity Cloud Code modules and scripts from the Unity Gaming Services serverless architecture, ensuring specific forms of data, like API Keys, are better secured. To use Cloud Code services, the following variables must be populated in `appsettings.json`:
+For production use, I recommend using the UnityCloud service type. This allows for calling Unity Cloud Code modules and scripts from the Unity Gaming Services serverless architecture, ensuring specific forms of data, like API Keys, are better secured. To use Cloud Code services, the following variables must be populated in `appsettings.json`:
 
     "CloudAuthToken": "PlayerAuthenticationToken",
-    "CloudProjectId": "The project id of your game on Unity Gaming Services",
+    "UnityCloudProjectId": "The project id of your game on Unity Gaming Services",
     "CloudCodeEndpoint": "Add scripts for Cloud Code Scripts or module/ModuelName for CloudCodeModules",
     "CloudResponseFunction": "Endpoint name for the function you want to use for the response service",
     "CloudModelListFunction": "Endpoint name for the function you want to use for the model list service",
-    "CloudChatFunction": "Endpoint name for the function you want to use for the chat service"
+    "UnityCloudChatFunction": "Endpoint name for the function you want to use for the chat service"
 
 These variables can be automatically populated by the GptUnityClient through the server's startup `args[2].` 
 

@@ -101,7 +101,7 @@ namespace GptUnityServer.Services.ServerProtocols
             }
 
 
-            if (promptSettings.ServiceType == "Response")
+            if (promptSettings.PromptTypeString == "Response")
                 response = await SendMessage(userMessage);
 
             else

@@ -3,18 +3,18 @@ using System.Text;
 using SharedLibrary;
 using Newtonsoft.Json.Linq;
 
-namespace GptUnityServer.Services.UnityCloudCode
+namespace GptUnityServer.Services.UnityCloud
 {
     using GptUnityServer.Services.Universal;
     using Models;
     public class CloudResponseService : IAiResponseService
     {
 
-        private readonly Settings settings;
+        private readonly UnityCloudSetupData settings;
         private readonly PromptSettings promptSettings;
         string url = "https://cloud-code.services.api.unity.com/v1/projects";
 
-        public CloudResponseService(Settings _settings, PromptSettings _promptSettings)
+        public CloudResponseService(UnityCloudSetupData _settings, PromptSettings _promptSettings)
         {
 
             settings = _settings;
@@ -35,9 +35,10 @@ namespace GptUnityServer.Services.UnityCloudCode
 
                 JObject jsonData = JObject.Parse(responseJsonText);
                 //Console.WriteLine($"\n Converted data {jsonData}\n");
+                Console.WriteLine($"TrimmedData:{jsonData.ToString()}");
 
-                string trimmedData = jsonData["output"].ToString();
-                string parsedMessage = jsonData["output"]["choices"][0]["text"].ToString();
+                string trimmedData = jsonData["output"]["jsonRaw"].ToString();
+                string parsedMessage = jsonData["output"]["message"].ToString();
                 Console.WriteLine($"\n stringified data {trimmedData}\n");
                 // Send the request and get the response           
                 return new AiResponse(trimmedData, parsedMessage);
@@ -61,25 +62,29 @@ namespace GptUnityServer.Services.UnityCloudCode
         {
             HttpClient client = new HttpClient();
 
-            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {settings.CloudAuthToken}");
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {settings.UnityCloudPlayerToken}");
             var requestBody = new
             {
                 @params = new
                 {
-                    prompt,
-                    model = promptSettings.Model,
-                    temperature = promptSettings.Temperature,
-                    max_tokens = promptSettings.MaxTokens,
-                    top_p = promptSettings.TopP,
-                    frequency_penalty = promptSettings.FrequencyPenalty,
+                    prompt = new
+                    {
+                        Prompt = prompt,
+                        Model = promptSettings.Model,
+                        Temperature = promptSettings.Temperature,
+                        MaxTokens = promptSettings.MaxTokens,
+                        TopP = promptSettings.TopP,
+                        FrequencyPenalty = promptSettings.FrequencyPenalty,
+                    }
                 }
             };
 
             var jsonString = JsonConvert.SerializeObject(requestBody);
+            
             var httpContent = new StringContent(jsonString, Encoding.UTF8, "application/json");
 
 
-            string finalUrl = url + $"/{settings.CloudProjectId}/{settings.CloudCodeEndpoint}/{settings.CloudResponseFunction}";
+            string finalUrl = url + $"/{settings.UnityCloudProjectId}/{settings.UnityCloudEndpoint}/{settings.UnityCloudResponseFunction}";
             Console.WriteLine($"Making http request to Cloude Code with url:{finalUrl}");
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, finalUrl);
             request.Content = httpContent;
