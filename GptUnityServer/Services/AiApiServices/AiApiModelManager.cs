@@ -36,7 +36,7 @@ namespace GptUnityServer.Services.AiApiServices
 
             if (response.IsSuccessStatusCode)
             {
-                Console.WriteLine("Successfully aquired models!");
+ 
                 string responseContent = await response.Content.ReadAsStringAsync();
                 JObject responseJson = JObject.Parse(responseContent);
 
@@ -44,7 +44,7 @@ namespace GptUnityServer.Services.AiApiServices
                 {
                     modelList.Add(element["id"].ToString());
                 }
-                Console.WriteLine($"Got models with list length: {modelList.Count}");
+                Console.WriteLine($"Sucessfully Got models with list length: {modelList.Count}");
             }
             else
             {

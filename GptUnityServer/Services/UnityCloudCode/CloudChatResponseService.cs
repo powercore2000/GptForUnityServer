@@ -24,8 +24,6 @@ namespace GptUnityServer.Services.UnityCloud
 
         public async Task<AiResponse> SendMessage(string userMessage, string[] systemMessages)
         {
-            Console.WriteLine("Running cloud based response for chat with system messages:");
-
             string formattedSystemMessages;
 
             formattedSystemMessages = "[";
@@ -45,8 +43,8 @@ namespace GptUnityServer.Services.UnityCloud
                "\"role\":\"user\"," +
                 $"\"content\":\"{userMessage}\"";
             formattedSystemMessages += "}\n]";
-            Console.WriteLine("Displaying system messages in format:");
-            Console.WriteLine($"{formattedSystemMessages}");
+            //Console.WriteLine("Displaying system messages in format:");
+            //Console.WriteLine($"{formattedSystemMessages}");
             HttpResponseMessage response = await CallCloudCode(formattedSystemMessages);
 
             //Console.WriteLine("\nWhat returned was  " + response.Content);
@@ -60,7 +58,7 @@ namespace GptUnityServer.Services.UnityCloud
 
                 string trimmedData = jsonData["output"].ToString();
                 string parsedMessage = jsonData["output"]["choices"][0]["message"]["content"].ToString();
-                Console.WriteLine($"\n stringified data {trimmedData}\n");
+                //Console.WriteLine($"\n stringified data {trimmedData}\n");
                 // Send the request and get the response           
                 return new AiResponse(trimmedData, parsedMessage);
             }

@@ -24,13 +24,13 @@ namespace GptUnityServer.Services.AiApiServices
                 if (response.IsSuccessStatusCode)
                 {
 
-                    Console.WriteLine($"The API key is valid.\n Status Code: {response.StatusCode} \n With Validation url: {validationUrl}");
+                    Console.WriteLine($"The API key is valid.\n Status Code: {response.StatusCode} \n");
                     
                     return true;
                 }
                 else
                 {
-                    Console.WriteLine($"The API key is invalid.\n Status Code: {response.StatusCode} \nApi key: {key}");
+                    Console.WriteLine($"The API key is invalid.\n Status Code: {response.StatusCode} \n");
                     return false;
                 }
             }

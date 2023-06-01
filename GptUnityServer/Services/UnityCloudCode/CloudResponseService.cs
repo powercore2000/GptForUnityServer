@@ -24,7 +24,6 @@ namespace GptUnityServer.Services.UnityCloud
 
         public async Task<AiResponse> SendMessage(string prompt)
         {
-            Console.WriteLine("Running cloud based response!");
 
             HttpResponseMessage response = await CallCloudCode(prompt);
             //Console.WriteLine("\nWhat returned was  " + response.Content);
@@ -35,11 +34,11 @@ namespace GptUnityServer.Services.UnityCloud
 
                 JObject jsonData = JObject.Parse(responseJsonText);
                 //Console.WriteLine($"\n Converted data {jsonData}\n");
-                Console.WriteLine($"TrimmedData:{jsonData.ToString()}");
+                //Console.WriteLine($"TrimmedData:{jsonData.ToString()}");
 
                 string trimmedData = jsonData["output"]["jsonRaw"].ToString();
                 string parsedMessage = jsonData["output"]["message"].ToString();
-                Console.WriteLine($"\n stringified data {trimmedData}\n");
+                //Console.WriteLine($"\n stringified data {trimmedData}\n");
                 // Send the request and get the response           
                 return new AiResponse(trimmedData, parsedMessage);
             }
