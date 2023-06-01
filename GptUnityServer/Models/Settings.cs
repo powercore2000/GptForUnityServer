@@ -204,37 +204,5 @@ namespace GptUnityServer.Models
 
     }
 
-    #region Enums
-    public enum ServerProtocolTypes
-    {
-
-        TCP,
-        UDP,
-        HTTP
-    }
-
-    public enum ServerServiceTypes
-    {
-        /// <summary>
-        /// Makes calls to a generic Ai's Api directly. Must assign AiApiKey and AiApiUrl varables on start up in app settings. Should NOT be used on distributted software
-        /// </summary>
-        AiApi,
-        
-        /// <summary>
-        /// Makes calls to Unity's Clode Code Api. Used as a template for other cloud service support
-        /// </summary>
-        UnityCloudCode,
-
-        /// <summary>
-        /// Makes calls to a local instance of Oobabooga's text-generation-webui Api. 
-        /// </summary>
-        OobaUi,
-
-        /// <summary>
-        /// Makes calls to a local instance of Kobold Ai's Api
-        /// </summary>
-        KoboldAi
-    }
-    #endregion
 
 }

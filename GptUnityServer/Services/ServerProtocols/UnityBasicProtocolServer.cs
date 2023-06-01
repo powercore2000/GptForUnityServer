@@ -194,7 +194,7 @@ namespace GptUnityServer.Services.ServerProtocols
 
             JArray modelData = JArray.FromObject(modelList);
             
-            //message = JsonConvert.SerializeObject(modelData);
+            //Formats the models array sent into a JSON Object containing an array
             return "{ \"models\":" + modelData.ToString() + "}";
 
 
