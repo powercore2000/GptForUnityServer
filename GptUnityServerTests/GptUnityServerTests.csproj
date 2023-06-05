@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GptUnityServer\GptUnityServer.csproj" />
+    <ProjectReference Include="..\GptUnityServer\GptForUnityServer.csproj" />
     <ProjectReference Include="..\NetCoreServer\NetCoreServer.csproj" />
   </ItemGroup>
 
