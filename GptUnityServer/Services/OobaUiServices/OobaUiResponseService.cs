@@ -7,6 +7,9 @@ using GptUnityServer.Services.Universal;
 
 namespace GptUnityServer.Services.OobaUiServices
 {
+    /// <summary>
+    /// DEPRICATED. Use the new LocalAIServices instead!
+    /// </summary>
     public class OobaUiResponseService : IAiResponseService
     {
 

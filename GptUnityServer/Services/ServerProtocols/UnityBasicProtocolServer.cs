@@ -96,16 +96,16 @@ namespace GptUnityServer.Services.ServerProtocols
 
                 string prompt = clientMessage.Substring(startIndex, endIndex - startIndex).Replace(messageIdText, "");
                 userMessage = clientMessage.Remove(startIndex, endIndex - startIndex).Replace(promptIdText, "");
-                Console.WriteLine($"Indexing prompt {prompt}");
+                //Console.WriteLine($"Indexing prompt {prompt}");
                 SetPromptDetails(prompt);
             }
 
 
-            if (promptSettings.PromptTypeString == "Response")
-                response = await SendMessage(userMessage);
+            if (promptSettings.PromptTypeString == "Chat")
+                response = await SendChatMessage(userMessage);
 
             else
-                response = await SendChatMessage(userMessage);
+                response = await SendMessage(userMessage);
 
 
 

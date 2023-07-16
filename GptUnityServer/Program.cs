@@ -60,7 +60,7 @@ else if (settings.ServerServiceEnum == ServerServiceTypes.OobaUi)
     builder.Services.AddTransient<IAiResponseService, OobaUiResponseService>();
     builder.Services.AddTransient<IAiModelManager, MockAiModelManagerService>();
     builder.Services.AddTransient<IKeyValidationService, MockApiKeyValidationService>();
-    builder.Services.AddTransient<IAiChatResponseService, MockChatService>();
+    builder.Services.AddTransient<IAiChatResponseService, OobaUiChatService>();
 }
 
 //Assign services to point to Kobold Ai's Api
@@ -69,7 +69,7 @@ else if (settings.ServerServiceEnum == ServerServiceTypes.KoboldAi)
     builder.Services.AddTransient<IAiResponseService, KoboldAiResponseService>();
     builder.Services.AddTransient<IAiModelManager, MockAiModelManagerService>();
     builder.Services.AddTransient<IKeyValidationService, MockApiKeyValidationService>();
-    builder.Services.AddTransient<IAiChatResponseService, MockChatService>();
+    builder.Services.AddTransient<IAiChatResponseService, KoboldAIChatService>();
 }
 
 

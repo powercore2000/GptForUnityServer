@@ -23,7 +23,7 @@
 
   <ItemGroup>
     <Reference Include="SharedLibrary">
-      <HintPath>..\..\GptToUnity\Library\ScriptAssemblies\SharedLibrary.dll</HintPath>
+      <HintPath>..\..\GptForUnity\Library\ScriptAssemblies\SharedLibrary.dll</HintPath>
     </Reference>
   </ItemGroup>
 
