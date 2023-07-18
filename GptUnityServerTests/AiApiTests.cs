@@ -18,9 +18,9 @@ namespace GptUnityServerTests
         public void Setup()
         {
             promptSettings = new PromptSettings();
-            promptSettings.Temperature = 0.3f;
-            promptSettings.Prompt = "How are you today?";
-            promptSettings.MaxTokens = 20;
+            promptSettings.temp = 0.3f;
+            promptSettings.prompt = "How are you today?";
+            promptSettings.max_tokens = 20;
 
             mockAiApiSetup.ApiResponseUrl = "";
             mockAiApiSetup.ApiChatUrl = "";
@@ -45,7 +45,7 @@ namespace GptUnityServerTests
         public void Get_Ai_Chat_From_Api()
         {
             promptSettings.Model = "gpt-3.5-turbo";
-            promptSettings.SystemStrings = new string[]
+            promptSettings.chat_history = new string[]
                 {
                     "system:You are a kansas city farmer",
                     "user:Who are you?",
@@ -54,7 +54,7 @@ namespace GptUnityServerTests
             };
 
             AiApiChatResponseService chatService = new AiApiChatResponseService(mockAiApiSetup, promptSettings);
-            AiResponse response = chatService.SendMessage(promptSettings.Prompt,promptSettings.SystemStrings).Result;
+            AiResponse response = chatService.SendMessage(promptSettings.prompt,promptSettings.chat_history).Result;
             Console.WriteLine(response.Message);
             Assert.IsNotNull(response);
 
@@ -66,7 +66,7 @@ namespace GptUnityServerTests
 
             AiApiResponseService responseServie = new AiApiResponseService(mockAiApiSetup,promptSettings);
 
-            AiResponse response = responseServie.SendMessage(promptSettings.Prompt).Result;
+            AiResponse response = responseServie.SendMessage(promptSettings.prompt).Result;
             Console.WriteLine(response.Message);
             Assert.IsNotNull(response);
         }

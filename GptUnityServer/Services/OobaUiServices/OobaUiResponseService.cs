@@ -30,11 +30,11 @@ namespace GptUnityServer.Services.OobaUiServices
             var paramsObj = new
             {
                 //model = promptSettings.Model,
-                temperature = promptSettings.Temperature,
-                max_new_tokens = promptSettings.MaxTokens,
-                top_p = promptSettings.TopP,
+                temp = promptSettings.temp,
+                max_new_tokens = promptSettings.max_tokens,
+                top_p = promptSettings.top_p,
                 seed = -1,
-                //frequency_penalty = promptSettings.FrequencyPenalty,
+                //frequency_penalty = promptSettings.frequency_penalty,
             };
             
             string payload = JsonConvert.SerializeObject(new object[] { prompt, paramsObj });

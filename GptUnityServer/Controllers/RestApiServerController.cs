@@ -56,7 +56,7 @@ namespace GptUnityServer.Controllers
             if (restApiServerService.ApiKeyValid)
             {
                 promptSettings.OverritePromptSettings(promptParams);
-                return await aiResponseService.SendMessage(promptParams.Prompt);
+                return await aiResponseService.SendMessage(promptParams.prompt);
             }
 
             else {
@@ -71,7 +71,7 @@ namespace GptUnityServer.Controllers
             if (restApiServerService.ApiKeyValid)
             {
                 promptSettings.OverritePromptSettings(promptParams);
-                return await aiChatResponseService.SendMessage(promptParams.Prompt,promptParams.SystemStrings);
+                return await aiChatResponseService.SendMessage(promptParams.prompt,promptParams.chat_history);
             }
 
             else

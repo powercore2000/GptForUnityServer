@@ -68,12 +68,12 @@ namespace GptUnityServer.Services.UnityCloud
                 {
                     prompt = new
                     {
-                        Prompt = prompt,
+                        prompt = prompt,
                         Model = promptSettings.Model,
-                        Temperature = promptSettings.Temperature,
-                        MaxTokens = promptSettings.MaxTokens,
-                        TopP = promptSettings.TopP,
-                        FrequencyPenalty = promptSettings.FrequencyPenalty,
+                        temp = promptSettings.temp,
+                        max_tokens = promptSettings.max_tokens,
+                        top_p = promptSettings.top_p,
+                        frequency_penalty = promptSettings.frequency_penalty,
                     }
                 }
             };

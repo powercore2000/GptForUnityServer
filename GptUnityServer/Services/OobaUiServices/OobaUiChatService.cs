@@ -36,24 +36,24 @@ namespace GptUnityServer.Services.OobaUiServices
             request.Content = new StringContent(JsonConvert.SerializeObject(new
             {
                 prompt,
-                temp = promptSettings.Temperature,
-                top_p = promptSettings.TopP,
-                top_k = 40,
-                typical_p = 1,
-                top_a = 0,
-                tfs = 1,
-                epsilon_cutoff = 0,
-                eta_cutoff = 0,
-                rep_pen = 1.2,
-                no_repeat_ngram_size = 0,
-                penalty_alpha = 0,
-                num_beams = 1,
-                length_penalty = 1,
-                min_length = 0,
-                encoder_rep_pen = 1,
-                do_sample = true,
-                early_stopping = false,
-                stopping_strings = new string[] { "You:" }               
+                promptSettings.temp,
+                promptSettings.top_p,
+                promptSettings.top_k,
+                promptSettings.typical_p,
+                promptSettings.top_a,
+                promptSettings.tfs,
+                promptSettings.epsilon_cutoff,
+                promptSettings.eta_cutoff,
+                promptSettings.rep_pen,
+                promptSettings.no_repeat_ngram_size,
+                promptSettings.penalty_alpha,
+                promptSettings.num_beams,
+                promptSettings.length_penalty,
+                promptSettings.min_length,
+                promptSettings.encoder_rep_pen,
+                promptSettings.do_sample,
+                promptSettings.early_stopping,
+                promptSettings.stopping_strings              
             }), Encoding.UTF8, "application/json");
 
             // Send the request and get the response
@@ -82,27 +82,3 @@ namespace GptUnityServer.Services.OobaUiServices
         }
     }
 }
-
-
-/* Default OobaUi Prompt stats
-                 prompt,
-                temp = 0.7,
-                top_p = 0.5,
-                top_k = 40,
-                typical_p = 1,
-                top_a = 0,
-                tfs = 1,
-                epsilon_cutoff = 0,
-                eta_cutoff = 0,
-                rep_pen = 1.2,
-                no_repeat_ngram_size = 0,
-                penalty_alpha = 0,
-                num_beams = 1,
-                length_penalty = 1,
-                min_length = 0,
-                encoder_rep_pen = 1,
-                do_sample = true,
-                early_stopping = false,
-                stopping_strings = new string[] { "You:" }   
- 
- */

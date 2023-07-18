@@ -137,7 +137,7 @@ namespace GptUnityServer.Services.ServerProtocols
             using (var scope = serviceProvider.CreateScope())
             {
                 IAiChatResponseService openAiService = scope.ServiceProvider.GetRequiredService<IAiChatResponseService>();
-                AiResponse response = await openAiService.SendMessage(message, promptSettings.SystemStrings);
+                AiResponse response = await openAiService.SendMessage(message, promptSettings.chat_history);
                 return response.Message;
             }
 

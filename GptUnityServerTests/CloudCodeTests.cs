@@ -17,9 +17,9 @@ namespace GptUnityServerTests
         public void Setup()
         {
 
-            promptSettings.Temperature = 0.3f;
-            promptSettings.Prompt = "How are you today?";
-            promptSettings.MaxTokens = 20;
+            promptSettings.temp = 0.3f;
+            promptSettings.prompt = "How are you today?";
+            promptSettings.max_tokens = 20;
 
             /*
             mockCloudCodeSetup.UnityCloudPlayerToken = "";
@@ -53,7 +53,7 @@ namespace GptUnityServerTests
         public void Get_Chat_From_Unity_Cloud()
         {
             promptSettings.Model = "gpt-3.5-turbo";
-            promptSettings.SystemStrings = new string[]
+            promptSettings.chat_history = new string[]
                 {
                     "system:You are a kansas city farmer",
                     "user:Who are you?",
@@ -62,7 +62,7 @@ namespace GptUnityServerTests
             };
 
             CloudChatResponseService chatService = new CloudChatResponseService(mockCloudCodeSetup, promptSettings);
-            AiResponse response = chatService.SendMessage(promptSettings.Prompt, promptSettings.SystemStrings).Result;
+            AiResponse response = chatService.SendMessage(promptSettings.prompt, promptSettings.chat_history).Result;
             Console.WriteLine(response.Message);
             Assert.IsNotNull(response);
 
@@ -74,7 +74,7 @@ namespace GptUnityServerTests
 
             CloudResponseService responseServie = new CloudResponseService(mockCloudCodeSetup, promptSettings);
 
-            AiResponse response = responseServie.SendMessage(promptSettings.Prompt).Result;
+            AiResponse response = responseServie.SendMessage(promptSettings.prompt).Result;
             Console.WriteLine(response.Message);
             Assert.IsNotNull(response);
         }

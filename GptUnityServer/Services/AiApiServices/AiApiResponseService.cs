@@ -37,10 +37,10 @@ namespace GptUnityServer.Services.AiApiServices
             {
                 prompt,
                 model = promptSettings.Model,
-                temperature = promptSettings.Temperature,
-                max_tokens = promptSettings.MaxTokens,
-                top_p = promptSettings.TopP,
-                frequency_penalty = promptSettings.FrequencyPenalty,
+                temp = promptSettings.temp,
+                max_tokens = promptSettings.max_tokens,
+                top_p = promptSettings.top_p,
+                frequency_penalty = promptSettings.frequency_penalty,
             }), Encoding.UTF8, "application/json");
 
 
