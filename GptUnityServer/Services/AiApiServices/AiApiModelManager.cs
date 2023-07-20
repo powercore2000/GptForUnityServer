@@ -11,31 +11,32 @@ namespace GptUnityServer.Services.AiApiServices
     using Microsoft.AspNetCore.DataProtection.KeyManagement;
     using Models;
     using Newtonsoft.Json.Linq;
+    using SharedLibrary;
 
     /// <summary>
     /// THIS IS FOR TESTING ONLY. It is not recomended to use your API key on the client's machine to perform these operations.
     /// </summary>
-    public class ApiModelManager : IAiModelManager
+    public class AiApiModelManager : IAiModelManager
     {
 
-        private readonly Settings settings;
+        private readonly AiApiSetupData aiApiSetupData;
 
-        public ApiModelManager(Settings _settings)
+        public AiApiModelManager(AiApiSetupData _setupData)
         {
 
-            settings = _settings;
+            aiApiSetupData = _setupData;
         }
 
         public async Task<string[]> GetAllModels()
         {
             List<string> modelList = new List<string>();
             HttpClient httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + settings.AiApiKey);
-            HttpResponseMessage response = await httpClient.GetAsync(settings.AiApiKeyValidationUrl);
+            httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + aiApiSetupData.ApiKey);
+            HttpResponseMessage response = await httpClient.GetAsync(aiApiSetupData.ApiKeyValidationUrl);
 
             if (response.IsSuccessStatusCode)
             {
-                Console.WriteLine("Successfully aquired models!");
+ 
                 string responseContent = await response.Content.ReadAsStringAsync();
                 JObject responseJson = JObject.Parse(responseContent);
 
@@ -43,7 +44,7 @@ namespace GptUnityServer.Services.AiApiServices
                 {
                     modelList.Add(element["id"].ToString());
                 }
-                Console.WriteLine($"Got models with list length: {modelList.Count}");
+                Console.WriteLine($"Sucessfully Got models with list length: {modelList.Count}");
             }
             else
             {

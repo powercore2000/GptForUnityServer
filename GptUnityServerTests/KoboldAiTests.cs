@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using GptUnityServer.Services.KoboldAIServices;
 using GptUnityServer.Services.OobaUiServices;
+using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 
 namespace GptUnityServerTests
 {
@@ -15,9 +16,17 @@ namespace GptUnityServerTests
         public void Setup()
         {
             promptSettings = new PromptSettings();
-            promptSettings.Temperature = 0.3f;
-            promptSettings.Prompt = "You: But I cant date anyone who cant beat me in hand to hand combat";
-            promptSettings.MaxTokens = 300;
+            promptSettings.temp = 0.5f;
+            promptSettings.prompt = "You: How are you?";
+            promptSettings.max_tokens = 500;
+            promptSettings.top_p = 0.9f;
+
+            string messages = "{{user}}: So how did you get into computer engineering?\n{{char}}: I've always loved tinkering with technology since I was a kid.\n{{user}}: That's really impressive!\n{{char}}: *She chuckles bashfully* Thanks!\n{{user}}: So what do you do when you're not working on computers?\n{{char}}: I love exploring, going out with friends, watching movies, and playing video games.\n{{user}}: What's your favorite type of computer hardware to work with?\n{{char}}: Motherboards, they're like puzzles and the backbone of any system.\n{{user}}: That sounds great!\n{{char}}: Yeah, it's really fun. I'm lucky to be able to do this as a job.";
+           // messages += "\n*Chiharu strides into the room with a smile, her eyes lighting up when she sees you. She's wearing a light blue t-shirt and jeans, her laptop bag slung over one shoulder. She takes a seat next to you, her enthusiasm palpable in the air*\n\nHey! I'm so excited to finally meet you. I've heard so many great things about you and I'm eager to pick your brain about computers. I'm sure you have a wealth of knowledge that I can learn from. *She grins, eyes twinkling with excitement* Let's get started!";
+            messages = messages.Replace("{{user}}", "You");
+            messages = messages.Replace("{{char}}", "Chiharu Yamada");
+
+            promptSettings.chat_history = messages.Split('\n');
         }
 
 
@@ -36,7 +45,7 @@ namespace GptUnityServerTests
         public void Conext_Ooba_Test()
         {
 
-            promptSettings.Prompt = "*A shy girl in a white dress enters the room and stares at you blankly*" +
+            promptSettings.prompt = "*A shy girl in a white dress enters the room and stares at you blankly*" +
                 "You: Sally have you seen my dog? His name is Jimbo" +
                 "*Sally does not respond*" +
                 "You: Are you alright Sally?" +
@@ -44,7 +53,7 @@ namespace GptUnityServerTests
                 "You:Do you even know my dogs name Sally?"
                 ;
             var responseServie = new KoboldAiResponseService(promptSettings);
-            var response = responseServie.SendMessage(promptSettings.Prompt).Result;
+            var response = responseServie.SendMessage(promptSettings.prompt).Result;
             Console.WriteLine(response.Message);
             Assert.IsNotNull(response);
         }
@@ -55,7 +64,27 @@ namespace GptUnityServerTests
 
             var responseServie = new KoboldAiResponseService(promptSettings);
 
-            var response = responseServie.SendMessage(promptSettings.Prompt).Result;
+            var response = responseServie.SendMessage(promptSettings.prompt).Result;
+            Console.WriteLine(response.Message);
+            Assert.IsNotNull(response);
+        }
+
+        [Test]
+        public void Get_Chat_Response_From_Kobold()
+        {
+
+
+
+            var responseServie = new KoboldAIChatService(promptSettings);
+            string persona = "Chiharu Yamada is a young, computer engineer-nerd with a knack for problem solving and a passion for technology.";
+            string greeting = "*Chiharu strides into the room with a smile, her eyes lighting up when she sees you. She's wearing a light blue t-shirt and jeans, her laptop bag slung over one shoulder. She takes a seat next to you, her enthusiasm palpable in the air*\n\nHey! I'm so excited to finally meet you. I've heard so many great things about you and I'm eager to pick your brain about computers. I'm sure you have a wealth of knowledge that I can learn from. *She grins, eyes twinkling with excitement* Let's get started!";
+
+            string exampleStringsMerged = string.Join(" ", promptSettings.chat_history);
+
+            promptSettings.prompt = "You: Who are you?";
+            Console.WriteLine($"Sending message {promptSettings.prompt}\n Array of strings:{exampleStringsMerged}");
+
+            var response = responseServie.SendMessage(promptSettings.prompt, promptSettings.chat_history).Result;
             Console.WriteLine(response.Message);
             Assert.IsNotNull(response);
         }

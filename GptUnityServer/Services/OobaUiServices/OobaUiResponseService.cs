@@ -7,6 +7,9 @@ using GptUnityServer.Services.Universal;
 
 namespace GptUnityServer.Services.OobaUiServices
 {
+    /// <summary>
+    /// DEPRICATED. Use the new LocalAIServices instead!
+    /// </summary>
     public class OobaUiResponseService : IAiResponseService
     {
 
@@ -27,11 +30,11 @@ namespace GptUnityServer.Services.OobaUiServices
             var paramsObj = new
             {
                 //model = promptSettings.Model,
-                temperature = promptSettings.Temperature,
-                max_new_tokens = promptSettings.MaxTokens,
-                top_p = promptSettings.TopP,
+                temp = promptSettings.temp,
+                max_new_tokens = promptSettings.max_tokens,
+                top_p = promptSettings.top_p,
                 seed = -1,
-                //frequency_penalty = promptSettings.FrequencyPenalty,
+                //frequency_penalty = promptSettings.frequency_penalty,
             };
             
             string payload = JsonConvert.SerializeObject(new object[] { prompt, paramsObj });
@@ -74,60 +77,5 @@ namespace GptUnityServer.Services.OobaUiServices
             return aiResponse;
         }
 
-        public async Task<AiResponse> AltSendMessage(string prompt)
-        {
-            string url = "http://127.0.0.1:5000/run/textgen";
-            string message;
-
-            var paramsObj = new
-            {
-                //model = promptSettings.Model,
-                temperature = promptSettings.Temperature,
-                max_new_tokens = promptSettings.MaxTokens,
-                top_p = promptSettings.TopP,
-                seed = -1,
-                //frequency_penalty = promptSettings.FrequencyPenalty,
-            };
-
-            string payload = JsonConvert.SerializeObject(new object[] { prompt, paramsObj });
-
-            HttpClient client = new HttpClient();
-
-            // Set up the request
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, url);
-
-            request.Content = new StringContent(
-                JsonConvert.SerializeObject(
-                    new
-                    {
-
-                        data = new string[] { payload }
-
-                    }),
-                    Encoding.UTF8, "application/json");
-
-            // Send the request and get the response
-            HttpResponseMessage response = await client.SendAsync(request);
-            string responseContent = await response.Content.ReadAsStringAsync();
-            if (response.IsSuccessStatusCode)
-            {
-
-                JObject responseJson = JObject.Parse(responseContent);
-                message = responseJson["data"][0].ToString();
-            }
-
-            else
-            {
-                message = responseContent;
-            }
-
-            AiResponse aiResponse = new AiResponse(responseContent, message);
-
-
-            // Print the response
-            //Console.WriteLine($"Ai responds with \n {message}");
-            Console.WriteLine($"\n Raw Json output: {aiResponse.JsonRaw}\n\n");
-            return aiResponse;
-        }
     }
 }

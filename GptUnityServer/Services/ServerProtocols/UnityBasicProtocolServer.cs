@@ -96,16 +96,16 @@ namespace GptUnityServer.Services.ServerProtocols
 
                 string prompt = clientMessage.Substring(startIndex, endIndex - startIndex).Replace(messageIdText, "");
                 userMessage = clientMessage.Remove(startIndex, endIndex - startIndex).Replace(promptIdText, "");
-                Console.WriteLine($"Indexing prompt {prompt}");
+                //Console.WriteLine($"Indexing prompt {prompt}");
                 SetPromptDetails(prompt);
             }
 
 
-            if (promptSettings.ServiceType == "Response")
-                response = await SendMessage(userMessage);
+            if (promptSettings.PromptTypeString == "Chat")
+                response = await SendChatMessage(userMessage);
 
             else
-                response = await SendChatMessage(userMessage);
+                response = await SendMessage(userMessage);
 
 
 
@@ -137,7 +137,7 @@ namespace GptUnityServer.Services.ServerProtocols
             using (var scope = serviceProvider.CreateScope())
             {
                 IAiChatResponseService openAiService = scope.ServiceProvider.GetRequiredService<IAiChatResponseService>();
-                AiResponse response = await openAiService.SendMessage(message, promptSettings.SystemStrings);
+                AiResponse response = await openAiService.SendMessage(message, promptSettings.chat_history);
                 return response.Message;
             }
 
@@ -194,7 +194,7 @@ namespace GptUnityServer.Services.ServerProtocols
 
             JArray modelData = JArray.FromObject(modelList);
             
-            //message = JsonConvert.SerializeObject(modelData);
+            //Formats the models array sent into a JSON Object containing an array
             return "{ \"models\":" + modelData.ToString() + "}";
 
 

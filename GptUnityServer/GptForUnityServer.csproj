@@ -30,7 +30,7 @@
       <HintPath>..\..\GptToUnity\Library\PackageCache\com.unity.nuget.newtonsoft-json@3.0.2\Runtime\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="SharedLibrary">
-      <HintPath>..\..\GptToUnity\Library\ScriptAssemblies\SharedLibrary.dll</HintPath>
+      <HintPath>..\..\GptForUnity\Library\ScriptAssemblies\SharedLibrary.dll</HintPath>
     </Reference>
   </ItemGroup>
 
