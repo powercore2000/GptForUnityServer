@@ -3,28 +3,31 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33103.184
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedLibrary", "..\GptToUnity\SharedLibrary.csproj", "{F33A607C-FD02-F7E7-9E73-E8BF6745EA45}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2F320123-F272-4415-8880-DE94D3F7F5EE}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		README.md = README.md
-		..\GptToUnity\Library\ScriptAssemblies\SharedLibrary.dll = ..\GptToUnity\Library\ScriptAssemblies\SharedLibrary.dll
+		..\GptForUnity\Library\ScriptAssemblies\SharedLibrary.dll = ..\GptForUnity\Library\ScriptAssemblies\SharedLibrary.dll
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetCoreServer", "NetCoreServer\NetCoreServer.csproj", "{2923CD5E-75D6-427D-AFEC-12A3E245E327}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GptUnityServer", "GptUnityServer\GptUnityServer.csproj", "{CE1998F9-BA1E-4AF6-B6F9-242B5D0507D2}"
 	ProjectSection(ProjectDependencies) = postProject
-		{F33A607C-FD02-F7E7-9E73-E8BF6745EA45} = {F33A607C-FD02-F7E7-9E73-E8BF6745EA45}
+		{177BDC5D-C1E5-28D7-27D7-4979E825D138} = {177BDC5D-C1E5-28D7-27D7-4979E825D138}
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GptForUnityServer", "GptUnityServer\GptForUnityServer.csproj", "{CE1998F9-BA1E-4AF6-B6F9-242B5D0507D2}"
+	ProjectSection(ProjectDependencies) = postProject
+		{177BDC5D-C1E5-28D7-27D7-4979E825D138} = {177BDC5D-C1E5-28D7-27D7-4979E825D138}
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GptUnityServerTests", "GptUnityServerTests\GptUnityServerTests.csproj", "{0399CFB2-D97D-4A57-A955-914C86D15326}"
 	ProjectSection(ProjectDependencies) = postProject
+		{177BDC5D-C1E5-28D7-27D7-4979E825D138} = {177BDC5D-C1E5-28D7-27D7-4979E825D138}
 		{2923CD5E-75D6-427D-AFEC-12A3E245E327} = {2923CD5E-75D6-427D-AFEC-12A3E245E327}
 		{CE1998F9-BA1E-4AF6-B6F9-242B5D0507D2} = {CE1998F9-BA1E-4AF6-B6F9-242B5D0507D2}
-		{F33A607C-FD02-F7E7-9E73-E8BF6745EA45} = {F33A607C-FD02-F7E7-9E73-E8BF6745EA45}
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedLibrary", "..\GptForUnity\SharedLibrary.csproj", "{177BDC5D-C1E5-28D7-27D7-4979E825D138}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,10 +35,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F33A607C-FD02-F7E7-9E73-E8BF6745EA45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F33A607C-FD02-F7E7-9E73-E8BF6745EA45}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F33A607C-FD02-F7E7-9E73-E8BF6745EA45}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F33A607C-FD02-F7E7-9E73-E8BF6745EA45}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2923CD5E-75D6-427D-AFEC-12A3E245E327}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2923CD5E-75D6-427D-AFEC-12A3E245E327}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2923CD5E-75D6-427D-AFEC-12A3E245E327}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -48,6 +47,10 @@ Global
 		{0399CFB2-D97D-4A57-A955-914C86D15326}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0399CFB2-D97D-4A57-A955-914C86D15326}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0399CFB2-D97D-4A57-A955-914C86D15326}.Release|Any CPU.Build.0 = Release|Any CPU
+		{177BDC5D-C1E5-28D7-27D7-4979E825D138}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{177BDC5D-C1E5-28D7-27D7-4979E825D138}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{177BDC5D-C1E5-28D7-27D7-4979E825D138}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{177BDC5D-C1E5-28D7-27D7-4979E825D138}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

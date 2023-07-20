@@ -1,14 +1,13 @@
 using GptUnityServer.Models;
-using GptUnityServer.Services.OobaUiServices;
-using GptUnityServer.Services.KoboldAIServices;
 using GptUnityServer.Services._PlaceholderServices;
-using GptUnityServer.Services.UnityCloudCode;
-using GptUnityServer.Services.ServerManagment;
 using GptUnityServer.Services.AiApiServices;
-using GptUnityServer.Services.Universal;
+using GptUnityServer.Services.KoboldAIServices;
+using GptUnityServer.Services.OobaUiServices;
+using GptUnityServer.Services.ServerManagment;
 using GptUnityServer.Services.ServerProtocols;
-using Microsoft.AspNetCore.Mvc;
-using GptUnityServer.Controllers;
+using GptUnityServer.Services.UnityCloud;
+using GptUnityServer.Services.Universal;
+using SharedLibrary;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,18 +15,29 @@ var promptSettings = new SharedLibrary.PromptSettings();
 //builder.Configuration.Bind("", promptSettings);
 
 var settings = new Settings();
+var aiApiSetup = new AiApiSetupData();
+var unityCloudSetupData = new UnityCloudSetupData();
+//var 
 builder.Configuration.Bind("Settings", settings);
-
+builder.Configuration.Bind("AiApiSetup", aiApiSetup);
+builder.Configuration.Bind("UnityCloudSetup", unityCloudSetupData);
 
 settings.RunSetUp(args);
 
+if (settings.ServerServiceEnum == ServerServiceTypes.AiApi)
+    aiApiSetup.RunSetUp(args);
+else if (settings.ServerServiceEnum == ServerServiceTypes.UnityCloud)
+    unityCloudSetupData.RunSetUp(args);
+
 
 builder.Services.AddSingleton(settings);
+builder.Services.AddSingleton(aiApiSetup);
+builder.Services.AddSingleton(unityCloudSetupData);
 builder.Services.AddSingleton(promptSettings);
 
 
-
-if (settings.ServerServiceEnum == ServerServiceTypes.UnityCloudCode)
+//Provide Cloud Access to Ai Endpoints in Unity's Cloud Code Infrastructure
+if (settings.ServerServiceEnum == ServerServiceTypes.UnityCloud)
 {
     builder.Services.AddTransient<IAiResponseService, CloudResponseService>();
     builder.Services.AddTransient<IAiModelManager, CloudModelManager>();
@@ -38,26 +48,28 @@ if (settings.ServerServiceEnum == ServerServiceTypes.UnityCloudCode)
 //For Debuggin Purposes mainly. DO NOT USE IN PRODUCTION UNLESS YOU KNOW WHAT YOU ARE DOING
 else if (settings.ServerServiceEnum == ServerServiceTypes.AiApi)
 {
-    builder.Services.AddTransient<IAiResponseService, ApiResponseService>();
-    builder.Services.AddTransient<IAiModelManager, ApiModelManager>(); 
+    builder.Services.AddTransient<IAiResponseService, AiApiResponseService>();
+    builder.Services.AddTransient<IAiModelManager, AiApiModelManager>(); 
     builder.Services.AddTransient<IKeyValidationService, AiApiKeyValidationService>();
-    builder.Services.AddTransient<IAiChatResponseService, MockChatService>();
+    builder.Services.AddTransient<IAiChatResponseService, AiApiChatResponseService>();
 }
 
+//Assign services to point to Ooba Text Generation Web Ui's Api
 else if (settings.ServerServiceEnum == ServerServiceTypes.OobaUi)
 {
     builder.Services.AddTransient<IAiResponseService, OobaUiResponseService>();
     builder.Services.AddTransient<IAiModelManager, MockAiModelManagerService>();
     builder.Services.AddTransient<IKeyValidationService, MockApiKeyValidationService>();
-    builder.Services.AddTransient<IAiChatResponseService, MockChatService>();
+    builder.Services.AddTransient<IAiChatResponseService, OobaUiChatService>();
 }
 
+//Assign services to point to Kobold Ai's Api
 else if (settings.ServerServiceEnum == ServerServiceTypes.KoboldAi)
 {
     builder.Services.AddTransient<IAiResponseService, KoboldAiResponseService>();
     builder.Services.AddTransient<IAiModelManager, MockAiModelManagerService>();
     builder.Services.AddTransient<IKeyValidationService, MockApiKeyValidationService>();
-    builder.Services.AddTransient<IAiChatResponseService, MockChatService>();
+    builder.Services.AddTransient<IAiChatResponseService, KoboldAIChatService>();
 }
 
 
@@ -112,4 +124,4 @@ if (settings.ServerProtocolEnum == ServerProtocolTypes.HTTP)
 
 
 //app.Run("http://localhost:6776");
-app.Run();
+app.Run("http://localhost:5010");
