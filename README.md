@@ -6,17 +6,17 @@
 
 
 ## Overview
-Have you wanted to get the power of local and cloud Ai solutions inside of unity to help build your games? Well look no further! The GptForUnity program comes in two parts:
+Have you wanted to get the power of local and cloud Ai inside of unity to help build your games? Well look no further! The GptForUnity program comes in two parts:
 
 GptForUnityServer a middleware tool meant to host TCP/UDP servers to connect Unity with Ai service APIs (OobaUi,OpenAi, ect) 
-GptForUnityClient, a user interface and client meant to recive and handle prompting for Ai conversations
+GptForUnityClient, a user interface and client meant to recive and handle prompting the Ai services
 
 
 The server component performs the following functions:
 
 - Connect to the GptUnityClient
-- Access cloud and AI services on behalf of the Unity Client using ASP.Net Core
-- Exchange data between Unity and the AI Service using a Shared Library of models
+- Access cloud and local Ai services on behalf of the Unity Client using ASP.Net Core
+- Exchange data between Unity and the AI Services by using a Shared Library of models
 
 
 ## Communication Protocols with Unity Client
@@ -27,7 +27,7 @@ The currently supported protocols used to communicate between Unity and the GptU
 - UDP
 - HTTP (WIP)
 
-$$ TCP and UDP Notes
+## TCP and UDP Notes
 
 This uses the NetCoreServer repository to create a client-server relationship with the Unity Engine and pass information between this server and the Unity Client. The protocol for the server can be set in two ways:
 - By the `launchsettings.json` file inside the server, under the `DefaultProtocol` variable.
@@ -49,12 +49,12 @@ This server currently has support for LocalAi Frontend Software and Cloud AI API
 
 For more information about LocalAi and what frontend software is, visit [Crataco's Ai Guide](https://github.com/Crataco/ai-guide).
 
-There are four main service actions the server sets up for AI interactions:
+The server interacts with the Ai backend through services. The currently supported services are:
 
 | Service Action     | Description |
 | ----------- | ----------- |
 | Response      | Posts a text prompt to the endpoint and receives a text response from the AI       |
-| Chat   | Posts a series of system, user, and preset messages to the AI and receives a contextual response        |
+| Chat   | Sends context, personality, and chat history, between the user, and the AI service to simulate conversion|
 | Model List      | Gets a list of all models the AI service offers (Cloud AI Only)       |
 | API Key Validation   | Checks if the AiApiKey is valid (Cloud AI Only)        |
 
@@ -107,13 +107,13 @@ The `SharedLibrary.csproj` contains the classes and models that can be shared be
 
 ## Prompt Construction
 
-The GptForUnityClient has two ways of building its prompts for characters and generic responses. 
+The GptForUnityClient has two ways of building its prompts for interaction with an Ai backend. 
 
 
 | Prompt Construction Type    | Description |
 | ----------- | ----------- |
-| File      | Load both parameter settings and character info from json files under the settings button       |
-| Ui   | Build the characters information and parameter settings from the UI options       |
+| File      | Load both parameter settings and character/prompt info from json files under the settings button       |
+| Ui   | Build the character/prompt information and parameter settings from the UI options in the GptPlayground scene    |
 
 # Installation
 
