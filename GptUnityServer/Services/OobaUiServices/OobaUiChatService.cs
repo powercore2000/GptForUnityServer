@@ -9,15 +9,8 @@ namespace GptUnityServer.Services.OobaUiServices
     public class OobaUiChatService : IAiChatResponseService
     {
 
-        private readonly PromptSettings promptSettings;
 
-        public OobaUiChatService(PromptSettings _promptSettings)
-        {
-
-            promptSettings = _promptSettings;
-        }
-
-        public async Task<AiResponse> SendMessage(string userMessage, string[] systemMessages)
+        public async Task<AiResponse> SendMessage(PromptSettings promptSettings)
         {
             string url = "http://127.0.0.1:5000/api/v1/generate";
             string message;
@@ -26,12 +19,13 @@ namespace GptUnityServer.Services.OobaUiServices
             client.DefaultRequestHeaders.Add("accept", "application/json");
             // Set up the request
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, url);
-            string chatHistory = string.Empty;
-            if (systemMessages != null)
-                chatHistory = string.Join(" ", systemMessages);
+
+            string additonalContext = string.Empty;
+            if (promptSettings.context_history != null)
+                additonalContext = string.Join(" ", promptSettings.context_history);
 
 
-            string prompt = userMessage;//promptSettings.CharacterPersona + promptSettings.SceneContext + chatHistory + userMessage;
+            string prompt = additonalContext + "\r\n"+ promptSettings.prompt;
             Console.WriteLine($"Final prompt {prompt}");
             request.Content = new StringContent(JsonConvert.SerializeObject(new
             {

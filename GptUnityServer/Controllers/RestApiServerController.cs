@@ -68,10 +68,11 @@ namespace GptUnityServer.Controllers
         [HttpPost("/SendChat")]
         public async Task<AiResponse> SendChat([FromBody] PromptSettings promptParams)
         {
+            Console.WriteLine("Hitting send chat endpoint");
             if (restApiServerService.ApiKeyValid)
             {
                 promptSettings.OverritePromptSettings(promptParams);
-                return await aiChatResponseService.SendMessage(promptParams.prompt,promptParams.chat_history);
+                return await aiChatResponseService.SendMessage(promptParams);
             }
 
             else

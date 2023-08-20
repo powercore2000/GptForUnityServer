@@ -124,4 +124,4 @@ if (settings.ServerProtocolEnum == ServerProtocolTypes.HTTP)
 
 
 //app.Run("http://localhost:6776");
-app.Run("http://localhost:5010");
+app.Run();

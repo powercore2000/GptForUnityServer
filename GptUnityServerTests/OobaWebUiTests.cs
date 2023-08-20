@@ -45,16 +45,20 @@ namespace GptUnityServerTests
 
 
 
-            var responseServie = new OobaUiChatService(promptSettings);
+            var responseServie = new OobaUiChatService();
             string persona = "Chiharu Yamada is a young, computer engineer-nerd with a knack for problem solving and a passion for technology.";
             string greeting = "*Chiharu strides into the room with a smile, her eyes lighting up when she sees you. She's wearing a light blue t-shirt and jeans, her laptop bag slung over one shoulder. She takes a seat next to you, her enthusiasm palpable in the air*\n\nHey! I'm so excited to finally meet you. I've heard so many great things about you and I'm eager to pick your brain about computers. I'm sure you have a wealth of knowledge that I can learn from. *She grins, eyes twinkling with excitement* Let's get started!";
 
-            string exampleStringsMerged = string.Join(" ", promptSettings.chat_history);
+            string userMessage = "You: Who are you?";
+            string aiStart = "Chiharu Yamada:";
 
-            promptSettings.prompt = "You: Who are you?";
-            Console.WriteLine($"Sending message {promptSettings.prompt}\n Array of strings:{exampleStringsMerged}");
+            string contextHist = (promptSettings.context_history != null) ? string.Join(" ", promptSettings.context_history) : string.Empty;
+            
+            promptSettings.prompt = $" {contextHist} \r\n {greeting} \r\n {persona} \r\n {userMessage} \r\n {aiStart}";
 
-            var response = responseServie.SendMessage(greeting + persona + exampleStringsMerged + promptSettings.prompt, promptSettings.chat_history).Result;
+            Console.WriteLine($"Sending message {promptSettings.prompt}\n Array of strings:{contextHist}");
+            
+            var response = responseServie.SendMessage(promptSettings).Result;
             Console.WriteLine(response.Message);
             Assert.IsNotNull(response);
         }

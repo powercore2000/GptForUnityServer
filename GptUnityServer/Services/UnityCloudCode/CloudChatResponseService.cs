@@ -14,20 +14,19 @@ namespace GptUnityServer.Services.UnityCloud
         private readonly PromptSettings promptSettings;
         string url = "https://cloud-code.services.api.unity.com/v1/projects";
 
-        public CloudChatResponseService(UnityCloudSetupData _settings, PromptSettings _promptSettings)
+        public CloudChatResponseService(UnityCloudSetupData _settings)
         {
 
             settings = _settings;
-            promptSettings = _promptSettings;
         }
 
 
-        public async Task<AiResponse> SendMessage(string userMessage, string[] systemMessages)
+        public async Task<AiResponse> SendMessage(PromptSettings promptSettings)
         {
             string formattedSystemMessages;
 
             formattedSystemMessages = "[";
-            foreach (string message in systemMessages)
+            foreach (string message in promptSettings.context_history)
             {
                 Console.WriteLine($"-{message}");
                 formattedSystemMessages += "\n{";
@@ -41,7 +40,7 @@ namespace GptUnityServer.Services.UnityCloud
             formattedSystemMessages += "{";
             formattedSystemMessages +=
                "\"role\":\"user\"," +
-                $"\"content\":\"{userMessage}\"";
+                $"\"content\":\"{promptSettings.prompt}\"";
             formattedSystemMessages += "}\n]";
             //Console.WriteLine("Displaying system messages in format:");
             //Console.WriteLine($"{formattedSystemMessages}");

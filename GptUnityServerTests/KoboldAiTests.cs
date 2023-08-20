@@ -26,7 +26,7 @@ namespace GptUnityServerTests
             messages = messages.Replace("{{user}}", "You");
             messages = messages.Replace("{{char}}", "Chiharu Yamada");
 
-            promptSettings.chat_history = messages.Split('\n');
+            promptSettings.context_history = messages.Split('\n');
         }
 
 
@@ -75,16 +75,16 @@ namespace GptUnityServerTests
 
 
 
-            var responseServie = new KoboldAIChatService(promptSettings);
+            var responseServie = new KoboldAIChatService();
             string persona = "Chiharu Yamada is a young, computer engineer-nerd with a knack for problem solving and a passion for technology.";
             string greeting = "*Chiharu strides into the room with a smile, her eyes lighting up when she sees you. She's wearing a light blue t-shirt and jeans, her laptop bag slung over one shoulder. She takes a seat next to you, her enthusiasm palpable in the air*\n\nHey! I'm so excited to finally meet you. I've heard so many great things about you and I'm eager to pick your brain about computers. I'm sure you have a wealth of knowledge that I can learn from. *She grins, eyes twinkling with excitement* Let's get started!";
 
-            string exampleStringsMerged = string.Join(" ", promptSettings.chat_history);
+            string exampleStringsMerged = string.Join(" ", promptSettings.context_history);
 
             promptSettings.prompt = "You: Who are you?";
             Console.WriteLine($"Sending message {promptSettings.prompt}\n Array of strings:{exampleStringsMerged}");
 
-            var response = responseServie.SendMessage(promptSettings.prompt, promptSettings.chat_history).Result;
+            var response = responseServie.SendMessage(promptSettings).Result;
             Console.WriteLine(response.Message);
             Assert.IsNotNull(response);
         }

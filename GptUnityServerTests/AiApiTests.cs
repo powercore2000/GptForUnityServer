@@ -45,7 +45,7 @@ namespace GptUnityServerTests
         public void Get_Ai_Chat_From_Api()
         {
             promptSettings.Model = "gpt-3.5-turbo";
-            promptSettings.chat_history = new string[]
+            promptSettings.context_history = new string[]
                 {
                     "system:You are a kansas city farmer",
                     "user:Who are you?",
@@ -54,7 +54,7 @@ namespace GptUnityServerTests
             };
 
             AiApiChatResponseService chatService = new AiApiChatResponseService(mockAiApiSetup, promptSettings);
-            AiResponse response = chatService.SendMessage(promptSettings.prompt,promptSettings.chat_history).Result;
+            AiResponse response = chatService.SendMessage(promptSettings).Result;
             Console.WriteLine(response.Message);
             Assert.IsNotNull(response);
 
