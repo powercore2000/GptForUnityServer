@@ -14,14 +14,14 @@ namespace GptUnityServer.Services.ServerProtocols
 
         protected bool isKeyValid { get; set; }
         protected bool displayedStatusMessage { get; set; }
-        protected Action onValidationFail { get; set; }
-        protected Action onValidationSucess { get; set; }
-        protected string serverType { get; set; }
+        protected Action? onValidationFail { get; set; }
+        protected Action? onValidationSucess { get; set; }
+        protected string? serverType { get; set; }
 
         protected readonly IServiceProvider serviceProvider;
         protected readonly PromptSettings promptSettings;
 
-        public Action<string> OnAiMessageRecived;
+        public Action<string>? OnAiMessageRecived;
 
         public UnityBasicProtocolServer(IServiceProvider _serviceProvider, PromptSettings _promptSettings)
         {
@@ -63,8 +63,9 @@ namespace GptUnityServer.Services.ServerProtocols
 
             if (clientMessage == CommunicationData.InitalizationIdText)
             {
-                string response = CheckApiValidity();
+                string response = CheckApiKeyValidity();
 
+                Console.WriteLine($"Triggered Protocol Api Key Validity with response {response}");
 
                 OnAiMessageRecived.Invoke(response);
                 string modelList = await SendModelList();
@@ -143,7 +144,7 @@ namespace GptUnityServer.Services.ServerProtocols
         }
 
 
-        protected virtual string CheckApiValidity()
+        protected virtual string CheckApiKeyValidity()
         {
             displayedStatusMessage = true;
             if (isKeyValid)
@@ -160,7 +161,7 @@ namespace GptUnityServer.Services.ServerProtocols
                 ValidationFailFunctions();
                 Console.WriteLine($"Invalid {serverType} server api key!");
 
-                return $"ERROR: Invalid Open Ai API Key With {serverType}";
+                return $"ERROR: Invalid API Key With {serverType}";
             }
 
 
