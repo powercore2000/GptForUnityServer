@@ -11,41 +11,40 @@ namespace GptUnityServer.Services.UnityCloud
     {
 
         private readonly UnityCloudSetupData settings;
-        private readonly PromptSettings promptSettings;
         string url = "https://cloud-code.services.api.unity.com/v1/projects";
 
-        public CloudChatResponseService(UnityCloudSetupData _settings, PromptSettings _promptSettings)
+        public CloudChatResponseService(UnityCloudSetupData _settings)
         {
 
             settings = _settings;
-            promptSettings = _promptSettings;
         }
 
 
-        public async Task<AiResponse> SendMessage(string userMessage, string[] systemMessages)
+        public async Task<AiResponse> SendMessage(PromptSettings promptSettings)
         {
-            string formattedSystemMessages;
-
-            formattedSystemMessages = "[";
-            foreach (string message in systemMessages)
+            string formattedSystemMessages = string.Empty;
+            if (promptSettings.context_history.Length > 0)
             {
-                Console.WriteLine($"-{message}");
-                formattedSystemMessages += "\n{";
-                formattedSystemMessages +=
-                   "\"role\":\"system\"," +
-                    $"\"content\":\"{message}\"";
-                formattedSystemMessages += "},\n";
+                formattedSystemMessages = "[";
+                foreach (string message in promptSettings.context_history)
+                {
+                    Console.WriteLine($"-{message}");
+                    formattedSystemMessages += "\n{";
+                    formattedSystemMessages +=
+                       "\"role\":\"system\"," +
+                        $"\"content\":\"{message}\"";
+                    formattedSystemMessages += "},\n";
 
+                }
             }
-
             formattedSystemMessages += "{";
             formattedSystemMessages +=
                "\"role\":\"user\"," +
-                $"\"content\":\"{userMessage}\"";
+                $"\"content\":\"{promptSettings.prompt}\"";
             formattedSystemMessages += "}\n]";
             //Console.WriteLine("Displaying system messages in format:");
             //Console.WriteLine($"{formattedSystemMessages}");
-            HttpResponseMessage response = await CallCloudCode(formattedSystemMessages);
+            HttpResponseMessage response = await CallCloudCode(formattedSystemMessages, promptSettings);
 
             //Console.WriteLine("\nWhat returned was  " + response.Content);
             if (response.IsSuccessStatusCode)
@@ -77,7 +76,7 @@ namespace GptUnityServer.Services.UnityCloud
 
 
 
-        private async Task<HttpResponseMessage> CallCloudCode(string messages)
+        private async Task<HttpResponseMessage> CallCloudCode(string messages, PromptSettings promptSettings)
         {
 
             HttpClient client = new HttpClient();

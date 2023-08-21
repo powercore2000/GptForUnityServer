@@ -9,15 +9,7 @@ namespace GptUnityServer.Services.KoboldAIServices
     public class KoboldAIChatService : IAiChatResponseService
     {
 
-        private readonly PromptSettings promptSettings;
-
-        public KoboldAIChatService(PromptSettings _promptSettings)
-        {
-
-            promptSettings = _promptSettings;
-        }
-
-        public async Task<AiResponse> SendMessage(string userMessage, string[] systemMessages)
+        public async Task<AiResponse> SendMessage(PromptSettings promptSettings)
         {
             string url = "http://127.0.0.1:5000/api/v1/generate";
             string message;
@@ -26,29 +18,29 @@ namespace GptUnityServer.Services.KoboldAIServices
             client.DefaultRequestHeaders.Add("accept", "application/json");
             // Set up the request
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, url);
-            string chatHistory = string.Join(" ", systemMessages);
-            string prompt = chatHistory + userMessage;
+            string chatHistory = string.Join(" ", promptSettings.context_history);
+            string prompt = chatHistory + promptSettings.prompt;
             request.Content = new StringContent(JsonConvert.SerializeObject(new
             {
                 prompt,
-                temp = 0.7,
-                top_p = 0.5,
-                top_k = 40,
-                typical_p = 1,
-                top_a = 0,
-                tfs = 1,
-                epsilon_cutoff = 0,
-                eta_cutoff = 0,
-                rep_pen = 1.2,
-                no_repeat_ngram_size = 0,
-                penalty_alpha = 0,
-                num_beams = 1,
-                length_penalty = 1,
-                min_length = 0,
-                encoder_rep_pen = 1,
-                do_sample = true,
-                early_stopping = false,
-                stopping_strings = new string[] { "You:" }               
+                promptSettings.temp,
+                promptSettings.top_p,
+                promptSettings.top_k,
+                promptSettings.typical_p,
+                promptSettings.top_a,
+                promptSettings.tfs,
+                promptSettings.epsilon_cutoff,
+                promptSettings.eta_cutoff,
+                promptSettings.rep_pen,
+                promptSettings.no_repeat_ngram_size,
+                promptSettings.penalty_alpha,
+                promptSettings.num_beams,
+                promptSettings.length_penalty,
+                promptSettings.min_length,
+                promptSettings.encoder_rep_pen,
+                promptSettings.do_sample,
+                promptSettings.early_stopping,
+                promptSettings.stopping_strings
             }), Encoding.UTF8, "application/json");
 
             // Send the request and get the response

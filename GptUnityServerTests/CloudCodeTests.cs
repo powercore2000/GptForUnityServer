@@ -53,7 +53,7 @@ namespace GptUnityServerTests
         public void Get_Chat_From_Unity_Cloud()
         {
             promptSettings.Model = "gpt-3.5-turbo";
-            promptSettings.chat_history = new string[]
+            promptSettings.context_history = new string[]
                 {
                     "system:You are a kansas city farmer",
                     "user:Who are you?",
@@ -61,8 +61,8 @@ namespace GptUnityServerTests
 
             };
 
-            CloudChatResponseService chatService = new CloudChatResponseService(mockCloudCodeSetup, promptSettings);
-            AiResponse response = chatService.SendMessage(promptSettings.prompt, promptSettings.chat_history).Result;
+            CloudChatResponseService chatService = new CloudChatResponseService(mockCloudCodeSetup);
+            AiResponse response = chatService.SendMessage(promptSettings).Result;
             Console.WriteLine(response.Message);
             Assert.IsNotNull(response);
 

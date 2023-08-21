@@ -14,14 +14,14 @@ namespace GptUnityServer.Services.ServerProtocols
 
         protected bool isKeyValid { get; set; }
         protected bool displayedStatusMessage { get; set; }
-        protected Action onValidationFail { get; set; }
-        protected Action onValidationSucess { get; set; }
-        protected string serverType { get; set; }
+        protected Action? onValidationFail { get; set; }
+        protected Action? onValidationSucess { get; set; }
+        protected string? serverType { get; set; }
 
         protected readonly IServiceProvider serviceProvider;
         protected readonly PromptSettings promptSettings;
 
-        public Action<string> OnAiMessageRecived;
+        public Action<string>? OnAiMessageRecived;
 
         public UnityBasicProtocolServer(IServiceProvider _serviceProvider, PromptSettings _promptSettings)
         {
@@ -63,8 +63,9 @@ namespace GptUnityServer.Services.ServerProtocols
 
             if (clientMessage == CommunicationData.InitalizationIdText)
             {
-                string response = CheckApiValidity();
+                string response = CheckApiKeyValidity();
 
+                Console.WriteLine($"Triggered Protocol Api Key Validity with response {response}");
 
                 OnAiMessageRecived.Invoke(response);
                 string modelList = await SendModelList();
@@ -83,31 +84,17 @@ namespace GptUnityServer.Services.ServerProtocols
         /// <returns></returns>
         public virtual async Task ProcessClientInput(string clientMessage)
         {
-            string promptIdText = CommunicationData.PromptIdText;
-            string messageIdText = CommunicationData.MessageIdText;
             string userMessage = clientMessage;
             string response;
 
-            if (clientMessage.Contains(promptIdText))
-            {
-
-                int startIndex = clientMessage.IndexOf(promptIdText) + promptIdText.Length;
-                int endIndex = clientMessage.LastIndexOf(messageIdText) + messageIdText.Length;
-
-                string prompt = clientMessage.Substring(startIndex, endIndex - startIndex).Replace(messageIdText, "");
-                userMessage = clientMessage.Remove(startIndex, endIndex - startIndex).Replace(promptIdText, "");
-                //Console.WriteLine($"Indexing prompt {prompt}");
-                SetPromptDetails(prompt);
-            }
+            SetPromptDetails(clientMessage);
 
 
             if (promptSettings.PromptTypeString == "Chat")
-                response = await SendChatMessage(userMessage);
+                response = await SendChatMessage(promptSettings);
 
             else
                 response = await SendMessage(userMessage);
-
-
 
             Console.WriteLine($"displaying Ai response: {response}");
             OnAiMessageRecived.Invoke(response);
@@ -129,15 +116,18 @@ namespace GptUnityServer.Services.ServerProtocols
 
         }
 
-        public virtual async Task<string> SendChatMessage(string message)
+        public virtual async Task<string> SendChatMessage(PromptSettings promptSettings)
         {
 
             // The scope informs the service provider when you're
             // done with the transient service so it can be disposed
             using (var scope = serviceProvider.CreateScope())
             {
-                IAiChatResponseService openAiService = scope.ServiceProvider.GetRequiredService<IAiChatResponseService>();
-                AiResponse response = await openAiService.SendMessage(message, promptSettings.chat_history);
+                IAiChatResponseService chatService = scope.ServiceProvider.GetRequiredService<IAiChatResponseService>();
+                //The empty string array is to be replaced with a service that fetches from a database
+                // in order to find relevant context messages to prefix to the prompt message
+                //
+                AiResponse response = await chatService.SendMessage(promptSettings);
                 return response.Message;
             }
 
@@ -145,18 +135,16 @@ namespace GptUnityServer.Services.ServerProtocols
 
         protected void SetPromptDetails(string promptDetailsString)
         {
-
-            if (!string.IsNullOrEmpty(promptDetailsString))
+            using (var scope = serviceProvider.CreateScope())
             {
-                Console.WriteLine($"Setting prompt settings ");//to : {JsonConvert.DeserializeObject<PromptSettings>(promptDetails)}");
-                promptSettings.OverritePromptSettings(JsonConvert.DeserializeObject<PromptSettings>(promptDetailsString));
+                IPromptSettingsService promptSettingService = scope.ServiceProvider.GetRequiredService<IPromptSettingsService>();
+                promptSettingService.SetPromptDetails(promptDetailsString);
 
             }
-
         }
 
 
-        protected virtual string CheckApiValidity()
+        protected virtual string CheckApiKeyValidity()
         {
             displayedStatusMessage = true;
             if (isKeyValid)
@@ -173,7 +161,7 @@ namespace GptUnityServer.Services.ServerProtocols
                 ValidationFailFunctions();
                 Console.WriteLine($"Invalid {serverType} server api key!");
 
-                return $"ERROR: Invalid Open Ai API Key With {serverType}";
+                return $"ERROR: Invalid API Key With {serverType}";
             }
 
 

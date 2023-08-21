@@ -1,3 +1,4 @@
+using GptForUnityServer.Services._MockServices;
 using GptUnityServer.Models;
 using GptUnityServer.Services._PlaceholderServices;
 using GptUnityServer.Services.AiApiServices;
@@ -59,7 +60,7 @@ else if (settings.ServerServiceEnum == ServerServiceTypes.OobaUi)
 {
     builder.Services.AddTransient<IAiResponseService, OobaUiResponseService>();
     builder.Services.AddTransient<IAiModelManager, MockAiModelManagerService>();
-    builder.Services.AddTransient<IKeyValidationService, MockApiKeyValidationService>();
+    builder.Services.AddTransient<IKeyValidationService, OfflineApiKeyValidationService>();
     builder.Services.AddTransient<IAiChatResponseService, OobaUiChatService>();
 }
 
@@ -68,7 +69,7 @@ else if (settings.ServerServiceEnum == ServerServiceTypes.KoboldAi)
 {
     builder.Services.AddTransient<IAiResponseService, KoboldAiResponseService>();
     builder.Services.AddTransient<IAiModelManager, MockAiModelManagerService>();
-    builder.Services.AddTransient<IKeyValidationService, MockApiKeyValidationService>();
+    builder.Services.AddTransient<IKeyValidationService, OfflineApiKeyValidationService>();
     builder.Services.AddTransient<IAiChatResponseService, KoboldAIChatService>();
 }
 
@@ -122,6 +123,4 @@ if (settings.ServerProtocolEnum == ServerProtocolTypes.HTTP)
 }
 
 
-
-//app.Run("http://localhost:6776");
-app.Run("http://localhost:5010");
+app.Run();

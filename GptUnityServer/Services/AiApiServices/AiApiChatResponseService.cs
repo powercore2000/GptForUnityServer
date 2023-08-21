@@ -15,13 +15,11 @@ namespace GptUnityServer.Services.AiApiServices
 
         public AiApiChatResponseService(AiApiSetupData _aiApiSetupData, PromptSettings _promptSettings)
         {
-
             aiApiSetupData = _aiApiSetupData;
-            promptSettings = _promptSettings;
         }
 
 
-        public async Task<AiResponse> SendMessage(string userMessage, string[] systemMessages)
+        public async Task<AiResponse> SendMessage(PromptSettings promptSettings)
         {
 
             string apiKey = aiApiSetupData.ApiKey;
@@ -30,7 +28,7 @@ namespace GptUnityServer.Services.AiApiServices
             string formattedSystemMessages;
 
             formattedSystemMessages = "[";
-            foreach (string message in systemMessages)
+            foreach (string message in promptSettings.context_history)
             { 
                 int colonIndex = message.IndexOf(':');
                 string messageAuthor = message.Substring(0, colonIndex);
@@ -48,7 +46,7 @@ namespace GptUnityServer.Services.AiApiServices
             formattedSystemMessages += "{";
             formattedSystemMessages +=
                "\"role\":\"user\"," +
-                $"\"content\":\"{userMessage}\"";
+                $"\"content\":\"{promptSettings.user_message}\"";
             formattedSystemMessages += "}\n]";
             //Console.WriteLine("Displaying system messages in format:");
             //Console.WriteLine($"{formattedSystemMessages}");
