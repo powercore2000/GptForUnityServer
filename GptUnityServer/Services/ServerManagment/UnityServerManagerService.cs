@@ -11,7 +11,7 @@ namespace GptUnityServer.Services.ServerManagment
     using Models;
     public class UnityServerManagerService : IHostedService
     {
-
+        private static bool hasCheckedForValidation = false;
         //private readonly IServiceProvider serviceProvider;
         private IUnityProtocolServer selectedServerService;
         private IEnumerable<IUnityProtocolServer> allProtocolServers;
@@ -94,22 +94,27 @@ namespace GptUnityServer.Services.ServerManagment
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            string validationKey = "";
-            string validationUrl = "";
-            if (settings.ServerServiceEnum == ServerServiceTypes.AiApi) {
-                validationKey = aiApiSetupData.ApiKey;
-                validationUrl = aiApiSetupData.ApiKeyValidationUrl;
-                    }
+            if (!hasCheckedForValidation)
+            {
+                string validationKey = "";
+                string validationUrl = "";
+                if (settings.ServerServiceEnum == ServerServiceTypes.AiApi)
+                {
+                    validationKey = aiApiSetupData.ApiKey;
+                    validationUrl = aiApiSetupData.ApiKeyValidationUrl;
+                }
 
-            else if (settings.ServerServiceEnum == ServerServiceTypes.UnityCloud) {
-                validationKey = UnityCloudSetupData.UnityCloudPlayerToken;
-                validationUrl = "https://cloud-code.services.api.unity.com/v1/projects" + $"/{UnityCloudSetupData.UnityCloudProjectId}/{UnityCloudSetupData.UnityCloudEndpoint}/{UnityCloudSetupData.UnityCloudModelsFunction}";
+                else if (settings.ServerServiceEnum == ServerServiceTypes.UnityCloud)
+                {
+                    validationKey = UnityCloudSetupData.UnityCloudPlayerToken;
+                    validationUrl = "https://cloud-code.services.api.unity.com/v1/projects" + $"/{UnityCloudSetupData.UnityCloudProjectId}/{UnityCloudSetupData.UnityCloudEndpoint}/{UnityCloudSetupData.UnityCloudModelsFunction}";
+                }
+
+
+                IsApiKeyValid = await validatonService.ValidateKey(validationKey, validationUrl);
+                hasCheckedForValidation = true;
+                //Console.WriteLine($"Starting Unity Server service! \nCurrent key validation : {IsApiKeyValid}");         
             }
-
-
-            IsApiKeyValid = await validatonService.ValidateKey(validationKey, validationUrl);
-            //Console.WriteLine($"Starting Unity Server service! \nCurrent key validation : {IsApiKeyValid}");         
-
             await selectedServerService.StartAsync(cancellationToken, IsApiKeyValid, DeactivateService);
 
         }

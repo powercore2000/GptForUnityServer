@@ -8,6 +8,11 @@ using System.Threading.Tasks;
 using GptUnityServer.Services.ServerProtocols;
 using GptUnityServer.Services.ServerManagment;
 using GptUnityServer.Services.AiApiServices;
+using GptForUnityServer.Services.Universal;
+using GptForUnityServer.Services.ServerManagment;
+using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Net;
 
 namespace GptUnityServer.Controllers
 {
@@ -19,9 +24,11 @@ namespace GptUnityServer.Controllers
         private readonly IAiResponseService aiResponseService;
         private readonly IAiModelManager aiModelManager;
         private readonly IAiChatResponseService aiChatResponseService;
+        private readonly IServiceProvider serviceProvider;
         private readonly RestApiServerService restApiServerService;
         private readonly UnityServerManagerService unityServerManagmentService;
         private readonly PromptSettings promptSettings;
+        private readonly ServiceSelectorService serviceSelectorService;
         private bool apiKeyValid;
 
         public RestApiServerController(
@@ -29,6 +36,8 @@ namespace GptUnityServer.Controllers
             IAiModelManager _aiModelManager,
             IAiResponseService _aiResponseService,         
             IAiChatResponseService _aiChatResponseService,
+            IServiceProvider _serviceProvider,
+            ServiceSelectorService _serviceSelectorService,
             UnityServerManagerService _unityServerManagmentService, 
             PromptSettings _promptSettings)
         {
@@ -38,7 +47,9 @@ namespace GptUnityServer.Controllers
             aiModelManager = _aiModelManager;
             aiChatResponseService = _aiChatResponseService;
             unityServerManagmentService = _unityServerManagmentService;
-            
+            serviceSelectorService = _serviceSelectorService;
+            serviceProvider = _serviceProvider;
+
             restApiServerService = unityServerManagmentService.CurrentServerService as RestApiServerService;
             promptSettings = _promptSettings;
         }
@@ -82,6 +93,32 @@ namespace GptUnityServer.Controllers
             }
         }
 
+        [HttpPost("/ClassifyMessageEmotion")]
+        public async Task<List<EmotionData>> GetEmotionFromMessage([FromBody] MessageData messageData)
+        {
+            Console.WriteLine("Grabbing emotion data");
+            using (var scope = serviceProvider.CreateScope())
+            {
+                return await serviceSelectorService.GetEmotionClassificationService().ClassifyMessage(messageData.Message);
+
+            }
+
+        }
+
+        [HttpPost("/SetClassifyEmotionService")]
+        public IActionResult SetEmotionClassification([FromBody] MessageData newClassificationType) {
+
+            ClassificationServiceTypes newType = serviceSelectorService.ClassificationService;
+
+            if (!Enum.TryParse(newClassificationType.Message, out newType)) {
+                return StatusCode((int)HttpStatusCode.InternalServerError, "Invalid ClassificationServiceTypes passed in! Defaulting to Mock...");
+            }
+            using (var scope = serviceProvider.CreateScope())
+            {
+                serviceSelectorService.SetEmotionClassificationService(newType);
+                return Ok();
+            }
+        }
 
         [HttpGet("/Models")]
         public async Task<string[]> GetModels()

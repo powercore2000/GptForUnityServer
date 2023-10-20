@@ -1,4 +1,7 @@
 using GptForUnityServer.Services._MockServices;
+using GptForUnityServer.Services.EmotionClassificationServices;
+using GptForUnityServer.Services.ServerManagment;
+using GptForUnityServer.Services.Universal;
 using GptUnityServer.Models;
 using GptUnityServer.Services._PlaceholderServices;
 using GptUnityServer.Services.AiApiServices;
@@ -36,6 +39,8 @@ builder.Services.AddSingleton(aiApiSetup);
 builder.Services.AddSingleton(unityCloudSetupData);
 builder.Services.AddSingleton(promptSettings);
 
+builder.Services.AddTransient<IEmotionClassificationService, MockEmotionClassificationService>();
+builder.Services.AddTransient<IEmotionClassificationService, SillyTavernExtraSimpleClassifyService>();
 
 //Provide Cloud Access to Ai Endpoints in Unity's Cloud Code Infrastructure
 if (settings.ServerServiceEnum == ServerServiceTypes.UnityCloud)
@@ -83,9 +88,10 @@ builder.Services.AddTransient<IUnityProtocolServer, TcpServerService>();
 builder.Services.AddTransient<IUnityProtocolServer, UdpServerService>();
 builder.Services.AddTransient<IUnityProtocolServer, RestApiServerService>();
 
+builder.Services.AddSingleton<ServiceSelectorService>();
 builder.Services.AddSingleton<UnityServerManagerService>();
-builder.Services.AddHostedService<UnityServerManagerService>(provider => provider.GetService<UnityServerManagerService>());
-
+//builder.Services.AddHostedService<UnityServerManagerService>();
+//builder.Services.AddHostedService<UnityServerManagerService>(provider => provider.GetService<UnityServerManagerService>());
 if (settings.ServerProtocolEnum == ServerProtocolTypes.HTTP)
 {
 
