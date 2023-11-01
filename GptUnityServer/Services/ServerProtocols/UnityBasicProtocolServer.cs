@@ -4,6 +4,7 @@ using GptUnityServer.Models;
 using Microsoft.Extensions.ObjectPool;
 using GptUnityServer.Services.Universal;
 using Newtonsoft.Json.Linq;
+using GptForUnityServer.Services.ServerManagment;
 
 namespace GptUnityServer.Services.ServerProtocols
 {
@@ -12,22 +13,22 @@ namespace GptUnityServer.Services.ServerProtocols
     {
 
 
-        protected bool isKeyValid { get; set; }
+        public bool ApiKeyValid { get; set; }
         protected bool displayedStatusMessage { get; set; }
         protected Action? onValidationFail { get; set; }
         protected Action? onValidationSucess { get; set; }
         protected string? serverType { get; set; }
 
-        protected readonly IServiceProvider serviceProvider;
+        //protected readonly IServiceProvider serviceProvider;
         protected readonly PromptSettings promptSettings;
+        protected readonly ModularServiceSelector modularServiceSelector;
 
         public Action<string>? OnAiMessageRecived;
 
-        public UnityBasicProtocolServer(IServiceProvider _serviceProvider, PromptSettings _promptSettings)
+        public UnityBasicProtocolServer(PromptSettings _promptSettings, ModularServiceSelector _modularServiceSelector)
         {
-
-            serviceProvider = _serviceProvider;
             promptSettings = _promptSettings;
+            modularServiceSelector = _modularServiceSelector;
         }
 
         public virtual void RestartServer()
@@ -38,7 +39,7 @@ namespace GptUnityServer.Services.ServerProtocols
 
         public virtual Task StartAsync(CancellationToken cancellationToken, bool _isKeyValid, Action _onFailedValidation)
         {
-            isKeyValid = _isKeyValid;
+            ApiKeyValid = _isKeyValid;
             onValidationFail += _onFailedValidation;
             return Task.CompletedTask;
         }
@@ -107,47 +108,31 @@ namespace GptUnityServer.Services.ServerProtocols
 
             // The scope informs the service provider when you're
             // done with the transient service so it can be disposed
-            using (var scope = serviceProvider.CreateScope())
-            {
-                IAiResponseService aiResponseService = scope.ServiceProvider.GetRequiredService<IAiResponseService>();
-                AiResponse response = await aiResponseService.SendMessage(message);
-                return response.Message;
-            }
+            AiResponse response = await modularServiceSelector.GetAiResponseService().SendMessage(message);
+            return response.Message;
 
         }
 
         public virtual async Task<string> SendChatMessage(PromptSettings promptSettings)
         {
 
-            // The scope informs the service provider when you're
-            // done with the transient service so it can be disposed
-            using (var scope = serviceProvider.CreateScope())
-            {
-                IAiChatResponseService chatService = scope.ServiceProvider.GetRequiredService<IAiChatResponseService>();
-                //The empty string array is to be replaced with a service that fetches from a database
-                // in order to find relevant context messages to prefix to the prompt message
-                //
-                AiResponse response = await chatService.SendMessage(promptSettings);
-                return response.Message;
-            }
+            AiResponse response = await modularServiceSelector.GetAiChatResponseService().SendMessage(promptSettings);
+            return response.Message;
 
         }
 
         protected void SetPromptDetails(string promptDetailsString)
         {
-            using (var scope = serviceProvider.CreateScope())
-            {
-                IPromptSettingsService promptSettingService = scope.ServiceProvider.GetRequiredService<IPromptSettingsService>();
-                promptSettingService.SetPromptDetails(promptDetailsString);
 
-            }
+            modularServiceSelector.GetPromptSettingsService().SetPromptDetails(promptDetailsString);
+
         }
 
 
         protected virtual string CheckApiKeyValidity()
         {
             displayedStatusMessage = true;
-            if (isKeyValid)
+            if (ApiKeyValid)
             {
                 onValidationSucess?.Invoke();
                 Console.WriteLine($"{serverType} server api key is valid!");
@@ -173,12 +158,7 @@ namespace GptUnityServer.Services.ServerProtocols
             string[] modelList;
 
 
-            using (var scope = serviceProvider.CreateScope())
-            {
-
-                IAiModelManager modelManager = scope.ServiceProvider.GetRequiredService<IAiModelManager>();
-                modelList = await modelManager.GetAllModels();
-            }
+            modelList = await modularServiceSelector.GetModelManagerService().GetAllModels();
 
             JArray modelData = JArray.FromObject(modelList);
             

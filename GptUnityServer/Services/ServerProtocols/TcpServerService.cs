@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Mail;
 using System.Net.Sockets;
 using System.Text;
+using GptForUnityServer.Services.ServerManagment;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.Extensions.DependencyInjection;
 using NetCoreServer;
@@ -165,7 +166,7 @@ namespace GptUnityServer.Services.ServerProtocols
         #region Constructor
 
 
-        public TcpServerService(IServiceProvider _serviceProvider, PromptSettings _promptSettings) : base(_serviceProvider, _promptSettings)
+        public TcpServerService(PromptSettings _promptSettings, ModularServiceSelector _modularServiceSelector) : base(_promptSettings, _modularServiceSelector)
         {
 
             OnClientConnect += delegate { Console.WriteLine("Client connected!"); };

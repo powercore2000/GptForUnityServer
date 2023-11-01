@@ -9,42 +9,52 @@ namespace GptUnityServer.Services.ServerManagment
     using GptUnityServer.Services.Universal;
     //using GptUnityServer.Services.OpenAiServices.OpenAiData;
     using Models;
+    using GptForUnityServer.Services.ServerManagment;
+
     public class UnityServerManagerService : IHostedService
     {
         private static bool hasCheckedForValidation = false;
         //private readonly IServiceProvider serviceProvider;
         private IUnityProtocolServer selectedServerService;
         private IEnumerable<IUnityProtocolServer> allProtocolServers;
+        private readonly IEnumerable<IUnityProtocolServer> protocolServerServices;
         private readonly Settings settings;
         private readonly AiApiSetupData aiApiSetupData;
         private readonly UnityCloudSetupData UnityCloudSetupData;
+        private readonly ModularServiceSelector modularServiceSelector;
         public IUnityProtocolServer CurrentServerService { get { return selectedServerService; } }
-        protected readonly IKeyValidationService validatonService;
         protected readonly IHostApplicationLifetime applicationLifetime;
         //protected readonly IOpenAiModelManager openAiModelManager;
-        protected bool IsApiKeyValid { get; set; }
+        public bool IsApiKeyValid { get; private set; }
         public UnityServerManagerService(
             IEnumerable<IUnityProtocolServer> _allProtocolServers,
             Settings _settings,
             AiApiSetupData _aiApiSetupData,
             UnityCloudSetupData _UnityCloudSetupData,
-            IKeyValidationService _validationService,
-            IHostApplicationLifetime _applicationLifetime
+            ModularServiceSelector _modularServiceSelector,
+            IHostApplicationLifetime _applicationLifetime,
+            IEnumerable<IUnityProtocolServer> _protocolServerServices
             )
         {
 
-            validatonService = _validationService;
             settings = _settings;
             aiApiSetupData = _aiApiSetupData;
             UnityCloudSetupData = _UnityCloudSetupData;
             allProtocolServers = _allProtocolServers;
             applicationLifetime = _applicationLifetime;
-            //openAiModelManager = _openAiModelManager;
-            DetermineSelectedServerType(settings.ServerProtocolEnum);
-
+            modularServiceSelector = _modularServiceSelector;
+            protocolServerServices = _protocolServerServices;
+            SetUnityServerService(settings.ServerProtocolEnum);
+            
         }
 
-        void DetermineSelectedServerType(ServerProtocolTypes newServerType)
+        void DeactivateService()
+        {
+
+            applicationLifetime.StopApplication();
+        }
+
+        public void SetUnityServerService(ServerProtocolTypes newServerType)
         {
 
             Console.WriteLine($"Selected {newServerType} for server type!");
@@ -54,7 +64,7 @@ namespace GptUnityServer.Services.ServerManagment
                 case ServerProtocolTypes.TCP:
                     {
 
-                        selectedServerService = allProtocolServers.Single(server => server is TcpServerService);
+                        selectedServerService = protocolServerServices.Single(server => server is TcpServerService);
 
                     }
                     break;
@@ -62,14 +72,14 @@ namespace GptUnityServer.Services.ServerManagment
                 case ServerProtocolTypes.UDP:
                     {
 
-                        selectedServerService = allProtocolServers.Single(server => server is UdpServerService);
+                        selectedServerService = protocolServerServices.Single(server => server is UdpServerService);
 
                     }
                     break;
                 case ServerProtocolTypes.HTTP:
                     {
                         Console.WriteLine("Rest Api Detected, grabbing API Controller Server...");
-                        selectedServerService = allProtocolServers.Single(server => server is RestApiServerService);
+                        selectedServerService = protocolServerServices.Single(server => server is RestApiServerService);
 
                     }
                     break;
@@ -77,20 +87,12 @@ namespace GptUnityServer.Services.ServerManagment
                 default:
                     {
                         Console.WriteLine($"Defaulted to TCP due to unrecognized server type!!");
-                        selectedServerService = allProtocolServers.Single(server => server is TcpServerService);
+                        selectedServerService = protocolServerServices.Single(server => server is TcpServerService);
                     }
                     break;
             }
 
         }
-
-
-        void DeactivateService()
-        {
-
-            applicationLifetime.StopApplication();
-        }
-
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
@@ -98,20 +100,24 @@ namespace GptUnityServer.Services.ServerManagment
             {
                 string validationKey = "";
                 string validationUrl = "";
+                modularServiceSelector.SetKeyValidationService(KeyValidationServiceTypes.Offline);
+
                 if (settings.ServerServiceEnum == ServerServiceTypes.AiApi)
                 {
+                    modularServiceSelector.SetKeyValidationService(KeyValidationServiceTypes.AiApi);
                     validationKey = aiApiSetupData.ApiKey;
                     validationUrl = aiApiSetupData.ApiKeyValidationUrl;
                 }
 
                 else if (settings.ServerServiceEnum == ServerServiceTypes.UnityCloud)
                 {
+                    modularServiceSelector.SetKeyValidationService(KeyValidationServiceTypes.Cloud);
                     validationKey = UnityCloudSetupData.UnityCloudPlayerToken;
                     validationUrl = "https://cloud-code.services.api.unity.com/v1/projects" + $"/{UnityCloudSetupData.UnityCloudProjectId}/{UnityCloudSetupData.UnityCloudEndpoint}/{UnityCloudSetupData.UnityCloudModelsFunction}";
                 }
 
-
-                IsApiKeyValid = await validatonService.ValidateKey(validationKey, validationUrl);
+               
+                IsApiKeyValid = modularServiceSelector.RunKeyValidationService(validationKey, validationUrl);
                 hasCheckedForValidation = true;
                 //Console.WriteLine($"Starting Unity Server service! \nCurrent key validation : {IsApiKeyValid}");         
             }

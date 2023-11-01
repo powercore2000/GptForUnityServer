@@ -42,43 +42,26 @@ builder.Services.AddSingleton(promptSettings);
 builder.Services.AddTransient<IEmotionClassificationService, MockEmotionClassificationService>();
 builder.Services.AddTransient<IEmotionClassificationService, SillyTavernExtraSimpleClassifyService>();
 
-//Provide Cloud Access to Ai Endpoints in Unity's Cloud Code Infrastructure
-if (settings.ServerServiceEnum == ServerServiceTypes.UnityCloud)
-{
-    builder.Services.AddTransient<IAiResponseService, CloudResponseService>();
-    builder.Services.AddTransient<IAiModelManager, CloudModelManager>();
-    builder.Services.AddTransient<IKeyValidationService, CloudCodeValidationServices>();
-    builder.Services.AddTransient<IAiChatResponseService, CloudChatResponseService>();
-}
+//Ai Model Manager
+builder.Services.AddTransient<IAiModelManager, CloudModelManager>();
+builder.Services.AddTransient<IAiModelManager, AiApiModelManager>();
+builder.Services.AddTransient<IAiModelManager, MockAiModelManagerService>();
 
-//For Debuggin Purposes mainly. DO NOT USE IN PRODUCTION UNLESS YOU KNOW WHAT YOU ARE DOING
-else if (settings.ServerServiceEnum == ServerServiceTypes.AiApi)
-{
-    builder.Services.AddTransient<IAiResponseService, AiApiResponseService>();
-    builder.Services.AddTransient<IAiModelManager, AiApiModelManager>(); 
-    builder.Services.AddTransient<IKeyValidationService, AiApiKeyValidationService>();
-    builder.Services.AddTransient<IAiChatResponseService, AiApiChatResponseService>();
-}
+builder.Services.AddTransient<IAiResponseService, CloudResponseService>();
+builder.Services.AddTransient<IAiResponseService, AiApiResponseService>();
+builder.Services.AddTransient<IAiResponseService, OobaUiResponseService>();
+builder.Services.AddTransient<IAiResponseService, KoboldAiResponseService>();
+builder.Services.AddTransient<IAiResponseService, MockAiResponseService>();
 
-//Assign services to point to Ooba Text Generation Web Ui's Api
-else if (settings.ServerServiceEnum == ServerServiceTypes.OobaUi)
-{
-    builder.Services.AddTransient<IAiResponseService, OobaUiResponseService>();
-    builder.Services.AddTransient<IAiModelManager, MockAiModelManagerService>();
-    builder.Services.AddTransient<IKeyValidationService, OfflineApiKeyValidationService>();
-    builder.Services.AddTransient<IAiChatResponseService, OobaUiChatService>();
-}
+builder.Services.AddTransient<IKeyValidationService, CloudCodeValidationServices>();
+builder.Services.AddTransient<IKeyValidationService, AiApiKeyValidationService>();
+builder.Services.AddTransient<IKeyValidationService, OfflineApiKeyValidationService>();
 
-//Assign services to point to Kobold Ai's Api
-else if (settings.ServerServiceEnum == ServerServiceTypes.KoboldAi)
-{
-    builder.Services.AddTransient<IAiResponseService, KoboldAiResponseService>();
-    builder.Services.AddTransient<IAiModelManager, MockAiModelManagerService>();
-    builder.Services.AddTransient<IKeyValidationService, OfflineApiKeyValidationService>();
-    builder.Services.AddTransient<IAiChatResponseService, KoboldAIChatService>();
-}
-
-
+builder.Services.AddTransient<IAiChatResponseService, CloudChatResponseService>();
+builder.Services.AddTransient<IAiChatResponseService, AiApiChatResponseService>();
+builder.Services.AddTransient<IAiChatResponseService, OobaUiChatService>();
+builder.Services.AddTransient<IAiChatResponseService, KoboldAIChatService>();
+builder.Services.AddTransient<IAiChatResponseService, MockAiChatService>();
 
 
 builder.Services.AddTransient<IPromptSettingsService, PromptSettingsService>();
@@ -88,10 +71,8 @@ builder.Services.AddTransient<IUnityProtocolServer, TcpServerService>();
 builder.Services.AddTransient<IUnityProtocolServer, UdpServerService>();
 builder.Services.AddTransient<IUnityProtocolServer, RestApiServerService>();
 
-builder.Services.AddSingleton<ServiceSelectorService>();
+builder.Services.AddSingleton<ModularServiceSelector>();
 builder.Services.AddSingleton<UnityServerManagerService>();
-//builder.Services.AddHostedService<UnityServerManagerService>();
-//builder.Services.AddHostedService<UnityServerManagerService>(provider => provider.GetService<UnityServerManagerService>());
 if (settings.ServerProtocolEnum == ServerProtocolTypes.HTTP)
 {
 

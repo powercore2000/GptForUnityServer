@@ -4,6 +4,7 @@
     {
 
         //public Action<string> OnReciveAiMessage { get; set; }
+        public bool ApiKeyValid { get; }
         public void StartServer(int _port = 1111);
         public void StopServer();
 

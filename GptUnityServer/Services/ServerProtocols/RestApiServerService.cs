@@ -2,9 +2,7 @@
 {
     public class RestApiServerService : IUnityProtocolServer
     {
-        private bool apiKeyValid;
-
-        public bool ApiKeyValid => apiKeyValid;
+        public bool ApiKeyValid { get; private set; }
 
         #region Net Core Server Methods
         public void RestartServer()
@@ -20,7 +18,7 @@
         public Task StartAsync(CancellationToken cancellationToken, bool _isKeyValid, Action _onFailedValidation)
         {
             Console.WriteLine("Rest Api Server Service launched!");
-            apiKeyValid = _isKeyValid;
+            ApiKeyValid = _isKeyValid;
             return Task.CompletedTask;
         }
 
