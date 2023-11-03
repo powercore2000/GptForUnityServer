@@ -53,7 +53,7 @@ namespace GptUnityServerTests
 
             };
 
-            AiApiChatResponseService chatService = new AiApiChatResponseService(mockAiApiSetup, promptSettings);
+            AiApiChatService chatService = new AiApiChatService(mockAiApiSetup, promptSettings);
             AiResponse response = chatService.SendMessage(promptSettings).Result;
             Console.WriteLine(response.Message);
             Assert.IsNotNull(response);
@@ -64,7 +64,7 @@ namespace GptUnityServerTests
         public void Get_Ai_Response_From_Api()
         {
 
-            AiApiResponseService responseServie = new AiApiResponseService(mockAiApiSetup,promptSettings);
+            AiApiInstructService responseServie = new AiApiInstructService(mockAiApiSetup,promptSettings);
 
             AiResponse response = responseServie.SendMessage(promptSettings.prompt).Result;
             Console.WriteLine(response.Message);

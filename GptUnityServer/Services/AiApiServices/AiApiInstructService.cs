@@ -9,11 +9,11 @@ namespace GptUnityServer.Services.AiApiServices
     using Models;
     using Newtonsoft.Json.Linq;
 
-    public class AiApiResponseService : IAiResponseService
+    public class AiApiInstructService : IAiInstructService
     {
         private readonly AiApiSetupData aiApiSetupData;
         private readonly PromptSettings promptSettings;
-        public AiApiResponseService(AiApiSetupData _aiApiSetupData, PromptSettings _promptSettings)
+        public AiApiInstructService(AiApiSetupData _aiApiSetupData, PromptSettings _promptSettings)
         {
 
             aiApiSetupData = _aiApiSetupData;
@@ -23,7 +23,7 @@ namespace GptUnityServer.Services.AiApiServices
 
         public async Task<AiResponse> SendMessage(string prompt)
         {
-            string url = aiApiSetupData.ApiResponseUrl;
+            string url = aiApiSetupData.ApiInstructUrl;
             string apiKey = aiApiSetupData.ApiKey;
             string message;
 

@@ -10,12 +10,12 @@ namespace GptUnityServer.Services.OobaUiServices
     /// <summary>
     /// DEPRICATED. Use the new LocalAIServices instead!
     /// </summary>
-    public class OobaUiResponseService : IAiResponseService
+    public class OobaUiInstructService : IAiInstructService
     {
 
         private readonly PromptSettings promptSettings;
 
-        public OobaUiResponseService(PromptSettings _promptSettings)
+        public OobaUiInstructService(PromptSettings _promptSettings)
         {
 
             promptSettings = _promptSettings;

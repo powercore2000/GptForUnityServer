@@ -5,10 +5,10 @@ namespace GptUnityServer.Services._PlaceholderServices
 {
     using GptUnityServer.Services.Universal;
     using Models;
-    public class MockAiResponseService : IAiResponseService
+    public class MockAiInstructService : IAiInstructService
     {
         private readonly Settings settings;
-        public MockAiResponseService(Settings _settings)
+        public MockAiInstructService(Settings _settings)
         {
 
             settings = _settings;

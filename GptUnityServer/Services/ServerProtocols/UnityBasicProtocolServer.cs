@@ -108,7 +108,7 @@ namespace GptUnityServer.Services.ServerProtocols
 
             // The scope informs the service provider when you're
             // done with the transient service so it can be disposed
-            AiResponse response = await modularServiceSelector.GetAiResponseService().SendMessage(message);
+            AiResponse response = await modularServiceSelector.GetAiInstructService().SendMessage(message);
             return response.Message;
 
         }
@@ -116,7 +116,7 @@ namespace GptUnityServer.Services.ServerProtocols
         public virtual async Task<string> SendChatMessage(PromptSettings promptSettings)
         {
 
-            AiResponse response = await modularServiceSelector.GetAiChatResponseService().SendMessage(promptSettings);
+            AiResponse response = await modularServiceSelector.GetAiChatService().SendMessage(promptSettings);
             return response.Message;
 
         }

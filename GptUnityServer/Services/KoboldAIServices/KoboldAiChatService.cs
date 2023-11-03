@@ -6,7 +6,7 @@ using SharedLibrary;
 
 namespace GptUnityServer.Services.KoboldAIServices
 {
-    public class KoboldAIChatService : IAiChatResponseService
+    public class KoboldAIChatService : IAiChatService
     {
 
         public async Task<AiResponse> SendMessage(PromptSettings promptSettings)

@@ -3,7 +3,7 @@ using SharedLibrary;
 
 namespace GptUnityServer.Services._PlaceholderServices
 {
-    public class MockAiChatService : IAiChatResponseService
+    public class MockAiChatService : IAiChatService
     {
         public Task<AiResponse> SendMessage(PromptSettings promptSettings)
         {

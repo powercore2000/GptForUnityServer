@@ -19,19 +19,26 @@ namespace GptUnityServer.Models
         /// The config type to fall back to if none is provides when server is initalized, or started in dev mode.
         /// </summary>
         public string? DefaultServiceType { get; set; }
-        
-       // public string ServerProtocolType { get { return ServerProtocolEnum.ToString(); } }
+
+        /// <summary>
+        /// The Emotion Classification Service type to fall back to if none is provides when server is initalized, or started in dev mode.
+        /// </summary>
+        public string? DefaultClassificationType { get; set; }
+
+        //public string? ServerProtocolType { get { return ServerProtocolEnum.ToString(); } }
         //public string ServerServiceType { get { return ServerServiceEnum.ToString(); } }
 
         public ServerProtocolTypes ServerProtocolEnum { get; private set; }
 
-        public ServerServiceTypes ServerServiceEnum { get; private set; }
+        public AiChatServiceTypes ServerServiceEnum { get; private set; }
+
+        public ClassificationServiceTypes ClassificationServiceEnum { get; private set; }
         #endregion
 
         #endregion
 
         #region Initalization Methods
-        
+
         /// <summary>
         /// Parses data passed in via Program.Start() argument parameters to handle the server's protocol, config, and operation data
         /// </summary>
@@ -63,6 +70,7 @@ namespace GptUnityServer.Models
         {
             SetServerProtocol(DefaultProtocolType);
             SetServerServices(DefaultServiceType);
+            SetClassificationService(DefaultClassificationType);
             //SetServerData is not called because the data will be filled from enviroment secrets
             Console.WriteLine($"Using default dev values! In {ServerServiceEnum} config");
 
@@ -100,7 +108,7 @@ namespace GptUnityServer.Models
         void SetServerServices(string newServiceType)
         {
 
-            ServerServiceTypes targetServerService;
+            AiChatServiceTypes targetServerService;
             bool validType = Enum.TryParse(newServiceType, out targetServerService);
 
             if (validType)            
@@ -116,7 +124,22 @@ namespace GptUnityServer.Models
             //OnServerTypeChange.Invoke(newServerType);
         }
 
+        void SetClassificationService(string newClassificationService) {
 
+            ClassificationServiceTypes classificationServiceType;
+            bool validType = Enum.TryParse(newClassificationService, out classificationServiceType);
+
+            if (validType)
+                ClassificationServiceEnum = classificationServiceType;
+
+            else
+            {
+                Console.WriteLine($"ERROR: Unrecognized service type passed into Program.Start()\nNo Emotion Classification service types corresponds to {newClassificationService}");
+            }
+
+            Console.WriteLine($"Setting emotion classification service to: {ClassificationServiceEnum}");
+
+        }
         #endregion
 
 

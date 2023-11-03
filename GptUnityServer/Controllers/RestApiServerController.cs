@@ -22,10 +22,8 @@ namespace GptUnityServer.Controllers
     public class RestApiServerController : ControllerBase
     {
         private readonly ILogger<RestApiServerController> logger;
-        private readonly IAiResponseService aiResponseService;
-        private readonly IAiModelManager aiModelManager;
         private readonly IServiceProvider serviceProvider;
-        private readonly UnityServerManagerService unityServerManagmentService;
+        //private readonly UnityServerManagerService unityServerManagmentService;
         private readonly PromptSettings promptSettings;
         private readonly ModularServiceSelector serviceSelectorService;
         //private readonly RestApiServerService currentRestApiServerService;
@@ -33,28 +31,17 @@ namespace GptUnityServer.Controllers
 
         public RestApiServerController(
             ILogger<RestApiServerController> _logger,
-            IAiModelManager _aiModelManager,
-            IAiResponseService _aiResponseService,         
-            IAiChatResponseService _aiChatResponseService,
             IServiceProvider _serviceProvider,
             ModularServiceSelector _serviceSelectorService,
-            UnityServerManagerService _unityServerManagmentService, 
+            //UnityServerManagerService _unityServerManagmentService, 
             PromptSettings _promptSettings)
         {
 
             logger = _logger;
-            aiResponseService = _aiResponseService;
-            aiModelManager = _aiModelManager;
-            unityServerManagmentService = _unityServerManagmentService;
+            //unityServerManagmentService = _unityServerManagmentService;
             serviceSelectorService = _serviceSelectorService;
             serviceProvider = _serviceProvider;
             
-            //These methods need to be run to set up the Api to be usable
-            serviceSelectorService.SetKeyValidationService(KeyValidationServiceTypes.Offline);
-            serviceSelectorService.RunKeyValidationService("", "");
-            serviceSelectorService.SetEmotionClassificationService(ClassificationServiceTypes.SillyTavernExtras);
-            serviceSelectorService.SetAiChatResponseService(AiChatResponseServiceTypes.OobaUi);
-            //currentRestApiServerService = serviceSelectorService.GetServerService() as RestApiServerService;
             promptSettings = _promptSettings;
 
         }
@@ -88,13 +75,13 @@ namespace GptUnityServer.Controllers
 
 
 
-        [HttpPost("/SendResponse")]
-        public async Task<AiResponse> SendResponse([FromBody]PromptSettings promptParams)
+        [HttpPost("/SendInstruct")]
+        public async Task<AiResponse> SendInstruct([FromBody]PromptSettings promptParams)
         {
             if (GetApiKeyValidity())
             {
                 promptSettings.OverritePromptSettings(promptParams);
-                return await aiResponseService.SendMessage(promptParams.prompt);
+                return await serviceSelectorService.GetAiInstructService().SendMessage(promptParams.prompt);
             }
 
             else {
@@ -112,7 +99,7 @@ namespace GptUnityServer.Controllers
             if (GetApiKeyValidity())
             {
                 promptSettings.OverritePromptSettings(promptParams);
-                return await serviceSelectorService.GetAiChatResponseService().SendMessage(promptParams);
+                return await serviceSelectorService.GetAiChatService().SendMessage(promptParams);
             }
 
             else
@@ -122,11 +109,11 @@ namespace GptUnityServer.Controllers
             }
         }
         
-        [HttpPost("/SetAiChatResponseService")]
-        public IActionResult SetAiChatResponse([FromBody] MessageData newClassificationType)
+        [HttpPost("/SetAiChatService")]
+        public IActionResult SetAiChat([FromBody] MessageData newClassificationType)
         {
 
-            AiChatResponseServiceTypes newType = serviceSelectorService.AiChatResponseService;
+            AiChatServiceTypes newType = serviceSelectorService.AiChatService;
 
             if (!Enum.TryParse(newClassificationType.Message, out newType))
             {
@@ -134,7 +121,7 @@ namespace GptUnityServer.Controllers
             }
             using (var scope = serviceProvider.CreateScope())
             {
-                serviceSelectorService.SetAiChatResponseService(newType);
+                serviceSelectorService.SetAiChatService(newType);
                 return Ok();
             }
         }
@@ -173,7 +160,7 @@ namespace GptUnityServer.Controllers
         [HttpGet("/GetModels")]
         public async Task<string[]> GetModels()
         {
-            return await aiModelManager.GetAllModels();
+            return await serviceSelectorService.GetModelManagerService().GetAllModels();
         }
 
         [HttpPost("/SetModelManagerService")]

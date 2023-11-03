@@ -18,8 +18,8 @@ namespace GptForUnityServer.Services.ServerManagment
         public ClassificationServiceTypes ClassificationService { get; private set; } = ClassificationServiceTypes.Mock;
         public ModelManagerServiceTypes ModelManagerService { get; private set; } = ModelManagerServiceTypes.Mock;
         public KeyValidationServiceTypes KeyValidationService { get; private set; } = KeyValidationServiceTypes.Offline;
-        public AiChatResponseServiceTypes AiChatResponseService { get; private set; } = AiChatResponseServiceTypes.Mock;
-
+        public AiChatServiceTypes AiChatService { get; private set; } = AiChatServiceTypes.Mock;
+        public AiChatServiceTypes AiInstructService { get; private set; } = AiChatServiceTypes.Mock;
         public PromptSettingServiceTypes PromptSettingService { get; private set; } = PromptSettingServiceTypes.Default;
 
         public bool IsApiKeyValid { get; private set; }
@@ -31,8 +31,8 @@ namespace GptForUnityServer.Services.ServerManagment
         private readonly IEnumerable<IEmotionClassificationService> emotionClassificationServices;
         private readonly IEnumerable<IAiModelManager> aiModelManagerServices;
         private readonly IEnumerable<IKeyValidationService> keyValidationServices;
-        private readonly IEnumerable<IAiChatResponseService> aiChatResponseServices;
-        private readonly IEnumerable<IAiResponseService> aiResponseServices;
+        private readonly IEnumerable<IAiChatService> aiChatServices;
+        private readonly IEnumerable<IAiInstructService> aiInstructServices;
         private readonly IEnumerable<IPromptSettingsService> promptSettingService;
         private readonly IEnumerable<IUnityProtocolServer> protocolServerServices;
 
@@ -41,8 +41,8 @@ namespace GptForUnityServer.Services.ServerManagment
             IEnumerable<IEmotionClassificationService> _emotionClassificationServices,
             IEnumerable<IAiModelManager> _aiModelManagerServices,
             IEnumerable<IKeyValidationService> _keyValidationServices,
-            IEnumerable<IAiChatResponseService> _aiChatResponseServices,
-            IEnumerable<IAiResponseService> _aiResponseServices,
+            IEnumerable<IAiChatService> _aiChatServices,
+            IEnumerable<IAiInstructService> _aiResponseServices,
             IEnumerable<IPromptSettingsService> _promptSettingService
             
             ) {
@@ -51,8 +51,8 @@ namespace GptForUnityServer.Services.ServerManagment
             emotionClassificationServices = _emotionClassificationServices;
             aiModelManagerServices = _aiModelManagerServices;
             keyValidationServices = _keyValidationServices;
-            aiChatResponseServices = _aiChatResponseServices;
-            aiResponseServices = _aiResponseServices;
+            aiChatServices = _aiChatServices;
+            aiInstructServices = _aiResponseServices;
             promptSettingService = _promptSettingService;
         }
 
@@ -72,13 +72,17 @@ namespace GptForUnityServer.Services.ServerManagment
 
             KeyValidationService = newServiceType;
         }
-
-        public void SetAiChatResponseService(AiChatResponseServiceTypes newServiceType)
+        public void SetAiChatService(AiChatServiceTypes newServiceType)
         {
 
-            AiChatResponseService = newServiceType;
+            AiChatService = newServiceType;
         }
 
+        public void SetAiInstructService(AiChatServiceTypes newServiceType)
+        {
+
+            AiInstructService = newServiceType;
+        }
 
         public IEmotionClassificationService GetEmotionClassificationService() {
 
@@ -150,52 +154,52 @@ namespace GptForUnityServer.Services.ServerManagment
             }
         }
 
-        public IAiChatResponseService GetAiChatResponseService()
+        public IAiChatService GetAiChatService()
         {
 
 
-            switch (AiChatResponseService)
+            switch (AiChatService)
             {
 
-                case AiChatResponseServiceTypes.AiApi:
-                    return aiChatResponseServices.Single(server => server is AiApiChatResponseService);
+                case AiChatServiceTypes.AiApi:
+                    return aiChatServices.Single(server => server is AiApiChatService);
+                        
+                case AiChatServiceTypes.UnityCloud:
+                    return aiChatServices.Single(server => server is CloudChatService);
 
-                case AiChatResponseServiceTypes.Cloud:
-                    return aiChatResponseServices.Single(server => server is CloudChatResponseService);
+                case AiChatServiceTypes.OobaUi:
+                    return aiChatServices.Single(server => server is OobaUiChatService);
 
-                case AiChatResponseServiceTypes.OobaUi:
-                    return aiChatResponseServices.Single(server => server is OobaUiChatService);
-
-                case AiChatResponseServiceTypes.Kobold:
-                    return aiChatResponseServices.Single(server => server is KoboldAIChatService);
+                case AiChatServiceTypes.KoboldAi:
+                    return aiChatServices.Single(server => server is KoboldAIChatService);
 
                 default:
-                    return aiChatResponseServices.Single(server => server is MockAiChatService);
+                    return aiChatServices.Single(server => server is MockAiChatService);
 
             }
         }
 
-        public IAiResponseService GetAiResponseService()
+        public IAiInstructService GetAiInstructService()
         {
 
 
-            switch (AiChatResponseService)
+            switch (AiInstructService)
             {
 
-                case AiChatResponseServiceTypes.AiApi:
-                    return aiResponseServices.Single(server => server is AiApiResponseService);
+                case AiChatServiceTypes.AiApi:
+                    return aiInstructServices.Single(server => server is AiApiInstructService);
 
-                case AiChatResponseServiceTypes.Cloud:
-                    return aiResponseServices.Single(server => server is CloudResponseService);
+                case AiChatServiceTypes.UnityCloud:
+                    return aiInstructServices.Single(server => server is CloudInstructService);
 
-                case AiChatResponseServiceTypes.OobaUi:
-                    return aiResponseServices.Single(server => server is OobaUiResponseService);
+                case AiChatServiceTypes.OobaUi:
+                    return aiInstructServices.Single(server => server is OobaUiInstructService);
 
-                case AiChatResponseServiceTypes.Kobold:
-                    return aiResponseServices.Single(server => server is KoboldAiResponseService);
+                case AiChatServiceTypes.KoboldAi:
+                    return aiInstructServices.Single(server => server is KoboldAiInstructService);
 
                 default:
-                    return aiResponseServices.Single(server => server is MockAiResponseService);
+                    return aiInstructServices.Single(server => server is MockAiInstructService);
 
             }
         }

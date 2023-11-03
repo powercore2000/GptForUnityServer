@@ -34,7 +34,7 @@ namespace GptUnityServerTests
         public void Get_Model_From_Kobold()
         {
 
-            var responseServie = new KoboldAiResponseService(promptSettings);
+            var responseServie = new KoboldAiInstructService(promptSettings);
 
             string response = responseServie.GetModel().Result;
             Console.WriteLine(response);
@@ -52,7 +52,7 @@ namespace GptUnityServerTests
                 "Sally:...Hmm? Oh sorry, I was lost in thought." +
                 "You:Do you even know my dogs name Sally?"
                 ;
-            var responseServie = new KoboldAiResponseService(promptSettings);
+            var responseServie = new KoboldAiInstructService(promptSettings);
             var response = responseServie.SendMessage(promptSettings.prompt).Result;
             Console.WriteLine(response.Message);
             Assert.IsNotNull(response);
@@ -62,7 +62,7 @@ namespace GptUnityServerTests
         public void Get_Ai_Response_From_Kobold()
         {
 
-            var responseServie = new KoboldAiResponseService(promptSettings);
+            var responseServie = new KoboldAiInstructService(promptSettings);
 
             var response = responseServie.SendMessage(promptSettings.prompt).Result;
             Console.WriteLine(response.Message);

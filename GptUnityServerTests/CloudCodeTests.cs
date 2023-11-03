@@ -61,7 +61,7 @@ namespace GptUnityServerTests
 
             };
 
-            CloudChatResponseService chatService = new CloudChatResponseService(mockCloudCodeSetup);
+            CloudChatService chatService = new CloudChatService(mockCloudCodeSetup);
             AiResponse response = chatService.SendMessage(promptSettings).Result;
             Console.WriteLine(response.Message);
             Assert.IsNotNull(response);
@@ -72,7 +72,7 @@ namespace GptUnityServerTests
         public void Get_Response_From_Unity_Cloud()
         {
 
-            CloudResponseService responseServie = new CloudResponseService(mockCloudCodeSetup, promptSettings);
+            CloudInstructService responseServie = new CloudInstructService(mockCloudCodeSetup, promptSettings);
 
             AiResponse response = responseServie.SendMessage(promptSettings.prompt).Result;
             Console.WriteLine(response.Message);

@@ -6,7 +6,7 @@ using SharedLibrary;
 
 namespace GptUnityServer.Services.OobaUiServices
 {
-    public class OobaUiChatService : IAiChatResponseService
+    public class OobaUiChatService : IAiChatService
     {
 
 

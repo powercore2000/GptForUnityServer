@@ -7,12 +7,12 @@ using GptUnityServer.Services.Universal;
 
 namespace GptUnityServer.Services.KoboldAIServices
 {
-    public class KoboldAiResponseService : IAiResponseService
+    public class KoboldAiInstructService : IAiInstructService
     {
 
         private readonly PromptSettings promptSettings;
 
-        public KoboldAiResponseService(PromptSettings _promptSettings)
+        public KoboldAiInstructService(PromptSettings _promptSettings)
         {
 
             promptSettings = _promptSettings;

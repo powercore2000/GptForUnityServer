@@ -2,7 +2,7 @@
 
 namespace GptUnityServer.Services.Universal
 {
-    public interface IAiChatResponseService
+    public interface IAiChatService
     {
         public Task<AiResponse> SendMessage(PromptSettings promptSettings);
     }

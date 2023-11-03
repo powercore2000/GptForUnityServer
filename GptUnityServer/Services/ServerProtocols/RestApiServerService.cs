@@ -29,6 +29,7 @@
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
+            Console.WriteLine("Deactivating Rest Api Server!");
             throw new NotImplementedException();
         }
 

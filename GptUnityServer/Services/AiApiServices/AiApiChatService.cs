@@ -3,48 +3,54 @@ using System.Text;
 using SharedLibrary;
 using Newtonsoft.Json.Linq;
 
-namespace GptUnityServer.Services.UnityCloud
+namespace GptUnityServer.Services.AiApiServices
 {
-    using GptUnityServer.Services.Universal;
+    using Universal;
     using Models;
-    public class CloudChatResponseService : IAiChatResponseService
+    public class AiApiChatService : IAiChatService
     {
 
-        private readonly UnityCloudSetupData settings;
-        string url = "https://cloud-code.services.api.unity.com/v1/projects";
+        private readonly AiApiSetupData aiApiSetupData;
+        private readonly PromptSettings promptSettings;
 
-        public CloudChatResponseService(UnityCloudSetupData _settings)
+        public AiApiChatService(AiApiSetupData _aiApiSetupData, PromptSettings _promptSettings)
         {
-
-            settings = _settings;
+            aiApiSetupData = _aiApiSetupData;
         }
 
 
         public async Task<AiResponse> SendMessage(PromptSettings promptSettings)
         {
-            string formattedSystemMessages = string.Empty;
-            if (promptSettings.context_history.Length > 0)
-            {
-                formattedSystemMessages = "[";
-                foreach (string message in promptSettings.context_history)
-                {
-                    Console.WriteLine($"-{message}");
-                    formattedSystemMessages += "\n{";
-                    formattedSystemMessages +=
-                       "\"role\":\"system\"," +
-                        $"\"content\":\"{message}\"";
-                    formattedSystemMessages += "},\n";
 
-                }
+            string apiKey = aiApiSetupData.ApiKey;
+            //string message = userMessage;
+
+            string formattedSystemMessages;
+
+            formattedSystemMessages = "[";
+            foreach (string message in promptSettings.context_history)
+            { 
+                int colonIndex = message.IndexOf(':');
+                string messageAuthor = message.Substring(0, colonIndex);
+                string messageContent = message.Remove(0, colonIndex+1);
+
+                Console.WriteLine($"-{message}");
+                formattedSystemMessages += "\n{";
+                formattedSystemMessages +=
+                   $"\"role\":\"{messageAuthor}\"," +
+                    $"\"content\":\"{messageContent}\"";
+                formattedSystemMessages += "},\n";
+ 
             }
+
             formattedSystemMessages += "{";
             formattedSystemMessages +=
                "\"role\":\"user\"," +
-                $"\"content\":\"{promptSettings.prompt}\"";
+                $"\"content\":\"{promptSettings.user_message}\"";
             formattedSystemMessages += "}\n]";
             //Console.WriteLine("Displaying system messages in format:");
             //Console.WriteLine($"{formattedSystemMessages}");
-            HttpResponseMessage response = await CallCloudCode(formattedSystemMessages, promptSettings);
+            HttpResponseMessage response = await CallAiApi(formattedSystemMessages);
 
             //Console.WriteLine("\nWhat returned was  " + response.Content);
             if (response.IsSuccessStatusCode)
@@ -55,11 +61,12 @@ namespace GptUnityServer.Services.UnityCloud
                 JObject jsonData = JObject.Parse(responseJsonText);
                 //Console.WriteLine($"\n Converted data {jsonData}\n");
 
-                string trimmedData = jsonData["output"].ToString();
-                string parsedMessage = jsonData["output"]["choices"][0]["message"]["content"].ToString();
+                //Console.WriteLine("Attempting to format response Json");
+                string trimmedData = jsonData["choices"].ToString();
+                string parsedMessage = jsonData["choices"][0]["message"]["content"].ToString();
                 //Console.WriteLine($"\n stringified data {trimmedData}\n");
                 // Send the request and get the response           
-                return new AiResponse(trimmedData, parsedMessage);
+                return new AiResponse(jsonData.ToString(), parsedMessage);
             }
 
             else
@@ -76,31 +83,29 @@ namespace GptUnityServer.Services.UnityCloud
 
 
 
-        private async Task<HttpResponseMessage> CallCloudCode(string messages, PromptSettings promptSettings)
+        private async Task<HttpResponseMessage> CallAiApi(string messageList)
         {
 
             HttpClient client = new HttpClient();
-
-            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {settings.UnityCloudPlayerToken}");
+            JArray array = JArray.Parse(messageList);
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {aiApiSetupData.ApiKey}");
             var requestBody = new
             {
-                @params = new
-                {
-                    messages,
+                    messages = array,
                     model = promptSettings.Model,
                     temp = promptSettings.temp,
                     max_tokens = promptSettings.max_tokens,
                     top_p = promptSettings.top_p,
                     frequency_penalty = promptSettings.frequency_penalty,
-                }
+                
             };
-
+            
             var jsonString = JsonConvert.SerializeObject(requestBody);
             var httpContent = new StringContent(jsonString, Encoding.UTF8, "application/json");
 
-
-            string finalUrl = url + $"/{settings.UnityCloudProjectId}/{settings.UnityCloudEndpoint}/{settings.UnityCloudChatFunction}";
-            Console.WriteLine($"Making http request to Cloude Code with url:{finalUrl}");
+            //Console.WriteLine(jsonString.ToString());
+            string finalUrl = aiApiSetupData.ApiChatUrl;
+            Console.WriteLine($"Making http request to Ai Api with url:{finalUrl}");
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, finalUrl);
             request.Content = httpContent;
 
@@ -111,3 +116,5 @@ namespace GptUnityServer.Services.UnityCloud
 
 
 }
+
+

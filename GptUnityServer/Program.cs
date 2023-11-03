@@ -28,9 +28,9 @@ builder.Configuration.Bind("UnityCloudSetup", unityCloudSetupData);
 
 settings.RunSetUp(args);
 
-if (settings.ServerServiceEnum == ServerServiceTypes.AiApi)
+if (settings.ServerServiceEnum == AiChatServiceTypes.AiApi)
     aiApiSetup.RunSetUp(args);
-else if (settings.ServerServiceEnum == ServerServiceTypes.UnityCloud)
+else if (settings.ServerServiceEnum == AiChatServiceTypes.UnityCloud)
     unityCloudSetupData.RunSetUp(args);
 
 
@@ -47,21 +47,21 @@ builder.Services.AddTransient<IAiModelManager, CloudModelManager>();
 builder.Services.AddTransient<IAiModelManager, AiApiModelManager>();
 builder.Services.AddTransient<IAiModelManager, MockAiModelManagerService>();
 
-builder.Services.AddTransient<IAiResponseService, CloudResponseService>();
-builder.Services.AddTransient<IAiResponseService, AiApiResponseService>();
-builder.Services.AddTransient<IAiResponseService, OobaUiResponseService>();
-builder.Services.AddTransient<IAiResponseService, KoboldAiResponseService>();
-builder.Services.AddTransient<IAiResponseService, MockAiResponseService>();
+builder.Services.AddTransient<IAiInstructService, CloudInstructService>();
+builder.Services.AddTransient<IAiInstructService, AiApiInstructService>();
+builder.Services.AddTransient<IAiInstructService, OobaUiInstructService>();
+builder.Services.AddTransient<IAiInstructService, KoboldAiInstructService>();
+builder.Services.AddTransient<IAiInstructService, MockAiInstructService>();
 
 builder.Services.AddTransient<IKeyValidationService, CloudCodeValidationServices>();
 builder.Services.AddTransient<IKeyValidationService, AiApiKeyValidationService>();
 builder.Services.AddTransient<IKeyValidationService, OfflineApiKeyValidationService>();
 
-builder.Services.AddTransient<IAiChatResponseService, CloudChatResponseService>();
-builder.Services.AddTransient<IAiChatResponseService, AiApiChatResponseService>();
-builder.Services.AddTransient<IAiChatResponseService, OobaUiChatService>();
-builder.Services.AddTransient<IAiChatResponseService, KoboldAIChatService>();
-builder.Services.AddTransient<IAiChatResponseService, MockAiChatService>();
+builder.Services.AddTransient<IAiChatService, CloudChatService>();
+builder.Services.AddTransient<IAiChatService, AiApiChatService>();
+builder.Services.AddTransient<IAiChatService, OobaUiChatService>();
+builder.Services.AddTransient<IAiChatService, KoboldAIChatService>();
+builder.Services.AddTransient<IAiChatService, MockAiChatService>();
 
 
 builder.Services.AddTransient<IPromptSettingsService, PromptSettingsService>();
@@ -72,7 +72,7 @@ builder.Services.AddTransient<IUnityProtocolServer, UdpServerService>();
 builder.Services.AddTransient<IUnityProtocolServer, RestApiServerService>();
 
 builder.Services.AddSingleton<ModularServiceSelector>();
-builder.Services.AddSingleton<UnityServerManagerService>();
+builder.Services.AddHostedService<UnityServerManagerService>();
 if (settings.ServerProtocolEnum == ServerProtocolTypes.HTTP)
 {
 
@@ -87,7 +87,7 @@ if (settings.ServerProtocolEnum == ServerProtocolTypes.HTTP)
 
 var app = builder.Build();
 
-
+//app.Services.GetRequiredService<UnityServerManagerService>().StartServer();
 
 if (settings.ServerProtocolEnum == ServerProtocolTypes.HTTP)
 {

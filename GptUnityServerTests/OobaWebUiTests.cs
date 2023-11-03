@@ -21,7 +21,7 @@ namespace GptUnityServerTests
         public void Get_Ai_Response_From_Web_Ui()
         {
             
-            var responseServie = new OobaUiResponseService(promptSettings);
+            var responseServie = new OobaUiInstructService(promptSettings);
 
             var response = responseServie.SendMessage(promptSettings.prompt).Result;
             Console.WriteLine(response.Message);
@@ -32,7 +32,7 @@ namespace GptUnityServerTests
         public async Task Async_Get_Ai_Response_From_Web_Ui()
         {
 
-            var responseServie = new OobaUiResponseService(promptSettings);
+            var responseServie = new OobaUiInstructService(promptSettings);
 
             var response = await responseServie.SendMessage(promptSettings.prompt);
             Console.WriteLine(response.Message);
