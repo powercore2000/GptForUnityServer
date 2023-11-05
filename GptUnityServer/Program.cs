@@ -11,6 +11,7 @@ using GptUnityServer.Services.ServerManagment;
 using GptUnityServer.Services.ServerProtocols;
 using GptUnityServer.Services.UnityCloud;
 using GptUnityServer.Services.Universal;
+using Microsoft.OpenApi.Models;
 using SharedLibrary;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -79,7 +80,19 @@ if (settings.ServerProtocolEnum == ServerProtocolTypes.HTTP)
     builder.Services.AddControllers();
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
-    builder.Services.AddSwaggerGen();
+    builder.Services.AddSwaggerGen(c =>
+    {
+        
+        c.SwaggerDoc("v1", new OpenApiInfo
+        {
+            Version = "v1.1",
+            Title = "GptForUnityServer API v1.1",
+            Description = "Used for all modern versions of the GptForUnityServer"
+        });
+        
+
+        c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
+    });
 }
 
 
@@ -97,6 +110,8 @@ if (settings.ServerProtocolEnum == ServerProtocolTypes.HTTP)
     if (app.Environment.IsDevelopment())
     {
         Console.WriteLine("Dev enviroment");
+
+
         app.UseSwagger();
         app.UseSwaggerUI();
     }
