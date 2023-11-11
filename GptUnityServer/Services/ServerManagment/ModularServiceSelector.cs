@@ -182,7 +182,7 @@ namespace GptForUnityServer.Services.ServerManagment
         public IAiInstructService GetAiInstructService()
         {
 
-
+            Console.WriteLine("Using instruct service: " + AiInstructService);
             switch (AiInstructService)
             {
 

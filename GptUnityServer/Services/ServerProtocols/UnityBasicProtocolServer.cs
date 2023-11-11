@@ -79,7 +79,7 @@ namespace GptUnityServer.Services.ServerProtocols
 
         }
         /// <summary>
-        /// Parse the contents of the client message before sending it to a service
+        /// Parse the contents of the client's JSON message to determine which service to send it to for handling
         /// </summary>
         /// <param name="clientMessage"></param>
         /// <returns></returns>
