@@ -1,7 +1,11 @@
-﻿namespace GptUnityServer.Services.Universal
+﻿using SharedLibrary;
+
+namespace GptUnityServer.Services.Universal
 {
     public interface IPromptSettingsService
     {
-        public void SetPromptDetails(string promptDetails);
+        public void SetPromptByString(string promptDetails);
+
+        public void SetPrompt(PromptSettings newPromptSettings);
     }
 }

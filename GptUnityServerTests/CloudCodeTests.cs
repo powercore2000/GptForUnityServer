@@ -33,7 +33,7 @@ namespace GptUnityServerTests
             mockCloudCodeSetup.UnityCloudProjectId = "641d700a-b48a-4b51-b2db-e776550b0009";
             mockCloudCodeSetup.UnityCloudEndpoint = "modules/OpenAiModule";
             mockCloudCodeSetup.UnityCloudModelsFunction = "GetAiModelList";
-            mockCloudCodeSetup.UnityCloudResponseFunction = "GetAiResponse";
+            //mockCloudCodeSetup.UnityCloudResponseFunction = "GetAiResponse";
             mockCloudCodeSetup.UnityCloudChatFunction = "OpenAiChatRequest";
         }
 

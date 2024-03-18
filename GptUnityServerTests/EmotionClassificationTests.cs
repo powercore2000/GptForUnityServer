@@ -21,7 +21,7 @@ namespace GptUnityServerTests
             promptSettings.prompt = "How are you today?";
             promptSettings.max_tokens = 20;
 
-            mockAiApiSetup.ApiResponseUrl = "";
+            //mockAiApiSetup.ApiResponseUrl = "";
             mockAiApiSetup.ApiChatUrl = "";
             mockAiApiSetup.ApiKey = "";
             mockAiApiSetup.ApiKeyValidationUrl = "";

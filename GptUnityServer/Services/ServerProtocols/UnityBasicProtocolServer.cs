@@ -124,7 +124,7 @@ namespace GptUnityServer.Services.ServerProtocols
         protected void SetPromptDetails(string promptDetailsString)
         {
 
-            modularServiceSelector.GetPromptSettingsService().SetPromptDetails(promptDetailsString);
+            modularServiceSelector.GetPromptSettingsService().SetPromptByString(promptDetailsString);
 
         }
 

@@ -26,6 +26,7 @@ namespace GptUnityServer.Controllers
         //private readonly UnityServerManagerService unityServerManagmentService;
         private readonly PromptSettings promptSettings;
         private readonly ModularServiceSelector serviceSelectorService;
+        private readonly IPromptSettingsService promptSettingsService;
         //private readonly RestApiServerService currentRestApiServerService;
         private bool hasCheckedApiKey;
 
@@ -33,6 +34,7 @@ namespace GptUnityServer.Controllers
             ILogger<RestApiServerController> _logger,
             IServiceProvider _serviceProvider,
             ModularServiceSelector _serviceSelectorService,
+            IPromptSettingsService _promptSettingsService,
             //UnityServerManagerService _unityServerManagmentService, 
             PromptSettings _promptSettings)
         {
@@ -43,6 +45,7 @@ namespace GptUnityServer.Controllers
             serviceProvider = _serviceProvider;
             
             promptSettings = _promptSettings;
+            promptSettingsService = _promptSettingsService;
 
         }
 
@@ -80,7 +83,7 @@ namespace GptUnityServer.Controllers
         {
             if (GetApiKeyValidity())
             {
-                promptSettings.OverritePromptSettings(promptParams);
+                promptSettingsService.SetPrompt(promptParams);
                 return await serviceSelectorService.GetAiInstructService().SendMessage(promptParams.prompt);
             }
 
@@ -98,7 +101,7 @@ namespace GptUnityServer.Controllers
             Console.WriteLine("Hitting send chat endpoint");
             if (GetApiKeyValidity())
             {
-                promptSettings.OverritePromptSettings(promptParams);
+                promptSettingsService.SetPrompt(promptParams);
                 return await serviceSelectorService.GetAiChatService().SendMessage(promptParams);
             }
 

@@ -2,9 +2,8 @@
 {
     using System;
     using System.Text;
-    using Assets.GptToUnity.SharedLibrary;
-    using Models;
     using SharedLibrary;
+    using Models;
     using Newtonsoft.Json.Linq;
     using Newtonsoft.Json;
     using GptUnityServer.Services.Universal;

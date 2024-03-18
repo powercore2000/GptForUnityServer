@@ -7,27 +7,23 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		README.md = README.md
-		..\GptForUnity\Library\ScriptAssemblies\SharedLibrary.dll = ..\GptForUnity\Library\ScriptAssemblies\SharedLibrary.dll
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetCoreServer", "NetCoreServer\NetCoreServer.csproj", "{2923CD5E-75D6-427D-AFEC-12A3E245E327}"
-	ProjectSection(ProjectDependencies) = postProject
-		{177BDC5D-C1E5-28D7-27D7-4979E825D138} = {177BDC5D-C1E5-28D7-27D7-4979E825D138}
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GptForUnityServer", "GptUnityServer\GptForUnityServer.csproj", "{CE1998F9-BA1E-4AF6-B6F9-242B5D0507D2}"
 	ProjectSection(ProjectDependencies) = postProject
-		{177BDC5D-C1E5-28D7-27D7-4979E825D138} = {177BDC5D-C1E5-28D7-27D7-4979E825D138}
+		{5CA786AC-5937-468E-B9C9-431F3CFCD3F0} = {5CA786AC-5937-468E-B9C9-431F3CFCD3F0}
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GptUnityServerTests", "GptUnityServerTests\GptUnityServerTests.csproj", "{0399CFB2-D97D-4A57-A955-914C86D15326}"
 	ProjectSection(ProjectDependencies) = postProject
-		{177BDC5D-C1E5-28D7-27D7-4979E825D138} = {177BDC5D-C1E5-28D7-27D7-4979E825D138}
 		{2923CD5E-75D6-427D-AFEC-12A3E245E327} = {2923CD5E-75D6-427D-AFEC-12A3E245E327}
+		{5CA786AC-5937-468E-B9C9-431F3CFCD3F0} = {5CA786AC-5937-468E-B9C9-431F3CFCD3F0}
 		{CE1998F9-BA1E-4AF6-B6F9-242B5D0507D2} = {CE1998F9-BA1E-4AF6-B6F9-242B5D0507D2}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedLibrary", "..\GptForUnity\SharedLibrary.csproj", "{177BDC5D-C1E5-28D7-27D7-4979E825D138}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharedLibary", "SharedLibary\SharedLibary.csproj", "{5CA786AC-5937-468E-B9C9-431F3CFCD3F0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,10 +43,10 @@ Global
 		{0399CFB2-D97D-4A57-A955-914C86D15326}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0399CFB2-D97D-4A57-A955-914C86D15326}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0399CFB2-D97D-4A57-A955-914C86D15326}.Release|Any CPU.Build.0 = Release|Any CPU
-		{177BDC5D-C1E5-28D7-27D7-4979E825D138}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{177BDC5D-C1E5-28D7-27D7-4979E825D138}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{177BDC5D-C1E5-28D7-27D7-4979E825D138}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{177BDC5D-C1E5-28D7-27D7-4979E825D138}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5CA786AC-5937-468E-B9C9-431F3CFCD3F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CA786AC-5937-468E-B9C9-431F3CFCD3F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5CA786AC-5937-468E-B9C9-431F3CFCD3F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5CA786AC-5937-468E-B9C9-431F3CFCD3F0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

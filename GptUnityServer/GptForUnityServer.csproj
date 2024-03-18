@@ -17,20 +17,18 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\NetCoreServer\NetCoreServer.csproj" />
+    <ProjectReference Include="..\SharedLibary\SharedLibary.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\GptToUnity\Library\PackageCache\com.unity.nuget.newtonsoft-json@3.0.2\Runtime\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="SharedLibrary">
-      <HintPath>..\..\GptForUnity\Library\ScriptAssemblies\SharedLibrary.dll</HintPath>
     </Reference>
   </ItemGroup>
 

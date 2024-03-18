@@ -1,6 +1,6 @@
 ﻿namespace GptUnityServer.Services.Universal
 {
-    using Assets.GptToUnity.SharedLibrary;
+    using SharedLibrary;
     public interface IAiModelManager
     {
 
